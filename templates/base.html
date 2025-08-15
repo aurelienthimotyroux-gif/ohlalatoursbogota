@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="{{ get_locale() }}">
+<head>
+    <meta charset="UTF-8" />
+    <title>{% block title %}{{ _("Accueil") }}{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="{{ _('Visites guidées à Bogotá avec Alejandra, guide locale.') }}">
+
+    <!-- Feuille de style principale -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <!-- Police Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Poppins', sans-serif; margin:0; padding:0; }
+        button {
+            background-color: #007bff; color: white; border: none;
+            padding: 12px 20px; border-radius: 6px; cursor: pointer;
+            font-size: 1rem; transition: background 0.3s;
+        }
+        button:hover { background-color: #0056b3; }
+        header { color: white; text-align: center; }
+        nav a { color: white; text-decoration: none; font-weight: 500; }
+        nav a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+    <!-- Bandeau principal -->
+    <header class="hero background-half" style="background-image: url('{{ url_for('static', filename='images/accueil.jpg') }}'); padding: 20px;">
+        <div class="hero-topbar" style="display: flex; justify-content: space-between; align-items: center;">
+            <!-- Sélecteur de langue -->
+            <div id="lang-switcher">
+                <a href="{{ lang_url('fr') }}">🇫🇷</a> |
+                <a href="{{ lang_url('en') }}">🇺🇸</a> |
+                <a href="{{ lang_url('es') }}">🇨🇴</a>
+            </div>
+
+            <!-- Navigation -->
+            <nav>
+                <a href="{{ url_for('index', lang=get_locale()) }}">{{ _("Accueil") }}</a> |
+                <a href="{{ url_for('tours', lang=get_locale()) }}">{{ _("Types de visites") }}</a> |
+                <a href="{{ url_for('reservation', lang=get_locale()) }}">{{ _("Réservation") }}</a>
+            </nav>
+        </div>
+
+        <h1 class="hero-title">{% block header_title %}{{ _("Bienvenue à Bogotá !") }}{% endblock %}</h1>
+    </header>
+
+    <!-- Contenu -->
+    <main style="max-width: 1000px; margin: 30px auto; padding: 0 20px;">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Section Contact -->
+    <section style="background: #f9f9f9; padding: 40px 20px; margin-top: 40px;">
+        <div style="max-width: 1000px; margin: auto; display: flex; flex-wrap: wrap; align-items: center; gap: 20px;">
+            
+            <!-- Photo -->
+            <div style="flex: 1; min-width: 250px;">
+                <img src="{{ url_for('static', filename='images/alejandra.jpg') }}?v=4"
+     alt="{{ _('Alejandra, votre guide à Bogotá') }}"
+     style="display:block;max-width:100%;height:auto;border-radius:10px;object-fit:cover;">
+
+
+            </div>
+
+            <!-- Infos Contact -->
+            <div style="flex: 1; min-width: 250px;">
+                <h2>{{ _("Contact") }}</h2>
+                <p>
+                    <strong>{{ _("Email") }} :</strong>
+                    <a href="mailto:alejandramontana25.18@gmail.com">alejandramontana25.18@gmail.com</a>
+                </p>
+                <p>
+                    <strong>{{ _("WhatsApp") }} :</strong>
+                    <a href="https://wa.me/573505384537" target="_blank">+57 350 538 4537</a>
+                </p>
+                <
+
+

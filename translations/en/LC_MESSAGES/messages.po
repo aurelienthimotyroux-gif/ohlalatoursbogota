@@ -1,0 +1,461 @@
+# English translations for PROJECT.
+# Copyright (C) 2025
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2025-08-09 18:25+0200\n"
+"PO-Revision-Date: 2025-08-15 18:45+0200\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: templates/base.html:5 templates/base.html:42 templates/index.html:5
+#: templates/index.html:74 templates/reservation.html:24
+#: templates/tours.html:25
+msgid "Accueil"
+msgstr "Home"
+
+#: templates/base.html:7 templates/index.html:7
+msgid "Visites guidées à Bogotá avec Alejandra, guide locale."
+msgstr "Guided tours in Bogotá with Alejandra, local guide."
+
+#: templates/base.html:43 templates/index.html:75 templates/reservation.html:25
+#: templates/tours.html:5 templates/tours.html:26 templates/tours.html:32
+msgid "Types de visites"
+msgstr "Tour types"
+
+#: templates/base.html:44 templates/index.html:76 templates/reservation.html:26
+#: templates/tours.html:27
+msgid "Réservation"
+msgstr "Booking"
+
+#: templates/base.html:48 templates/index.html:81
+msgid "Bienvenue à Bogotá !"
+msgstr "Welcome to Bogotá!"
+
+#: templates/base.html:63 templates/index.html:111
+msgid "Alejandra, votre guide à Bogotá"
+msgstr "Alejandra, your guide in Bogotá"
+
+#: templates/base.html:71 templates/index.html:117
+msgid "Contact"
+msgstr "Contact"
+
+#: templates/base.html:73 templates/index.html:119
+#: templates/reservation.html:48
+msgid "Email"
+msgstr "Email"
+
+#: templates/base.html:77 templates/index.html:123
+msgid "WhatsApp"
+msgstr "WhatsApp"
+
+msgid "Je suis Alejandra, guide locale passionnée, et je vous invite à découvrir une Bogotá authentique, vibrante et pleine de vie."
+msgstr "I am Alejandra, a passionate local guide, and I invite you to discover an authentic, vibrant, and lively Bogotá."
+
+msgid "À travers mes visites en petits groupes, nous explorerons son histoire, sa culture et ses saveurs : balades dans les quartiers historiques, expériences culinaires, escapades en pleine nature et excursions uniques aux alentours, comme la célèbre Cathédrale de sel de Zipaquirá."
+msgstr "Through my small-group tours, we will explore its history, culture, and flavors: strolls through historic neighborhoods, culinary experiences, nature getaways, and unique excursions nearby, such as the famous Salt Cathedral of Zipaquirá."
+
+msgid "Plus qu’une simple visite, je vous propose une immersion vivante et chaleureuse, une expérience à ressentir et à emporter avec vous."
+msgstr "More than just a tour, I offer a warm and lively immersion—an experience to feel and take with you."
+
+#: templates/index.html:96
+msgid "Voir les types de visites"
+msgstr "See tour types"
+
+#: templates/index.html:99
+msgid "Réserver maintenant"
+msgstr "Book now"
+
+#: templates/index.html:126
+msgid "N’hésitez pas à me contacter pour toute question ou réservation."
+msgstr "Feel free to contact me for any questions or bookings."
+
+#: templates/index.html:134
+msgid "Avis des voyageurs"
+msgstr "Traveler reviews"
+
+#: templates/index.html:140
+msgid "Canada"
+msgstr "Canada"
+
+#: templates/index.html:141
+msgid "mai"
+msgstr "May"
+
+#: templates/index.html:144
+msgid "L’expérience est super. Alejandra prend son temps pour nous expliquer et répondre à nos questions."
+msgstr "The experience was excellent. Alejandra takes her time to explain and answer our questions."
+
+#: templates/index.html:150 templates/index.html:171 templates/index.html:201
+#: templates/index.html:211 templates/index.html:221 templates.index.html:261
+msgid "Mexique"
+msgstr "Mexico"
+
+#: templates/index.html:151 templates.index.html:161
+msgid "mars"
+msgstr "March"
+
+#: templates/index.html:154
+msgid ""
+"Recommandé. La communication avec Alejandra était excellente avant et "
+"pendant, tout ce qui était décrit était respecté et toujours à l'écoute "
+"de nos besoins. C’est probablement un lieu que vous devez visiter si vous"
+" venez à Bogotá : belles vues et cathédrale de sel à couper le souffle."
+msgstr "Recommended. Communication with Alejandra was excellent before and during the tour; everything described was delivered and she was always attentive to our needs. This is probably a place you must visit if you come to Bogotá: beautiful views and a breathtaking salt cathedral."
+
+#: templates/index.html:160 templates.index.html:191 templates.index.html:251
+msgid "États-Unis"
+msgstr "United States"
+
+#: templates/index.html:164
+#, python-format
+msgid ""
+"Expérience incroyable ! Alejandra et son père (Omar) ont pris soin des "
+"besoins spéciaux de mon mari, et tout a été fait à 100%%. La Catedral de "
+"Sal, la cuisine traditionnelle à Brasas del Llano : une expérience "
+"culturelle 5 étoiles. Nous recommandons Alejandra si vous voulez une "
+"visite avec une amie. Merci beaucoup, à la prochaine !"
+msgstr "Incredible experience! Alejandra and her father (Omar) took great care of my husband's special needs and everything was done 100%%. The Salt Cathedral and the traditional food at Brasas del Llano were a 5-star cultural experience. We recommend Alejandra if you want a tour that feels like being with a friend. Thank you so much—see you next time!"
+
+#: templates/index.html:172
+msgid "septembre"
+msgstr "September"
+
+#: templates/index.html:175
+msgid ""
+"Alejandra et son père sont extraordinaires et nous ont offert une très "
+"belle journée à Zipaquirá. Nous repartons avec d’excellents souvenirs. "
+"Merci !"
+msgstr "Alejandra and her father are extraordinary and gave us a wonderful day in Zipaquirá. We leave with excellent memories. Thank you!"
+
+#: templates/index.html:181 templates.index.html:231 templates.index.html:241
+msgid "Costa Rica"
+msgstr "Costa Rica"
+
+#: templates/index.html:182
+msgid "janvier"
+msgstr "January"
+
+#: templates/index.html:185
+msgid "Merci beaucoup pour votre gentillesse et votre disponibilité. Super recommandé."
+msgstr "Thank you very much for your kindness and availability. Highly recommended."
+
+#: templates/index.html:192 templates.index.html:202 templates.index.html:212
+#: templates.index.html:222
+msgid "août"
+msgstr "August"
+
+#: templates/index.html:195
+msgid "Alejandra et son père Omar ont été des hôtes parfaits, très attentifs à ma manière de vouloir profiter de la visite."
+msgstr "Alejandra and her father Omar were perfect hosts, very attentive to the way I wanted to enjoy the tour."
+
+#: templates/index.html:205
+msgid "Nous recommandons cette expérience. Nous avons passé un excellent moment. Alejandra et son père sont polis et sympathiques."
+msgstr "We recommend this experience. We had an excellent time. Alejandra and her father are polite and friendly."
+
+#: templates/index.html:215
+#, python-format
+msgid "Hautement recommandé. Alejandra et son père ont été très sympathiques et à notre écoute à tout moment. Expérience 100 %% recommandée !"
+msgstr "Highly recommended. Alejandra and her father were very friendly and attentive at all times. 100%% recommended!"
+
+#: templates/index.html:225
+msgid ""
+"Du début à la fin, une expérience très agréable. Alejandra et son père "
+"Omar ont été très attentifs et gentils. Petit-déjeuner et déjeuner "
+"délicieux. Ils nous ont laissé profiter de la cathédrale à notre rythme :"
+" apprécié !"
+msgstr "From start to finish, a very pleasant experience. Alejandra and her father Omar were very attentive and kind. Delicious breakfast and lunch. They let us enjoy the cathedral at our own pace—much appreciated!"
+
+#: templates/index.html:232 templates.index.html:242 templates.index.html:262
+msgid "juillet"
+msgstr "July"
+
+#: templates/index.html:235
+msgid "Voyage bien planifié. À l’heure pour le pickup à l’hôtel. Pendant le trajet, Alejandra et Omar sont très sympathiques et patients."
+msgstr "Well-planned trip. On time for hotel pick-up. During the ride, Alejandra and Omar were very friendly and patient."
+
+#: templates/index.html:245
+msgid "Ale et Omar (son papa) sont super sympas et très impliqués pour que vous vous sentiez comme chez vous."
+msgstr "Ale and Omar (her dad) are super nice and very committed to making you feel at home."
+
+#: templates/index.html:252
+msgid "février"
+msgstr "February"
+
+#: templates/index.html:255
+msgid "Alejandra et son père ont été sympathiques, réactifs à nos questions, et nous ont emmenés sur des sites fascinants que nous n’aurions jamais trouvés seuls. Une expérience très agréable."
+msgstr "Alejandra and her father were friendly, responsive to our questions, and took us to fascinating places we would never have found on our own. A very pleasant experience."
+
+#: templates/index.html:265
+msgid ""
+"L’une des meilleures expériences à ne pas manquer. Alejandra et son papa, M. Omar, sont extrêmement gentils, à l’écoute, et très ponctuels. Parcours agréable, café sur la place, échanges culturels, visite impressionnante de la cathédrale de sel, puis déjeuner de plats typiques. Merci pour votre hospitalité, je reviendrais sans hésiter !"
+msgstr "One of the best experiences not to be missed. Alejandra and her dad, Mr. Omar, are extremely kind, attentive, and very punctual. Pleasant route, coffee in the square with cultural exchange, an impressive visit to the Salt Cathedral, then lunch with typical dishes. Thank you for your hospitality—I would return without hesitation!"
+
+#: templates/index.html:276
+msgid "Lire plus"
+msgstr "Read more"
+
+#: templates/index.html:277
+msgid "Lire moins"
+msgstr "Read less"
+
+#: templates/reservation.html:5 templates/reservation.html:33
+msgid "Réserver votre visite"
+msgstr "Book your tour"
+
+#: templates/reservation.html:45
+msgid "Nom"
+msgstr "Name"
+
+#: templates/reservation.html:51
+msgid "Date souhaitée"
+msgstr "Preferred date"
+
+#: templates/reservation.html:54
+msgid "Message"
+msgstr "Message"
+
+#: templates/reservation.html:57 templates/tours.html:99
+msgid "Envoyer"
+msgstr "Send"
+
+# --- Tours (Candelaria) ---
+msgid "La Candelaria : Histoire, art et secrets du cœur de Bogotá"
+msgstr "La Candelaria: History, art, and secrets of the heart of Bogotá"
+
+msgid "Ce qui est inclus :"
+msgstr "What's included:"
+
+msgid "Transport aller-retour depuis votre hébergement"
+msgstr "Round-trip transport from your accommodation"
+
+msgid "Guide locale passionnée et experte"
+msgstr "Passionate and knowledgeable local guide"
+
+msgid "Visite à pied des sites historiques et culturels emblématiques"
+msgstr "Walking tour of iconic historical and cultural sites"
+
+msgid "Exploration des fresques et du street art"
+msgstr "Exploration of murals and street art"
+
+msgid "Récits authentiques sur l’histoire, la politique et les traditions"
+msgstr "Authentic stories about history, politics, and traditions"
+
+msgid "Dégustation de café colombien d’exception"
+msgstr "Tasting of exceptional Colombian coffee"
+
+msgid "Conseils personnalisés pour vos découvertes gastronomiques et culturelles"
+msgstr "Personalized tips for your gastronomic and cultural discoveries"
+
+msgid "Durée : 3 heures"
+msgstr "Duration: 3 hours"
+
+msgid "Langues : 🇪🇸 🇫🇷 🇺🇸"
+msgstr "Languages: 🇪🇸 🇫🇷 🇺🇸"
+
+msgid "Tarif : à confirmer"
+msgstr "Price: to be confirmed"
+
+# --- Tours (Monserrate) ---
+msgid "Monserrate : Là où se rencontrent nature, histoire et foi"
+msgstr "Monserrate: Where nature, history, and faith meet"
+
+msgid "Grimpez au sommet le plus emblématique de Bogotá et vivez une expérience unique qui mêle nature, histoire et spiritualité. Nous monterons en téléphérique pour profiter de l’une des plus belles vues sur la capitale, entourés par la luxuriante végétation andine. Au sommet, nous visiterons le Sanctuaire du Señor Caído, haut lieu de ferveur spirituelle, avant de parcourir ses alentours pour admirer le paysage, l’architecture et les traditions qui font de Monserrate un site incontournable."
+msgstr "Climb to Bogotá’s most iconic peak and enjoy a unique experience that blends nature, history, and spirituality. We will take the cable car to enjoy one of the best views of the capital, surrounded by lush Andean vegetation. At the top, we will visit the Sanctuary of the Fallen Lord, a place of deep spiritual devotion, and stroll the surroundings to admire the landscape, architecture, and traditions that make Monserrate a must-see."
+
+msgid "Guide locale experte"
+msgstr "Expert local guide"
+
+msgid "Montée en téléphérique et descente en funiculaire"
+msgstr "Cable car up and funicular down"
+
+msgid "Dégustation de café colombien au sommet"
+msgstr "Colombian coffee tasting at the summit"
+
+msgid "Transport aller-retour depuis votre hébergement (optionnel)"
+msgstr "Round-trip transport from your accommodation (optional)"
+
+msgid "Durée : 2 heures"
+msgstr "Duration: 2 hours"
+
+msgid "Langues : 🇪🇸 🇫🇷 🇺🇸"
+msgstr "Languages: 🇪🇸 🇫🇷 🇺🇸"
+
+# --- Tours (Zipaquirá) ---
+msgid "Cathédrale de Sel de Zipaquirá : un joyau souterrain unique au monde"
+msgstr "Salt Cathedral of Zipaquirá: a unique underground gem"
+
+msgid "Découvrez les profondeurs de la terre et émerveillez-vous devant l’une des œuvres les plus impressionnantes de Colombie. Creusée dans une ancienne mine de sel, la Cathédrale de Zipaquirá allie grandeur architecturale, spiritualité et histoire minière. Nous parcourrons ses galeries monumentales, illuminées par un spectaculaire jeu de lumières, et admirerons les sculptures taillées dans le sel, témoins du savoir-faire et de la foi de ses bâtisseurs."
+msgstr "Discover the depths of the earth and be amazed by one of Colombia’s most impressive works. Carved inside an old salt mine, the Zipaquirá Cathedral combines architectural grandeur, spirituality, and mining history. We will walk through its monumental galleries, lit by a spectacular play of lights, and admire salt-carved sculptures—testimony to the craftsmanship and faith of its builders."
+
+msgid "Entrée à la Cathédrale de Sel"
+msgstr "Entry to the Salt Cathedral"
+
+msgid "Déjeuner traditionnel"
+msgstr "Traditional lunch"
+
+msgid "Temps libre pour explorer et prendre des photos"
+msgstr "Free time to explore and take photos"
+
+msgid "Durée : 6h (transfert inclus)"
+msgstr "Duration: 6h (transfer included)"
+
+msgid "Langues : 🇫🇷 🇪🇸 🇺🇸"
+msgstr "Languages: 🇫🇷 🇪🇸 🇺🇸"
+
+# --- Tours (La Chorrera) ---
+msgid "Cascade de La Chorrera : la plus haute chute d’eau de Colombie"
+msgstr "La Chorrera Waterfall: the tallest waterfall in Colombia"
+
+msgid "Découvrez une aventure inoubliable au cœur des montagnes andines et contemplez La Chorrera, la plus haute cascade du pays. Nous emprunterons des sentiers bordés d’une végétation luxuriante, en observant la richesse de la faune et de la flore locales. Tout au long de la randonnée, nous profiterons de paysages spectaculaires jusqu’à atteindre la chute vertigineuse de plus de 590 mètres, un spectacle naturel à couper le souffle."
+msgstr "Enjoy an unforgettable adventure in the heart of the Andes and take in La Chorrera, the tallest waterfall in the country. We will follow trails lined with lush vegetation, observing the richness of local flora and fauna. Throughout the hike we’ll enjoy spectacular landscapes until we reach the dizzying drop of more than 590 meters—an awe-inspiring natural spectacle."
+
+msgid "Entrée au parc naturel"
+msgstr "Entry to the natural park"
+
+msgid "Informations sur la faune, la flore et l’histoire du site"
+msgstr "Information about the site’s wildlife, flora, and history"
+
+msgid "Snack léger (prévoir un petit encas supplémentaire)"
+msgstr "Light snack (bring an extra small snack)"
+
+msgid "Pause pour se reposer et admirer la vue"
+msgstr "Pause to rest and admire the view"
+
+msgid "Durée : 7–8h"
+msgstr "Duration: 7–8h"
+
+# --- Common / CTA / misc ---
+msgid "Prix : 40 €"
+msgstr "Price: €40"
+
+msgid "Réserver"
+msgstr "Book"
+
+msgid "À votre tour de laisser un joli commentaire"
+msgstr "Your turn to leave a nice comment"
+
+msgid "Votre nom et pays"
+msgstr "Your name and country"
+
+msgid "Votre commentaire"
+msgstr "Your comment"
+
+msgid "Merci pour votre joli commentaire ! ❤️"
+msgstr "Thank you for your lovely comment! ❤️"
+
+msgid "Nombre de personnes (max 6)"
+msgstr "Number of people (max 6)"
+
+msgid "Mode de paiement"
+msgstr "Payment method"
+
+msgid "Cash"
+msgstr "Cash"
+
+msgid "PayPal"
+msgstr "PayPal"
+
+msgid "Carte de crédit"
+msgstr "Credit card"
+
+msgid "Email PayPal"
+msgstr "PayPal email"
+
+msgid "Numéro de carte"
+msgstr "Card number"
+
+msgid "Date d'expiration"
+msgstr "Expiration date"
+
+msgid "Code CVC"
+msgstr "CVC code"
+
+msgid "Service de transport inclus ?"
+msgstr "Transport service included?"
+
+msgid "Oui"
+msgstr "Yes"
+
+msgid "Non"
+msgstr "No"
+
+msgid "Service de Transport"
+msgstr "Transport Service"
+
+msgid "Qu'est-ce que le service de transport ?"
+msgstr "What is the transport service?"
+
+msgid "Nous proposons un service de transport confortable et sécurisé pour tous nos clients."
+msgstr "We offer a comfortable and safe transport service for all our clients."
+
+msgid "Si vous choisissez d'inclure le service de transport dans votre réservation, nous vous fournirons un véhicule privé pour vous emmener à la destination de votre visite."
+msgstr "If you choose to include the transport service in your booking, we will provide a private vehicle to take you to your tour destination."
+
+msgid "Pourquoi choisir le service de transport ?"
+msgstr "Why choose the transport service?"
+
+msgid "Confort et sécurité : Un véhicule privé pour vous et vos compagnons."
+msgstr "Comfort and safety: a private vehicle for you and your companions."
+
+msgid "Économisez du temps : Arrivez à destination rapidement et facilement."
+msgstr "Save time: arrive at your destination quickly and easily."
+
+msgid "Service personnalisé : Un chauffeur professionnel et courtois."
+msgstr "Personalized service: a professional, courteous driver."
+
+msgid "Comment réserver ?"
+msgstr "How to book?"
+
+msgid "Lorsque vous réservez votre visite, vous aurez la possibilité d'ajouter le service de transport à votre réservation."
+msgstr "When you book your tour, you will have the option to add the transport service to your booking."
+
+msgid "Indiquez simplement si vous souhaitez inclure le transport et nous nous occuperons du reste."
+msgstr "Simply indicate if you would like to include transport and we will take care of the rest."
+
+msgid "Tarification"
+msgstr "Pricing"
+
+msgid "Le tarif du service de transport dépend de la destination et du nombre de passagers."
+msgstr "The price of the transport service depends on the destination and the number of passengers."
+
+msgid "N'hésitez pas à nous contacter pour plus d'informations sur les tarifs."
+msgstr "Feel free to contact us for more information on prices."
+
+msgid "Type de visite"
+msgstr "Tour type"
+
+msgid "Choisissez un type de visite"
+msgstr "Choose a tour type"
+
+msgid "Votre note"
+msgstr "Your rating"
+
+msgid "Nos tours"
+msgstr "Our tours"
+
+msgid "Choisissez un tour"
+msgstr "Choose a tour"
+
+msgid "-- Sélectionnez --"
+msgstr "-- Select --"
+
+msgid "Infos utiles, horaires, etc."
+msgstr "Useful info, schedules, etc."
+
+msgid "Laissez-vous séduire par l’âme coloniale de Bogotá et partez à la découverte de La Candelaria, son quartier le plus coloré et vibrant. Entre ruelles pavées, façades colorées et fresques spectaculaires, chaque pas vous plonge dans un voyage à travers l’histoire, l’art et les traditions de la ville. Au fil de notre balade, vous écouterez des légendes fascinantes, revivrez des épisodes marquants de la politique colombienne et admirerez un art urbain qui donne vie aux murs de la capitale. Un moment privilégié pour comprendre Bogotá au-delà des clichés."
+msgstr "Let yourself be captivated by Bogotá’s colonial soul and discover La Candelaria, its most colorful and vibrant neighborhood. Between cobblestone alleys, colorful facades, and spectacular murals, every step immerses you in a journey through the city’s history, art, and traditions. As we stroll, you’ll hear fascinating legends, revisit key episodes of Colombian politics, and admire street art that brings the capital’s walls to life. A special moment to understand Bogotá beyond the clichés."
+
+msgid "Optionnel"
+msgstr "Optional"
+
+msgid "Pas de compte PayPal ? Choisissez l’option carte bancaire sur l’écran PayPal."
+msgstr "No PayPal account? Choose the card option on the PayPal screen."

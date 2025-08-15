@@ -1,0 +1,398 @@
+# French translations for PROJECT.
+# Copyright (C) 2025 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2025-08-09 18:25+0200\n"
+"PO-Revision-Date: 2025-08-06 23:09+0200\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: templates/base.html:5 templates/base.html:42 templates/index.html:5
+#: templates/index.html:74 templates/reservation.html:24
+#: templates/tours.html:25
+msgid "Accueil"
+msgstr ""
+
+#: templates/base.html:7 templates/index.html:7
+msgid "Visites guidées à Bogotá avec Alejandra, guide locale."
+msgstr ""
+
+#: templates/base.html:43 templates/index.html:75 templates/reservation.html:25
+#: templates/tours.html:5 templates/tours.html:26 templates/tours.html:32
+msgid "Types de visites"
+msgstr ""
+
+#: templates/base.html:44 templates/index.html:76 templates/reservation.html:26
+#: templates/tours.html:27
+msgid "Réservation"
+msgstr ""
+
+#: templates/base.html:48 templates/index.html:81
+msgid "Bienvenue à Bogotá !"
+msgstr ""
+
+#: templates/base.html:63 templates/index.html:111
+msgid "Alejandra, votre guide à Bogotá"
+msgstr ""
+
+#: templates/base.html:71 templates/index.html:117
+msgid "Contact"
+msgstr ""
+
+#: templates/base.html:73 templates/index.html:119
+#: templates/reservation.html:48
+msgid "Email"
+msgstr ""
+
+#: templates/base.html:77 templates/index.html:123
+msgid "WhatsApp"
+msgstr ""
+
+
+
+#: templates/index.html:96
+msgid "Voir les types de visites"
+msgstr ""
+
+#: templates/index.html:99
+msgid "Réserver maintenant"
+msgstr ""
+
+#: templates/index.html:126
+msgid "N’hésitez pas à me contacter pour toute question ou réservation."
+msgstr ""
+
+#: templates/index.html:134
+msgid "Avis des voyageurs"
+msgstr ""
+
+#: templates/index.html:140
+msgid "Canada"
+msgstr ""
+
+#: templates/index.html:141
+msgid "mai"
+msgstr ""
+
+#: templates/index.html:144
+msgid ""
+"L’expérience est super. Alejandra prend son temps pour nous expliquer et "
+"répondre à nos questions."
+msgstr ""
+
+#: templates/index.html:150 templates/index.html:171 templates/index.html:201
+#: templates/index.html:211 templates/index.html:221 templates/index.html:261
+msgid "Mexique"
+msgstr ""
+
+#: templates/index.html:151 templates/index.html:161
+msgid "mars"
+msgstr ""
+
+#: templates/index.html:154
+msgid ""
+"Recommandé. La communication avec Alejandra était excellente avant et "
+"pendant, tout ce qui était décrit était respecté et toujours à l'écoute "
+"de nos besoins. C’est probablement un lieu que vous devez visiter si vous"
+" venez à Bogotá : belles vues et cathédrale de sel à couper le souffle."
+msgstr ""
+
+#: templates/index.html:160 templates/index.html:191 templates/index.html:251
+msgid "États-Unis"
+msgstr ""
+
+#: templates/index.html:164
+#, python-format
+msgid ""
+"Expérience incroyable ! Alejandra et son père (Omar) ont pris soin des "
+"besoins spéciaux de mon mari, et tout a été fait à 100%%. La Catedral de "
+"Sal, la cuisine traditionnelle à Brasas del Llano : une expérience "
+"culturelle 5 étoiles. Nous recommandons Alejandra si vous voulez une "
+"visite avec une amie. Merci beaucoup, à la prochaine !"
+msgstr ""
+
+#: templates/index.html:172
+msgid "septembre"
+msgstr ""
+
+#: templates/index.html:175
+msgid ""
+"Alejandra et son père sont extraordinaires et nous ont offert une très "
+"belle journée à Zipaquirá. Nous repartons avec d’excellents souvenirs. "
+"Merci !"
+msgstr ""
+
+#: templates/index.html:181 templates/index.html:231 templates/index.html:241
+msgid "Costa Rica"
+msgstr ""
+
+#: templates/index.html:182
+msgid "janvier"
+msgstr ""
+
+#: templates/index.html:185
+msgid ""
+"Merci beaucoup pour votre gentillesse et votre disponibilité. Super "
+"recommandé."
+msgstr ""
+
+#: templates/index.html:192 templates/index.html:202 templates/index.html:212
+#: templates/index.html:222
+msgid "août"
+msgstr ""
+
+#: templates/index.html:195
+msgid ""
+"Alejandra et son père Omar ont été des hôtes parfaits, très attentifs à "
+"ma manière de vouloir profiter de la visite."
+msgstr ""
+
+#: templates/index.html:205
+msgid ""
+"Nous recommandons cette expérience. Nous avons passé un excellent moment."
+" Alejandra et son père sont polis et sympathiques."
+msgstr ""
+
+#: templates/index.html:215
+#, python-format
+msgid ""
+"Hautement recommandé. Alejandra et son père ont été très sympathiques et "
+"à notre écoute à tout moment. Expérience 100 % recommandée !"
+msgstr ""
+
+#: templates/index.html:225
+msgid ""
+"Du début à la fin, une expérience très agréable. Alejandra et son père "
+"Omar ont été très attentifs et gentils. Petit-déjeuner et déjeuner "
+"délicieux. Ils nous ont laissé profiter de la cathédrale à notre rythme :"
+" apprécié !"
+msgstr ""
+
+#: templates/index.html:232 templates/index.html:242 templates/index.html:262
+msgid "juillet"
+msgstr ""
+
+#: templates/index.html:235
+msgid ""
+"Voyage bien planifié. À l’heure pour le pickup à l’hôtel. Pendant le "
+"trajet, Alejandra et Omar sont très sympathiques et patients."
+msgstr ""
+
+#: templates/index.html:245
+msgid ""
+"Ale et Omar (son papa) sont super sympas et très impliqués pour que vous "
+"vous sentiez comme chez vous."
+msgstr ""
+
+#: templates/index.html:252
+msgid "février"
+msgstr ""
+
+#: templates/index.html:255
+msgid ""
+"Alejandra et son père ont été sympathiques, réactifs à nos questions, et "
+"nous ont emmenés sur des sites fascinants que nous n’aurions jamais "
+"trouvés seuls. Une expérience très agréable."
+msgstr ""
+
+#: templates/index.html:265
+msgid ""
+"L’une des meilleures expériences à ne pas manquer. Alejandra et son papa,"
+" M. Omar, sont extrêmement gentils, à l’écoute, et très ponctuels. "
+"Parcours agréable, café sur la place, échanges culturels, visite "
+"impressionnante de la cathédrale de sel, puis déjeuner de plats typiques."
+" Merci pour votre hospitalité, je reviendrais sans hésiter !"
+msgstr ""
+
+#: templates/index.html:276
+msgid "Lire plus"
+msgstr ""
+
+#: templates/index.html:277
+msgid "Lire moins"
+msgstr ""
+
+#: templates/reservation.html:5 templates/reservation.html:33
+msgid "Réserver votre visite"
+msgstr ""
+
+#: templates/reservation.html:45
+msgid "Nom"
+msgstr ""
+
+#: templates/reservation.html:51
+msgid "Date souhaitée"
+msgstr ""
+
+#: templates/reservation.html:54
+msgid "Message"
+msgstr ""
+
+#: templates/reservation.html:57
+msgid "Envoyer"
+msgstr ""
+
+#: templates/tours.html:42
+msgid "Visite historique de La Candelaria"
+msgstr ""
+
+#: templates/tours.html:43
+msgid ""
+"Découvrez le quartier colonial emblématique de Bogotá, entre street art, "
+"ruelles pavées et histoire politique."
+msgstr ""
+
+#: templates/tours.html:45
+msgid "Durée : 3h"
+msgstr ""
+
+#: templates/tours.html:46
+msgid "Prix : 20 €"
+msgstr ""
+
+#: templates/tours.html:47 templates/tours.html:58 templates/tours.html:69
+msgid "Langues"
+msgstr ""
+
+#: templates/tours.html:53
+msgid "Randonnée à Monserrate"
+msgstr ""
+
+#: templates/tours.html:54
+msgid "Montez au sommet de la ville pour une vue panoramique à couper le souffle."
+msgstr ""
+
+#: templates/tours.html:56
+msgid "Durée : 2h"
+msgstr ""
+
+#: templates/tours.html:57
+msgid "Prix : 15 €"
+msgstr ""
+
+#: templates/tours.html:64
+msgid "Excursion à la Cathédrale de sel de Zipaquirá"
+msgstr ""
+
+#: templates/tours.html:65
+msgid ""
+"Partez à la découverte de cette merveille souterraine unique au monde, "
+"creusée dans une ancienne mine de sel."
+msgstr ""
+
+#: templates/tours.html:67
+msgid "Durée : 6h (transfert inclus)"
+msgstr ""
+
+#: templates/tours.html:68
+msgid "Prix : 40 €"
+msgstr ""
+
+#: templates/tours.html:99
+msgid "Réserver"
+msgstr ""
+
+#~ msgid "Bienvenue à Bogotá !"
+#~ msgstr "Bienvenue à Bogotá"
+
+#~ msgid "Voir la galerie"
+#~ msgstr "Voir la galerie"
+
+#~ msgid ""
+#~ "Je m'appelle Alejandra, je suis guide"
+#~ " à Bogotá et je vous propose "
+#~ "des visites culturelles, locales et "
+#~ "authentiques."
+#~ msgstr ""
+#~ "Je m'appelle Alejandra, je suis guide"
+#~ " à Bogotá et je vous propose "
+#~ "des visites culturelles, locales et "
+#~ "authentiques."
+
+#~ msgid ""
+#~ "Découvrez les secrets de la Candelaria,"
+#~ " les marchés typiques, les musées, "
+#~ "les points de vue et bien plus "
+#~ "encore."
+#~ msgstr ""
+#~ "Découvrez les secrets de la Candelaria,"
+#~ " les marchés typiques, les musées, "
+#~ "les points de vue et bien plus "
+#~ "encore."
+
+#~ msgid "Quelques photos de mes visites"
+#~ msgstr "Quelques photos de mes visites"
+
+#~ msgid "Visite historique de La Candelaria"
+#~ msgstr "Visite historique de La Candelaria"
+
+#~ msgid ""
+#~ "Découvrez le quartier colonial emblématique"
+#~ " de Bogotá, entre street art, ruelles"
+#~ " pavées et histoire politique."
+#~ msgstr ""
+#~ "Découvrez le quartier colonial emblématique"
+#~ " de Bogotá, entre street art, ruelles"
+#~ " pavées et histoire politique."
+
+#~ msgid "Durée : 3h"
+#~ msgstr "Durée : 3h"
+
+#~ msgid "Prix : 20 €"
+#~ msgstr "Prix : 20 €"
+
+#~ msgid "Langue : 🇫🇷 🇪🇸"
+#~ msgstr "Langue : 🇫🇷 🇪🇸"
+
+#~ msgid "Randonnée à Monserrate"
+#~ msgstr "Randonnée à Monserrate"
+
+#~ msgid ""
+#~ "Montez au sommet de la ville pour"
+#~ " une vue panoramique à couper le "
+#~ "souffle."
+#~ msgstr ""
+#~ "Montez au sommet de la ville pour"
+#~ " une vue panoramique à couper le "
+#~ "souffle."
+
+#~ msgid "Durée : 2h"
+#~ msgstr "Durée : 2h"
+
+#~ msgid "Prix : 15 €"
+#~ msgstr "Prix : 15 €"
+
+#~ msgid "Excursion à la Cathédrale de sel de Zipaquirá"
+#~ msgstr "Excursion à la Cathédrale de sel de Zipaquirá"
+
+#~ msgid ""
+#~ "Partez à la découverte de cette "
+#~ "merveille souterraine unique au monde, "
+#~ "creusée dans une ancienne mine de "
+#~ "sel."
+#~ msgstr ""
+#~ "Partez à la découverte de cette "
+#~ "merveille souterraine unique au monde, "
+#~ "creusée dans une ancienne mine de "
+#~ "sel."
+
+#~ msgid "Durée : 6h (transfert inclus)"
+#~ msgstr "Durée : 6h (transfert inclus)"
+
+#~ msgid "Prix : 40 €"
+#~ msgstr "Prix : 40 €"
+
+#~ msgid "Langue : 🇫🇷 🇪🇸 🇺🇸"
+#~ msgstr "Langue : 🇫🇷 🇪🇸 🇺🇸"
+

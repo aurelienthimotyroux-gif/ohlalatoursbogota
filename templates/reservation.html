@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="{{ get_locale() }}">
+<head>
+  <meta charset="UTF-8" />
+  <title>{{ _("Réserver votre visite") }}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+  <!-- Bandeau -->
+  <header class="hero background-half"
+          style="background-image: url('{{ url_for('static', filename='images/bg_reservation.jpg') }}');">
+    <div class="hero-topbar">
+      <div id="lang-switcher">
+        <a href="{{ lang_url('fr') }}">🇫🇷</a> |
+        <a href="{{ lang_url('en') }}">🇺🇸</a> |
+        <a href="{{ lang_url('es') }}">🇨🇴</a>
+      </div>
+      <nav class="nav-hero">
+        <a href="{{ url_for('index', lang=get_locale()) }}">{{ _("Accueil") }}</a> |
+        <a href="{{ url_for('tours', lang=get_locale()) }}">{{ _("Nos tours") }}</a> |
+        <a href="{{ url_for('transport', lang=get_locale()) }}">{{ _("Service de Transport") }}</a> |
+        <a href="{{ url_for('reservation', lang=get_locale()) }}">{{ _("Réservation") }}</a>
+      </nav>
+    </div>
+    <h1 class="hero-title">
+      {{ _("Réserver votre visite") }}{% if tour %} : {{ _(tour.capitalize()) }}{% endif %}
+    </h1>
+  </header>
+
+  <!-- Formulaire -->
+  <main>
+    <section class="reservation-container">
+      <form class="reservation-form" method="POST" action="{{ url_for('reservation', lang=get_locale()) }}">
+        {% if tour %}
+          <input type="hidden" name="tour" value="{{ tour }}">
+        {% endif %}
+
+        <label for="nom">{{ _("Nom") }}</label>
+        <input type="text" id="nom" name="nom" required>
+
+        <label for="email">{{ _("Email") }}</label>
+        <input type="email" id="email" name="email" required>
+
+        <label for="date">{{ _("Date souhaitée") }}</label>
+        <input type="date" id="date" name="date" required>
+
+        <label for="message">{{ _("Message") }}</label>
+        <textarea id="message" name="message" rows="4" placeholder="{{ _('Infos utiles, horaires, etc.') }}"></textarea>
+
+        <label for="tour">{{ _("Choisissez un tour") }}</label>
+        <select name="tour" id="tour" required>
+          <option value="">{{ _("-- Sélectionnez --") }}</option>
+          <option value="candelaria">{{ _("Visite historique de La Candelaria") }}</option>
+          <option value="monserrate">{{ _("Randonnée à Monserrate") }}</option>
+          <option value="zipaquira">{{ _("Excursion à la Cathédrale de sel de Zipaquirá") }}</option>
+          <option value="chorrera">{{ _("Cascade de La Chorrera") }}</option>
+          <option value="finca-cafe">{{ _("Visite d’une finca à café") }}</option>
+        </select>
+
+        <!-- Mode de paiement (pour l’avenir) -->
+        <label for="payment-method">{{ _("Mode de paiement") }}</label>
+        <select id="payment-method" name="payment-method">
+          <option value="paypal" selected>PayPal</option>
+        </select>
+
+        <!-- Bloc PayPal -->
+        <div id="paypal-section" style="margin-top:12px;">
+          <label for="paypal-email">{{ _("Email PayPal") }}</label>
+          <input type="email" id="paypal-email" name="paypal-email" placeholder="{{ _('optionnel') }}">
+
+          <small style="display:block;margin-top:6px;">
+            {{ _("Pas de compte PayPal ? Choisissez l’option carte bancaire sur l’écran PayPal.") }}
+          </small>
+
+          <!-- Bouton PayPal s’affiche ici -->
+          <div id="paypal-button-container" style="margin-top:12px;"></div>
+
+          <!-- Zone d’erreur visible si SDK non chargé -->
+          <div id="paypal-error" style="display:none;margin-top:10px;padding:10px;border:1px solid #f00;color:#b00;background:#fee;"></div>
+        </div>
+
+        <button type="submit" id="form-submit">{{ _("Envoyer") }}</button>
+      </form>
+    </section>
+  </main>
+
+  <!-- SDK PayPal – SANDBOX -->
+  <script src="https://www.paypal.com/sdk/js?client-id=AUi3HV5PW7c5v5PlRNF9UqNl4iZtFI3tfp96u5Zmk245UW0ko67x4eR7tQ4Z5-93yk5wVIGr0bcS88UM&currency=EUR&intent=capture&components=buttons"></script>
+
+
+  <!-- Intégration PayPal -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // Préselectionne le tour si fourni en querystring (?tour=…)
+      (function preselectTourFromQuery() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const t = urlParams.get('tour');
+        if (t) {
+          const select = document.getElementById('tour');
+          if (select && [...select.options].some(o => o.value === t)) {
+            select.value = t;
+          }
+        }
+      })();
+
+      // Prix par tour (à adapter)
+      const prices = {
+        candelaria: 20,
+        monserrate: 15,
+        zipaquira: 40,
+        chorrera: 55,
+        'finca-cafe': 50
+      };
+
+      // Empêche d’envoyer le formulaire quand PayPal est choisi
+      const form = document.querySelector('.reservation-form');
+      const methodSelect = document.getElementById('payment-method');
+      form.addEventListener('submit', function (e) {
+        if (methodSelect.value === 'paypal') {
+          e.preventDefault();
+          document.getElementById('paypal-section').scrollIntoView({ behavior: 'smooth', block: 'center' });
+          alert("{{ _('Pour payer avec PayPal, cliquez sur le bouton PayPal au-dessus de « Envoyer ».') }}");
+        }
+      });
+
+      // Rendu unique du bouton
+      let paypalRendered = false;
+
+      function renderPaypalButton() {
+        if (paypalRendered) return;
+        const errBox = document.getElementById('paypal-error');
+
+        if (!window.paypal) {
+          errBox.style.display = 'block';
+          errBox.textContent = "{{ _('PayPal ne s’est pas chargé. Vérifiez votre Client ID et désactivez les bloqueurs.') }}";
+          return;
+        }
+
+        paypal.Buttons({
+          createOrder: function (data, actions) {
+            const tourId = document.getElementById('tour').value || '';
+            const amount = (prices[tourId] || 40).toFixed(2);
+            const date = document.getElementById('date').value || '';
+            const nom  = document.getElementById('nom').value || '';
+
+            const description = `Tour: ${tourId || 'N/A'} | Date: ${date || 'N/A'} | Nom: ${nom || 'N/A'}`;
+
+            return actions.order.create({
+              purchase_units: [{
+                amount: { currency_code: 'EUR', value: amount },
+                description
+              }]
+            });
+          },
+
+          onApprove: function (data, actions) {
+            return actions.order.capture().then(function () {
+              window.location.href = '/paiement-reussi?orderID=' + data.orderID;
+            });
+          },
+
+          onCancel: function () {
+            window.location.href = '/paiement-annule';
+          },
+
+          onError: function (err) {
+            errBox.style.display = 'block';
+            errBox.textContent = 'PayPal: ' + (err && err.message ? err.message : err);
+            console.error('PayPal error:', err);
+          }
+        })
+        .render('#paypal-button-container')
+        .then(function () { paypalRendered = true; });
+      }
+
+      // Rendre le bouton immédiatement (PayPal est le seul mode)
+      renderPaypalButton();
+    });
+  </script>
+</body>
+</html>

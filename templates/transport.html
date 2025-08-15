@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="{{ get_locale() }}">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ _("Service de Transport") }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+      /* Bloc texte + image côte à côte */
+      .transport-description {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 24px;
+        align-items: center;
+        padding: 20px;
+      }
+      .transport-text {
+        flex: 1 1 400px;
+      }
+      .transport-img {
+        flex: 1 1 350px;
+      }
+      .transport-img img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 12px;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+      }
+      .transport-text h2 {
+        margin-top: 0;
+      }
+    </style>
+</head>
+<body>
+
+    <!-- Bandeau image avec topbar (lang + nav) et titre -->
+    <header class="hero background-half"
+            style="background-image: url('{{ url_for('static', filename='images/bg_transport.webp') }}');">
+
+        <div class="hero-topbar">
+            <div id="lang-switcher">
+                <a href="{{ lang_url('fr') }}">🇫🇷</a> |
+                <a href="{{ lang_url('en') }}">🇺🇸</a> |
+                <a href="{{ lang_url('es') }}">🇨🇴</a>
+            </div>
+
+            <nav class="nav-hero">
+                <a href="{{ url_for('index', lang=get_locale()) }}">{{ _("Accueil") }}</a> |
+                <a href="{{ url_for('tours', lang=get_locale()) }}">{{ _("Nos tours") }}</a> |
+		        <a href="{{ url_for('transport', lang=get_locale()) }}">{{ _("Service de Transport") }}</a> |
+                <a href="{{ url_for('reservation', lang=get_locale()) }}">{{ _("Réservation") }}</a> 
+            </nav>
+        </div>
+
+        <h1 class="hero-title">
+            {{ _("Service de Transport") }}
+        </h1>
+    </header>
+
+    <!-- Description du service de transport -->
+    <main>
+        <section class="transport-description">
+            <div class="transport-text">
+                <h2>{{ _("Qu'est-ce que le service de transport ?") }}</h2>
+                <p>{{ _("Nous proposons un service de transport confortable et sécurisé pour tous nos clients.") }}</p>
+                <p>{{ _("Si vous choisissez d'inclure le service de transport dans votre réservation, nous vous fournirons un véhicule privé pour vous emmener à la destination de votre visite.") }}</p>
+
+                <h2>{{ _("Pourquoi choisir le service de transport ?") }}</h2>
+                <ul>
+                    <li>{{ _("Confort et sécurité : Un véhicule privé pour vous et vos compagnons.") }}</li>
+                    <li>{{ _("Économisez du temps : Arrivez à destination rapidement et facilement.") }}</li>
+                    <li>{{ _("Service personnalisé : Un chauffeur professionnel et courtois.") }}</li>
+                </ul>
+
+                <h2>{{ _("Comment réserver ?") }}</h2>
+                <p>{{ _("Lorsque vous réservez votre visite, vous aurez la possibilité d'ajouter le service de transport à votre réservation.") }}</p>
+                <p>{{ _("Indiquez simplement si vous souhaitez inclure le transport et nous nous occuperons du reste.") }}</p>
+
+                <h2>{{ _("Tarification") }}</h2>
+                <p>{{ _("Le tarif du service de transport dépend de la destination et du nombre de passagers.") }}</p>
+                <p>{{ _("N'hésitez pas à nous contacter pour plus d'informations sur les tarifs.") }}</p>
+            </div>
+
+            <div class="transport-img">
+                <img src="{{ url_for('static', filename='images/transport_service.jpeg') }}" 
+                     alt="{{ _('Service de transport privé') }}">
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>{{ _("© 2025 - Tous droits réservés") }}</p>
+    </footer>
+
+</body>
+</html>
