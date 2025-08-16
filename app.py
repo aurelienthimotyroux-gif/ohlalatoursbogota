@@ -9,6 +9,10 @@ from datetime import timedelta
 from werkzeug.middleware.proxy_fix import ProxyFix
 from urllib.parse import urlparse
 
+# ✅ AJOUTS
+import json
+from datetime import datetime
+
 # ------------------------------------------------------------------
 # Flask & Babel
 # ------------------------------------------------------------------
@@ -164,6 +168,27 @@ TOURS_LIST = [
 ]
 
 # ------------------------------------------------------------------
+# ✅ AJOUT : stockage simple des commentaires (JSON)
+# ------------------------------------------------------------------
+COMMENTS_PATH = os.getenv("COMMENTS_PATH", "/tmp/comments.json")
+
+def load_comments():
+    try:
+        with open(COMMENTS_PATH, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return []
+
+def save_comments(comments):
+    try:
+        with open(COMMENTS_PATH, "w", encoding="utf-8") as f:
+            json.dump(comments, f, ensure_ascii=False, indent=2)
+    except Exception:
+        logger.exception("Impossible d'écrire les commentaires")
+
+COMMENTS = load_comments()
+
+# ------------------------------------------------------------------
 # Commentaires (Index)
 # ------------------------------------------------------------------
 @app.route("/submit_comment", methods=["POST"])
@@ -172,9 +197,9 @@ def submit_comment():
     message = request.form.get("message", "").strip()
     rating_raw = request.form.get("rating", "1")
     try:
-        rating = int(rating_raw)
+        rating = float(rating_raw)
     except ValueError:
-        rating = 1
+        rating = 1.0
 
     if not name or not message:
         flash(_("Merci d’indiquer un nom et un message."), "error")
@@ -182,6 +207,17 @@ def submit_comment():
 
     # Exemple d'utilisation du request_id dans les logs
     logger.info("comment_submitted name=%s rating=%s req_id=%s", name, rating, g.request_id)
+
+    # ✅ on stocke l'avis et on persiste dans /tmp
+    new_comment = {
+        "name": name,
+        "country": "",
+        "date": datetime.now().strftime("%d %b %Y"),
+        "rating": rating,
+        "message": message
+    }
+    COMMENTS.insert(0, new_comment)
+    save_comments(COMMENTS)
 
     flash(_("Merci pour votre joli commentaire ! ❤️"), "success")
     return redirect(url_for("index", lang=get_locale()))
@@ -191,7 +227,8 @@ def submit_comment():
 # ------------------------------------------------------------------
 @app.route("/", endpoint="index")
 def index():
-    return render_template("index.html")
+    # ✅ on passe les commentaires dynamiques au template
+    return render_template("index.html", comments=COMMENTS)
 
 @app.route("/a-propos", endpoint="about")
 def about():

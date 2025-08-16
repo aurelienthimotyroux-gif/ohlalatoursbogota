@@ -112,6 +112,11 @@
       padding: 0; margin: -1px; overflow: hidden;
       clip: rect(0,0,1px,1px); white-space: nowrap; border: 0;
     }
+    /* flashes */
+    .flash-wrap { max-width:1000px; margin:16px auto; padding:0 20px; }
+    .flash { margin:8px 0; padding:10px; border-radius:8px; }
+    .flash-success{ background:#eefbf0; border:1px solid #b7ebc6; color:#1b5e20; }
+    .flash-error{ background:#fdeaea; border:1px solid #f5c2c2; color:#8a1f1f; }
   </style>
 
   <!-- JS Lire plus / Lire moins -->
@@ -152,11 +157,7 @@
     "url": "https://www.ohlalatoursbogota.com/",
     "image": "{{ url_for('static', filename='images/accueil.jpg', _external=True) }}",
     "areaServed": "Bogotá, Colombia",
-    "address": {
-      "@type": "PostalAddress",
-      "addressLocality": "Bogotá",
-      "addressCountry": "CO"
-    },
+    "address": { "@type": "PostalAddress", "addressLocality": "Bogotá", "addressCountry": "CO" },
     "availableLanguage": ["French","Spanish","English"],
     "email": "alejandramontana25.18@gmail.com",
     "telephone": "+57-350-538-4537",
@@ -183,12 +184,25 @@
     <h1 class="hero-title">{{ _("Bienvenue à Bogotá !") }}</h1>
   </header>
 
+  <!-- Messages flash -->
+  {% with msgs = get_flashed_messages(with_categories=true) %}
+    {% if msgs %}
+      <div class="flash-wrap" role="status" aria-live="polite">
+        {% for cat, msg in msgs %}
+          <div class="flash flash-{{ cat }}">
+            {{ msg }}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
   <main style="max-width: 1000px; margin: 30px auto; padding: 0 20px;">
     <section>
       <p>{{ _("Je suis Alejandra, guide locale passionnée, et je vous invite à découvrir une Bogotá authentique, vibrante et pleine de vie.") }}</p>
       <p>{{ _("À travers mes visites en petits groupes, nous explorerons son histoire, sa culture et ses saveurs : balades dans les quartiers historiques, expériences culinaires, escapades en pleine nature et excursions uniques aux alentours, comme la célèbre Cathédrale de sel de Zipaquirá.") }}</p>
       <p>{{ _("Plus qu’une simple visite, je vous propose une immersion vivante et chaleureuse, une expérience à ressentir et à emporter avec vous.") }}</p>
-      <!-- Légère optimisation sémantique/SEO (phrase naturelle avec mots-clés) -->
+      <!-- Légère optimisation sémantique/SEO -->
       <p>{{ _("Je propose des visites guidées à Bogotá avec un guide francophone, des tours privés vers la Candelaria, Monserrate et Zipaquirá, ainsi qu’un service de transport (taxi/van) et transferts aéroport.") }}</p>
     </section>
 
@@ -235,68 +249,107 @@
   <section class="testimonials">
     <div class="container">
       <h2>{{ _("Avis des voyageurs") }}</h2>
-      <div class="testimonials-grid">
 
-        {% set comments = [
-        {"name": "Francis", "country": "Canada", "date": "12 mai 2025", "rating": 5, "message": _("L’expérience est super. Alejandra prend son temps pour nous expliquer et répondre à nos questions.")},
-        {"name": "Katy", "country": "Mexique", "date": "21 mars 2023", "rating": 5, "message": _("Recommandé. La communication avec Alejandra était excellente avant et pendant, tout ce qui était décrit était respecté et toujours à l'écoute de nos besoins. C’est probablement un lieu que vous devez visiter si vous venez à Bogotá : belles vues et cathédrale de sel à couper le souffle.")},
-        {"name": "Liliana", "country": "États-Unis", "date": "4 mars 2023", "rating": 4.5, "message": _("Expérience incroyable ! Alejandra et son père (Omar) ont pris soin des besoins spéciaux de mon mari, et tout a été fait à 100%%. La Catedral de Sal, la cuisine traditionnelle à Brasas del Llano : une expérience culturelle 5 étoiles. Nous recommandons Alejandra si vous voulez une visite avec une amie. Merci beaucoup, à la prochaine !")},
-        {"name": "Marvin", "country": "Mexique", "date": "15 septembre 2022", "rating": 5, "message": _("Alejandra et son père sont extraordinaires et nous ont offert une très belle journée à Zipaquirá. Nous repartons avec d’excellents souvenirs. Merci !")},
-        {"name": "Oscar", "country": "Costa Rica", "date": "8 janvier 2023", "rating": 4.5, "message": _("Merci beaucoup pour votre gentillesse et votre disponibilité. Super recommandé.")},
-        {"name": "Sam", "country": "États-Unis", "date": "14 août 2022", "rating": 5, "message": _("Alejandra et son père Omar ont été des hôtes parfaits, très attentifs à ma manière de vouloir profiter de la visite.")},
-        {"name": "Kristina", "country": "Mexique", "date": "27 août 2022", "rating": 5, "message": _("Nous recommandons cette expérience. Nous avons passé un excellent moment. Alejandra et son père sont polis et sympathiques.")},
-        {"name": "Jorge", "country": "Mexique", "date": "11 août 2022", "rating": 5, "message": _("Hautement recommandé. Alejandra et son père ont été très sympathiques et à notre écoute à tout moment. Expérience 100%% recommandée !")},
-        {"name": "Fabiola", "country": "Mexique", "date": "11 août 2022", "rating": 5, "message": _("Du début à la fin, une expérience très agréable. Alejandra et son père Omar ont été très attentifs et gentils. Petit-déjeuner et déjeuner délicieux. Ils nous ont laissé profiter de la cathédrale à notre rythme : apprécié !")},
-        {"name": "Luna", "country": "Costa Rica", "date": "25 juillet 2019", "rating": 5, "message": _("Voyage bien planifié. À l’heure pour le pickup à l’hôtel. Pendant le trajet, Alejandra et Omar sont très sympathiques et patients.")},
-        {"name": "Yuliana", "country": "Costa Rica", "date": "18 juillet 2019", "rating": 5, "message": _("Ale et Omar (son papa) sont super sympas et très impliqués pour que vous vous sentiez comme chez vous.")},
-        {"name": "Ann", "country": "États-Unis", "date": "22 février 2020", "rating": 5, "message": _("Alejandra et son père ont été sympathiques, réactifs à nos questions, et nous ont emmenés sur des sites fascinants que nous n’aurions jamais trouvés seuls. Une expérience très agréable.")},
-        {"name": "Nancy", "country": "Mexique", "date": "30 juillet 2019", "rating": 5, "message": _("L’une des meilleures expériences à ne pas manquer. Alejandra et son papa, M. Omar, sont extrêmement gentils, à l’écoute, et très ponctuels. Parcours agréable, café sur la place, échanges culturels, visite impressionnante de la cathédrale de sel, puis déjeuner de plats typiques. Merci pour votre hospitalité, je reviendrais sans hésiter !")}
-        ] %}
-
-        {% for comment in comments %}
-          <div class="testimonial-card">
-            <div class="t-head">
-              <div class="t-name">{{ comment.name }} · {{ comment.country }}</div>
-              <div class="t-meta">{{ comment.date }}</div>
-            </div>
-
-            <!-- Étoiles vectorielles (gère 0.5) -->
-            <div class="t-stars" aria-label="{{ comment.rating }} / 5">
-              {% for i in range(1, 6) %}
-                {% if comment.rating >= i %}
-                  <svg><use href="#icon-star-full"></use></svg>
-                {% elif comment.rating >= i - 0.5 %}
-                  <svg><use href="#icon-star-half"></use></svg>
+      {# ===== Affiche d'abord les commentaires dynamiques s'ils existent ===== #}
+      {% if comments and comments|length > 0 %}
+        <div class="testimonials-grid">
+          {% for comment in comments %}
+            <div class="testimonial-card">
+              <div class="t-head">
+                <div class="t-name">{{ comment.name }}{% if comment.country %} · {{ comment.country }}{% endif %}</div>
+                <div class="t-meta">{{ comment.date }}</div>
+              </div>
+              <div class="t-stars" aria-label="{{ comment.rating }} / 5">
+                {% for i in range(1, 6) %}
+                  {% if comment.rating >= i %}
+                    <svg><use href="#icon-star-full"></use></svg>
+                  {% elif comment.rating >= i - 0.5 %}
+                    <svg><use href="#icon-star-half"></use></svg>
+                  {% else %}
+                    <svg><use href="#icon-star-empty"></use></svg>
+                  {% endif %}
+                {% endfor %}
+                <span class="sr-only">{{ comment.rating }} / 5</span>
+              </div>
+              <p
+                class="t-text{% if comment.message|length > 200 %} clamp{% endif %}"
+                id="comment-{{ loop.index }}"
+                data-full="{{ comment.message|e }}"
+              >
+                {% if comment.message|length > 200 %}
+                    {{ comment.message[:200] }}...
                 {% else %}
-                  <svg><use href="#icon-star-empty"></use></svg>
+                    {{ comment.message }}
                 {% endif %}
-              {% endfor %}
-              <span class="sr-only">{{ comment.rating }} / 5</span>
-            </div>
-
-            <p
-              class="t-text{% if comment.message|length > 200 %} clamp{% endif %}"
-              id="comment-{{ loop.index }}"
-              data-full="{{ comment.message|e }}"
-            >
+              </p>
               {% if comment.message|length > 200 %}
-                  {{ comment.message[:200] }}...
-              {% else %}
-                  {{ comment.message }}
+                <button class="t-toggle" onclick="toggleText('{{ loop.index }}')">
+                  {{ _("Lire plus") }}
+                </button>
               {% endif %}
-            </p>
+            </div>
+          {% endfor %}
+        </div>
 
-            {% if comment.message|length > 200 %}
-              <button class="t-toggle" onclick="toggleText('{{ loop.index }}')">
-                {{ _("Lire plus") }}
-              </button>
-            {% endif %}
-          </div>
-        {% endfor %}
-
-      </div>
+      {% else %}
+        {# ===== Sinon, on garde ta liste statique existante (fallback) ===== #}
+        <div class="testimonials-grid">
+          {% set comments = [
+          {"name": "Francis", "country": "Canada", "date": "12 mai 2025", "rating": 5, "message": _("L’expérience est super. Alejandra prend son temps pour nous expliquer et répondre à nos questions.")},
+          {"name": "Katy", "country": "Mexique", "date": "21 mars 2023", "rating": 5, "message": _("Recommandé. La communication avec Alejandra était excellente avant et pendant, tout ce qui était décrit était respecté et toujours à l'écoute de nos besoins. C’est probablement un lieu que vous devez visiter si vous venez à Bogotá : belles vues et cathédrale de sel à couper le souffle.")},
+          {"name": "Liliana", "country": "États-Unis", "date": "4 mars 2023", "rating": 4.5, "message": _("Expérience incroyable ! Alejandra et son père (Omar) ont pris soin des besoins spéciaux de mon mari, et tout a été fait à 100%%. La Catedral de Sal, la cuisine traditionnelle à Brasas del Llano : une expérience culturelle 5 étoiles. Nous recommandons Alejandra si vous voulez une visite avec une amie. Merci beaucoup, à la prochaine !")},
+          {"name": "Marvin", "country": "Mexique", "date": "15 septembre 2022", "rating": 5, "message": _("Alejandra et son père sont extraordinaires et nous ont offert une très belle journée à Zipaquirá. Nous repartons avec d’excellents souvenirs. Merci !")},
+          {"name": "Oscar", "country": "Costa Rica", "date": "8 janvier 2023", "rating": 4.5, "message": _("Merci beaucoup pour votre gentillesse et votre disponibilité. Super recommandé.")},
+          {"name": "Sam", "country": "États-Unis", "date": "14 août 2022", "rating": 5, "message": _("Alejandra et son père Omar ont été des hôtes parfaits, très attentifs à ma manière de vouloir profiter de la visite.")},
+          {"name": "Kristina", "country": "Mexique", "date": "27 août 2022", "rating": 5, "message": _("Nous recommandons cette expérience. Nous avons passé un excellent moment. Alejandra et son père sont polis et sympathiques.")},
+          {"name": "Jorge", "country": "Mexique", "date": "11 août 2022", "rating": 5, "message": _("Hautement recommandé. Alejandra et son père ont été très sympathiques et à notre écoute à tout moment. Expérience 100%% recommandée !")},
+          {"name": "Fabiola", "country": "Mexique", "date": "11 août 2022", "rating": 5, "message": _("Du début à la fin, une expérience très agréable. Alejandra et son père Omar ont été très attentifs et gentils. Petit-déjeuner et déjeuner délicieux. Ils nous ont laissé profiter de la cathédrale à notre rythme : apprécié !")},
+          {"name": "Luna", "country": "Costa Rica", "date": "25 juillet 2019", "rating": 5, "message": _("Voyage bien planifié. À l’heure pour le pickup à l’hôtel. Pendant le trajet, Alejandra et Omar sont très sympathiques et patients.")},
+          {"name": "Yuliana", "country": "Costa Rica", "date": "18 juillet 2019", "rating": 5, "message": _("Ale et Omar (son papa) sont super sympas et très impliqués pour que vous vous sentiez comme chez vous.")},
+          {"name": "Ann", "country": "États-Unis", "date": "22 février 2020", "rating": 5, "message": _("Alejandra et son père ont été sympathiques, réactifs à nos questions, et nous ont emmenés sur des sites fascinants que nous n’aurions jamais trouvés seuls. Une expérience très agréable.")},
+          {"name": "Nancy", "country": "Mexique", "date": "30 juillet 2019", "rating": 5, "message": _("L’une des meilleures expériences à ne pas manquer. Alejandra et son papa, M. Omar, sont extrêmement gentils, à l’écoute, et très ponctuels. Parcours agréable, café sur la place, échanges culturels, visite impressionnante de la cathédrale de sel, puis déjeuner de plats typiques. Merci pour votre hospitalité, je reviendrais sans hésiter !")}
+          ] %}
+          {% for comment in comments %}
+            <div class="testimonial-card">
+              <div class="t-head">
+                <div class="t-name">{{ comment.name }} · {{ comment.country }}</div>
+                <div class="t-meta">{{ comment.date }}</div>
+              </div>
+              <div class="t-stars" aria-label="{{ comment.rating }} / 5">
+                {% for i in range(1, 6) %}
+                  {% if comment.rating >= i %}
+                    <svg><use href="#icon-star-full"></use></svg>
+                  {% elif comment.rating >= i - 0.5 %}
+                    <svg><use href="#icon-star-half"></use></svg>
+                  {% else %}
+                    <svg><use href="#icon-star-empty"></use></svg>
+                  {% endif %}
+                {% endfor %}
+                <span class="sr-only">{{ comment.rating }} / 5</span>
+              </div>
+              <p
+                class="t-text{% if comment.message|length > 200 %} clamp{% endif %}"
+                id="comment-{{ loop.index }}"
+                data-full="{{ comment.message|e }}"
+              >
+                {% if comment.message|length > 200 %}
+                    {{ comment.message[:200] }}...
+                {% else %}
+                    {{ comment.message }}
+                {% endif %}
+              </p>
+              {% if comment.message|length > 200 %}
+                <button class="t-toggle" onclick="toggleText('{{ loop.index }}')">
+                  {{ _("Lire plus") }}
+                </button>
+              {% endif %}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
     </div>
   </section>
 
 </body>
 </html>
+

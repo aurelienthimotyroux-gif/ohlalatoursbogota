@@ -115,6 +115,8 @@
 
           <!-- Bouton PayPal s’affiche ici -->
           <div id="paypal-button-container" style="margin-top:12px;"></div>
+          <!-- Bouton CARTE s’affiche ici (ajout) -->
+          <div id="card-button-container" style="margin-top:12px;"></div>
 
           <!-- Zone d’erreur visible si SDK non chargé -->
           <div id="paypal-error" role="alert" style="display:none;margin-top:10px;padding:10px;border:1px solid #f00;color:#b00;background:#fee;"></div>
@@ -131,9 +133,9 @@
     </section>
   </main>
 
-  <!-- SDK PayPal – SANDBOX (garde ton client-id & params) -->
-  <!-- CHANGEMENT: aligner la devise sur EUR + forcer wallet (désactiver la carte/paiements différés) -->
-  <script src="https://www.paypal.com/sdk/js?client-id=AXcr1vyT3Zx-9XCo6fQLC94tyH4qoqxNAu-V8vVRMtm4kphjbOupFByJl6cAyyppQmE-YiOU7IaLOzuj&currency=EUR&intent=capture&components=buttons&disable-funding=card,credit,paylater"></script>
+  <!-- SDK PayPal – LIVE/SANDBOX selon ton client-id -->
+  <!-- Autorise à la fois wallet PayPal et carte -->
+  <script src="https://www.paypal.com/sdk/js?client-id=AXcr1vyT3Zx-9XCo6fQLC94tyH4qoqxNAu-V8vVRMtm4kphjbOupFByJl6cAyyppQmE-YiOU7IaLOzuj&currency=EUR&intent=capture&components=buttons&enable-funding=card,credit,paylater"></script>
 
   <!-- Intégration PayPal -->
   <script>
@@ -170,7 +172,7 @@
         }
       });
 
-      // Rendu unique du bouton
+      // Rendu unique du bouton Wallet
       let paypalRendered = false;
 
       function renderPaypalButton() {
@@ -183,8 +185,8 @@
           return;
         }
 
+        // --- Bouton PayPal (wallet) ---
         paypal.Buttons({
-          // CHANGEMENT: forcer le bouton PayPal (wallet/solde) uniquement
           fundingSource: paypal.FUNDING.PAYPAL,
 
           createOrder: function (data, actions) {
@@ -197,7 +199,6 @@
 
             return actions.order.create({
               purchase_units: [{
-                // CHANGEMENT: aligné sur EUR comme dans le SDK ci-dessus
                 amount: { currency_code: 'EUR', value: amount },
                 description
               }]
@@ -223,9 +224,53 @@
         })
         .render('#paypal-button-container')
         .then(function () { paypalRendered = true; });
+
+        // --- Bouton Carte via PayPal (en plus du wallet) ---
+        (function renderCardButton() {
+          const cardBtn = paypal.Buttons({
+            fundingSource: paypal.FUNDING.CARD,
+            style: { layout: 'vertical', color: 'blue', shape: 'rect', label: 'pay' },
+
+            createOrder: function (data, actions) {
+              const tourId = document.getElementById('tour').value || '';
+              const amount = (prices[tourId] || 40).toFixed(2);
+              const date = document.getElementById('date').value || '';
+              const nom  = document.getElementById('nom').value || '';
+              const description = `Tour: ${tourId || 'N/A'} | Date: ${date || 'N/A'} | Nom: ${nom || 'N/A'}`;
+
+              return actions.order.create({
+                purchase_units: [{
+                  amount: { currency_code: 'EUR', value: amount },
+                  description
+                }]
+              });
+            },
+
+            onApprove: function (data, actions) {
+              return actions.order.capture().then(function () {
+                window.location.href = '/paiement-reussi?orderID=' + data.orderID + '&lang={{ get_locale() }}';
+              });
+            },
+
+            onCancel: function () {
+              window.location.href = '/paiement-annule?lang={{ get_locale() }}';
+            },
+
+            onError: function (err) {
+              const errBox = document.getElementById('paypal-error');
+              errBox.style.display = 'block';
+              errBox.textContent = 'PayPal (carte): ' + (err && err.message ? err.message : err);
+              console.error('PayPal card error:', err);
+            }
+          });
+
+          if (cardBtn.isEligible()) {
+            cardBtn.render('#card-button-container');
+          }
+        })();
       }
 
-      // Rendre le bouton immédiatement (PayPal est le seul mode)
+      // Rendre les boutons immédiatement
       renderPaypalButton();
     });
   </script>
@@ -261,13 +306,7 @@
     "@context":"https://schema.org",
     "@type":"BreadcrumbList",
     "itemListElement":[
-      {"@type":"ListItem","position":1,"name":"{{ _('Accueil') }}","item":"{{ url_for('index', _external=True, lang=get_locale()) }}"},
-      {"@type":"ListItem","position":2,"name":"{{ _('Nos tours') }}","item":"{{ url_for('tours', _external=True, lang=get_locale()) }}"},
-      {"@type":"ListItem","position":3,"name":"{{ _('Réservation') }}","item":"{{ url_for('reservation', _external=True, lang=get_locale()) }}"}
-    ]
-  }
-  </script>
-</body>
-</html>
+      {"@type":"ListItem","position":1,"name":"{{ _('Accue_
+
 
 
