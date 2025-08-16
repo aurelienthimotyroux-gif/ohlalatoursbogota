@@ -459,3 +459,36 @@ msgstr "Optional"
 
 msgid "Pas de compte PayPal ? Choisissez l’option carte bancaire sur l’écran PayPal."
 msgstr "No PayPal account? Choose the card option on the PayPal screen."
+
+msgid "Visite d’une finca de café près de Bogotá"
+msgstr "Visit a coffee farm near Bogotá"
+
+msgid "Découvrez le café colombien depuis sa source : marchez parmi les caféiers, apprenez la plantation, la récolte et la mouture, et dégustez une tasse fraîchement préparée dans un cadre authentique."
+msgstr "Discover Colombian coffee from its source: walk among coffee plants, learn about planting, harvesting, and milling, and enjoy a freshly prepared cup in an authentic setting."
+
+msgid "Petit-déjeuner typique colombien"
+msgstr "Typical Colombian breakfast"
+
+msgid "Entrée à la finca de café"
+msgstr "Entrance to the coffee farm"
+
+msgid "Visite guidée de la plantation et des installations"
+msgstr "Guided tour of the plantation and facilities"
+
+msgid "Explication du processus de production du café"
+msgstr "Explanation of the coffee production process"
+
+msgid "Dégustation de café fraîchement préparé"
+msgstr "Tasting of freshly prepared coffee"
+
+msgid "Transport aller-retour depuis Bogotá"
+msgstr "Round-trip transportation from Bogotá"
+
+msgid "Durée : ≈5–6h"
+msgstr "Duration: ≈5–6h"
+
+msgid "Langues : 🇫🇷 🇪🇸 🇺🇸"
+msgstr "Languages: 🇫🇷 🇪🇸 🇺🇸"
+
+msgid "Tarif : à confirmer"
+msgstr "Price: to be confirmed"

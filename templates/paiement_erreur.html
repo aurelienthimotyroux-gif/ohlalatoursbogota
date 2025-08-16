@@ -1,10 +1,15 @@
 <!doctype html>
 <html lang="fr">
+<head>
   <meta charset="utf-8" />
   <title>Problème de paiement</title>
-  <body style="font-family: system-ui; max-width: 720px; margin: 40px auto">
-    <h1>Problème de paiement</h1>
-    <p>{{ message or "Une erreur est survenue." }}</p>
-    <p><a href="{{ url_for('reservation', lang=get_locale()) }}">Retourner à la réservation</a></p>
-  </body>
+</head>
+<body style="font-family: system-ui; max-width: 720px; margin: 40px auto;">
+  <h1>Problème de paiement ⚠️</h1>
+  <p>{{ message or "Une erreur est survenue." }}</p>
+  <p>
+    <a href="{{ url_for('reservation', lang=get_locale()) }}">Retourner à la réservation</a> —
+    <a href="{{ url_for('index', lang=get_locale()) }}">Accueil</a>
+  </p>
+</body>
 </html>

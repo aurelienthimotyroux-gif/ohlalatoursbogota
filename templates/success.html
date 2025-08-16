@@ -1,12 +1,21 @@
 <!doctype html>
 <html lang="fr">
+<head>
   <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Paiement confirmé</title>
-  <body style="font-family: system-ui; max-width: 720px; margin: 40px auto">
-    <h1>Paiement confirmé 🎉</h1>
-    <p>Merci ! Votre réservation est enregistrée.</p>
-    {% if order_id %}<p>Référence PayPal : <strong>{{ order_id }}</strong></p>{% endif %}
-    <p><a href="{{ url_for('tours', lang=get_locale()) }}">Voir nos autres tours</a> —
-       <a href="{{ url_for('index', lang=get_locale()) }}">Accueil</a></p>
-  </body>
+</head>
+<body style="font-family: system-ui; max-width: 720px; margin: 40px auto">
+  <h1>Paiement confirmé 🎉</h1>
+  <p>Merci ! Votre réservation est enregistrée.</p>
+
+  {% if order_id %}
+    <p>Référence PayPal : <strong>{{ order_id }}</strong></p>
+  {% endif %}
+
+  <p>
+    <a href="{{ url_for('tours', lang=get_locale()) }}">Voir nos autres tours</a> —
+    <a href="{{ url_for('index', lang=get_locale()) }}">Accueil</a>
+  </p>
+</body>
 </html>
