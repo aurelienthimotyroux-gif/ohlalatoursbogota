@@ -2,8 +2,40 @@
 <html lang="{{ get_locale() }}">
 <head>
     <meta charset="UTF-8">
-    <title>{{ _("Types de visites") }}</title>
+    <title>{{ _("Types de visites") }} — Oh La La Tours Bogotá</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- ✅ Meta SEO -->
+    <meta name="description" content="{{ _('Tours privés à Bogotá : Candelaria, Monserrate, Zipaquirá, La Chorrera et finca café (Hacienda Coloma). Guide francophone, anglais et espagnol. Transport/van et transferts aéroport disponibles.') }}">
+    <meta name="keywords" content="tours privés Bogotá, visite guidée Bogotá, guide francophone Bogotá, excursion Zipaquirá, randonnée Monserrate, Candelaria, Hacienda Coloma, cascade La Chorrera, transport privé Bogotá, van, transfert aéroport Bogotá">
+
+    <!-- ✅ Canonical + hreflang -->
+    <link rel="canonical" href="https://www.ohlalatoursbogota.com{{ request.path }}{% if get_locale()!='fr' %}?lang={{ get_locale() }}{% endif %}">
+    <link rel="alternate" href="{{ url_for('tours', lang='fr', _external=True) }}" hreflang="fr">
+    <link rel="alternate" href="{{ url_for('tours', lang='en', _external=True) }}" hreflang="en">
+    <link rel="alternate" href="{{ url_for('tours', lang='es', _external=True) }}" hreflang="es">
+    <link rel="alternate" href="{{ url_for('tours', lang='fr', _external=True) }}" hreflang="x-default">
+
+    <!-- ✅ Open Graph / Twitter -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.ohlalatoursbogota.com{{ request.path }}{% if get_locale()!='fr' %}?lang={{ get_locale() }}{% endif %}">
+    <meta property="og:site_name" content="Oh La La Tours Bogotá">
+    <meta property="og:title" content="{{ _('Tours privés à Bogotá – Candelaria, Monserrate, Zipaquirá, café') }}">
+    <meta property="og:description" content="{{ _('Découvrez nos visites guidées : Candelaria, Monserrate, Cathédrale de sel de Zipaquirá, cascade La Chorrera et finca café. Guides francophones. Transport/van et transferts aéroport.') }}">
+    <meta property="og:image" content="{{ url_for('static', filename='images/header_tours.jpg', _external=True) }}">
+    {% if get_locale() == 'fr' %}
+    <meta property="og:locale" content="fr_FR">
+    {% elif get_locale() == 'en' %}
+    <meta property="og:locale" content="en_US">
+    {% else %}
+    <meta property="og:locale" content="es_CO">
+    {% endif %}
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ _('Tours privés à Bogotá – Candelaria, Monserrate, Zipaquirá, café') }}">
+    <meta name="twitter:description" content="{{ _('Découvrez nos visites guidées : Candelaria, Monserrate, Cathédrale de sel de Zipaquirá, cascade La Chorrera et finca café. Guides francophones. Transport/van et transferts aéroport.') }}">
+    <meta name="twitter:image" content="{{ url_for('static', filename='images/header_tours.jpg', _external=True) }}">
+
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
 
@@ -79,13 +111,13 @@
 
         <!-- Topbar sur l'image -->
         <div class="hero-topbar">
-            <div id="lang-switcher">
+            <div id="lang-switcher" aria-label="{{ _('Choix de la langue') }}">
                 <a href="{{ lang_url('fr') }}">🇫🇷</a> |
                 <a href="{{ lang_url('en') }}">🇺🇸</a> |
                 <a href="{{ lang_url('es') }}">🇨🇴</a>
             </div>
 
-            <nav class="nav-hero">
+            <nav class="nav-hero" aria-label="{{ _('Navigation principale') }}">
                 <a href="{{ url_for('index', lang=get_locale()) }}">{{ _("Accueil") }}</a> |
                 <a href="{{ url_for('tours', lang=get_locale()) }}">{{ _("Nos tours") }}</a> |
                 <a href="{{ url_for('transport', lang=get_locale()) }}">{{ _("Service de Transport") }}</a> |
@@ -201,7 +233,7 @@
 ] %}
             {% for tour in tours_data %}
             <div class="tour-card {% if loop.index is odd %}left{% else %}right{% endif %}">
-                <div class="swiper tour-swiper">
+                <div class="swiper tour-swiper" aria-label="{{ _('Galerie d’images du tour') }} {{ tour.title }}">
                     <div class="swiper-wrapper">
                         {% for img in tour.images %}
                         <div class="swiper-slide">
@@ -209,8 +241,8 @@
                         </div>
                         {% endfor %}
                     </div>
-                    <div class="swiper-button-next"></div>
-                    <div class="swiper-button-prev"></div>
+                    <div class="swiper-button-next" aria-label="{{ _('Image suivante') }}"></div>
+                    <div class="swiper-button-prev" aria-label="{{ _('Image précédente') }}"></div>
                 </div>
 
                 <div class="content">
@@ -232,7 +264,7 @@
                     {% endif %}
 
                     <!-- Chips Durée / Langues / Tarif -->
-                    <ul class="tour-chips">
+                    <ul class="tour-chips" aria-label="{{ _('Informations pratiques') }}">
                       {% for info in tour.infos %}
                         {% set parts = info.split(':') %}
                         <li class="chip">
@@ -251,6 +283,31 @@
         </section>
     </main>
 
+    <!-- ✅ Données structurées listant les tours (ItemList) -->
+    <script type="application/ld+json">
+    {
+      "@context":"https://schema.org",
+      "@type":"ItemList",
+      "name":"Tours privés à Bogotá",
+      "itemListElement":[
+        {% for tour in tours_data %}
+        {
+          "@type":"ListItem",
+          "position": {{ loop.index }},
+          "item": {
+            "@type":"TouristTrip",
+            "name": {{ tour.title|tojson }},
+            "description": {{ tour.desc|tojson }},
+            "url": "{{ url_for('reservation', tour=tour.slug, _external=True, lang=get_locale()) }}",
+            "touristType": ["Couples","Familles","Groupes","Solo"],
+            "inLanguage": [{% if get_locale() == 'fr' %}"fr"{% elif get_locale() == 'en' %}"en"{% else %}"es"{% endif %}]
+          }
+        }{% if not loop.last %},{% endif %}
+        {% endfor %}
+      ]
+    }
+    </script>
+
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
     document.querySelectorAll('.tour-swiper').forEach((slider) => {
@@ -266,5 +323,4 @@
     </script>
 </body>
 </html>
-
 
