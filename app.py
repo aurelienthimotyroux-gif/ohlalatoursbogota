@@ -65,6 +65,22 @@ app.config["SQLALCHEMY_DATABASE_URI"] = _normalized_db_url()
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 
+# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+# AJOUT : modèle Comment + création de table
+class Comment(db.Model):
+    __tablename__ = "comments"
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(120), nullable=False)
+    country = db.Column(db.String(120), default="")
+    date_str = db.Column(db.String(32), nullable=False)   # ex: "12 mai 2025"
+    rating = db.Column(db.Float, default=5.0)
+    message = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, index=True)
+
+with app.app_context():
+    db.create_all()
+# <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
 # ------------------------------------------------------------------
 # PayPal & admin
 # ------------------------------------------------------------------
@@ -214,7 +230,15 @@ def delete_comment():
 # ------------------------------------------------------------------
 @app.route("/", endpoint="index")
 def index():
-    comments = Comment.query.order_by(Comment.created_at.desc()).all()
+    try:
+        comments = Comment.query.order_by(Comment.created_at.desc()).all()
+    except Exception as e:
+        # On loggue la stack pour Render, et on n’explose pas la page
+        logger.exception("comments_query_failed req_id=%s", g.request_id)
+        comments = []
+        # Optionnel: petit message informatif pour toi (pas bloquant)
+        flash(_("Impossible de charger les commentaires pour le moment."), "error")
+
     return render_template("index.html", comments=comments)
 
 @app.route("/a-propos", endpoint="about")
