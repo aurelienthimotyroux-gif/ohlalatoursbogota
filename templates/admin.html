@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head><meta charset="utf-8"><title>Admin — Commentaires</title></head>
+<body>
+  <h1>Commentaires</h1>
+
+  {% with msgs = get_flashed_messages(with_categories=true) %}
+    {% if msgs %}
+      {% for cat, msg in msgs %}
+        <div class="flash flash-{{ cat }}">{{ msg }}</div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  {% if comments %}
+  <table border="1" cellpadding="6" cellspacing="0">
+    <tr><th>ID</th><th>Nom</th><th>Pays</th><th>Note</th><th>Date</th><th>Message</th><th>Action</th></tr>
+    {% for c in comments %}
+      <tr>
+        <td>{{ c.id }}</td>
+        <td>{{ c.name }}</td>
+        <td>{{ c.country }}</td>
+        <td>{{ c.rating }}</td>
+        <td>{{ c.date_str }}</td>
+        <td style="max-width:500px">{{ c.message }}</td>
+        <td>
+          <form method="POST" action="{{ url_for('delete_comment') }}">
+            <input type="hidden" name="id" value="{{ c.id }}">
+            <button type="submit" onclick="return confirm('Supprimer ?');">🗑 Supprimer</button>
+          </form>
+        </td>
+      </tr>
+    {% endfor %}
+  </table>
+  {% else %}
+    <p>Aucun commentaire.</p>
+  {% endif %}
+</body>
+</html>

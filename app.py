@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, url_for, flash, redirect, abort, send_from_directory, g, session
 from flask_babel import Babel, _
-import os, requests, logging, json, tempfile, re
+import os, requests, logging, json, re
 from base64 import b64encode
 from datetime import timedelta, datetime
 from werkzeug.middleware.proxy_fix import ProxyFix
@@ -38,13 +38,7 @@ def lang_url(lang_code: str):
     args["lang"] = lang_code
     endpoint = request.endpoint or "index"
     return url_for(endpoint, **args)
-
 app.jinja_env.globals["lang_url"] = lang_url
-
-# Expose au template si l'admin est actif (pour afficher le bouton Supprimer)
-@app.context_processor
-def inject_is_admin():
-    return {"is_admin": bool(session.get("is_admin"))}
 
 # ------------------------------------------------------------------
 # DB (Postgres via DATABASE_URL, sinon SQLite local)
@@ -52,12 +46,12 @@ def inject_is_admin():
 from flask_sqlalchemy import SQLAlchemy
 
 def _normalized_db_url():
-    """Accepte postgres:// … et force le driver psycopg (v3 binaire)."""
     raw = os.getenv("DATABASE_URL", "").strip()
     if not raw:
         return "sqlite:///comments.sqlite3"
-
-    raw = re.sub(r"^postgres://", "postgresql://", raw)  # compat Render/Heroku
+    # ex: postgres:// -> postgresql://
+    raw = re.sub(r"^postgres://", "postgresql://", raw)
+    # forcer le driver psycopg (v3)
     raw = raw.replace("+psycopg2", "+psycopg")
     if raw.startswith("postgresql://") and "+psycopg" not in raw:
         raw = raw.replace("postgresql://", "postgresql+psycopg://", 1)
@@ -77,65 +71,8 @@ class Comment(db.Model):
     message = db.Column(db.Text, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow, index=True)
 
-    # Pour compat avec le template ({{ comment.date }})
-    @property
-    def date(self):
-        return self.date_str
-
 with app.app_context():
     db.create_all()
-
-# === Seed des avis par défaut (à lancer une seule fois) =====================
-def _seed_default_comments():
-    defaults = [
-        {"name": "Francis", "country": "Canada", "date": "12 mai 2025", "rating": 5, "message":
-         "L’expérience est super. Alejandra prend son temps pour nous expliquer et répondre à nos questions."},
-        {"name": "Katy", "country": "Mexique", "date": "21 mars 2023", "rating": 5, "message":
-         "Recommandé. La communication avec Alejandra était excellente avant et pendant, tout ce qui était décrit était respecté et toujours à l'écoute de nos besoins. C’est probablement un lieu que vous devez visiter si vous venez à Bogotá : belles vues et cathédrale de sel à couper le souffle."},
-        {"name": "Liliana", "country": "États-Unis", "date": "4 mars 2023", "rating": 4.5, "message":
-         "Expérience incroyable ! Alejandra et son père (Omar) ont pris soin des besoins spéciaux de mon mari, et tout a été fait à 100%. La Catedral de Sal, la cuisine traditionnelle à Brasas del Llano : une expérience culturelle 5 étoiles. Nous recommandons Alejandra si vous voulez une visite avec une amie. Merci beaucoup, à la prochaine !"},
-        {"name": "Marvin", "country": "Mexique", "date": "15 septembre 2022", "rating": 5, "message":
-         "Alejandra et son père sont extraordinaires et nous ont offert une très belle journée à Zipaquirá. Nous repartons avec d’excellents souvenirs. Merci !"},
-        {"name": "Oscar", "country": "Costa Rica", "date": "8 janvier 2023", "rating": 4.5, "message":
-         "Merci beaucoup pour votre gentillesse et votre disponibilité. Super recommandé."},
-        {"name": "Sam", "country": "États-Unis", "date": "14 août 2022", "rating": 5, "message":
-         "Alejandra et son père Omar ont été des hôtes parfaits, très attentifs à ma manière de vouloir profiter de la visite."},
-        {"name": "Kristina", "country": "Mexique", "date": "27 août 2022", "rating": 5, "message":
-         "Nous recommandons cette expérience. Nous avons passé un excellent moment. Alejandra et son père sont polis et sympathiques."},
-        {"name": "Jorge", "country": "Mexique", "date": "11 août 2022", "rating": 5, "message":
-         "Hautement recommandé. Alejandra et son père ont été très sympathiques et à notre écoute à tout moment. Expérience 100% recommandée !"},
-        {"name": "Fabiola", "country": "Mexique", "date": "11 août 2022", "rating": 5, "message":
-         "Du début à la fin, une expérience très agréable. Alejandra et son père Omar ont été très attentifs et gentils. Petit-déjeuner et déjeuner délicieux. Ils nous ont laissé profiter de la cathédrale à notre rythme : apprécié !"},
-        {"name": "Luna", "country": "Costa Rica", "date": "25 juillet 2019", "rating": 5, "message":
-         "Voyage bien planifié. À l’heure pour le pickup à l’hôtel. Pendant le trajet, Alejandra et Omar sont très sympathiques et patients."},
-        {"name": "Yuliana", "country": "Costa Rica", "date": "18 juillet 2019", "rating": 5, "message":
-         "Ale et Omar (son papa) sont super sympas et très impliqués pour que vous vous sentiez comme chez vous."},
-        {"name": "Ann", "country": "États-Unis", "date": "22 février 2020", "rating": 5, "message":
-         "Alejandra et son père ont été sympathiques, réactifs à nos questions, et nous ont emmenés sur des sites fascinants que nous n’aurions jamais trouvés seuls. Une expérience très agréable."},
-        {"name": "Nancy", "country": "Mexique", "date": "30 juillet 2019", "rating": 5, "message":
-         "L’une des meilleures expériences à ne pas manquer. Alejandra et son papa, M. Omar, sont extrêmement gentils, à l’écoute, et très ponctuels. Parcours agréable, café sur la place, échanges culturels, visite impressionnante de la cathédrale de sel, puis déjeuner de plats typiques. Merci pour votre hospitalité, je reviendrais sans hésiter !"},
-    ]
-    for d in defaults:
-        db.session.add(Comment(
-            name=d["name"],
-            country=d["country"],
-            date_str=d["date"],
-            rating=float(d["rating"]),
-            message=d["message"],
-        ))
-    db.session.commit()
-
-@app.get("/admin/seed-default-comments")
-def seed_default_comments():
-    key = request.args.get("key", "")
-    if not (os.getenv("ADMIN_DELETE_TOKEN") and key == os.getenv("ADMIN_DELETE_TOKEN")):
-        abort(403)
-    if Comment.query.count() > 0:
-        flash(_("Il y a déjà des commentaires en base — aucun import fait."), "error")
-        return redirect(url_for("index", lang=get_locale()))
-    _seed_default_comments()
-    flash(_("Commentaires par défaut importés en base."), "success")
-    return redirect(url_for("index", lang=get_locale()))
 
 # ------------------------------------------------------------------
 # PayPal & admin
@@ -246,17 +183,20 @@ def submit_comment():
     return redirect(url_for("index", lang=get_locale()))
 
 # ------------------------------------------------------------------
-# Admin (login/logout/suppression)
+# Admin (activation par clé + liste + suppression)
 # ------------------------------------------------------------------
 @app.get("/admin")
-def admin_login():
-    key = request.args.get("key", "")
-    if ADMIN_DELETE_TOKEN and key == ADMIN_DELETE_TOKEN:
-        session["is_admin"] = True
-        flash(_("Mode administrateur activé."), "success")
-    else:
-        flash(_("Clé admin invalide."), "error")
-    return redirect(url_for("index", lang=get_locale()))
+def admin():
+    # Active le mode admin via ?key=TOKEN une seule fois par session
+    if not session.get("is_admin"):
+        key = request.args.get("key", "")
+        if ADMIN_DELETE_TOKEN and key == ADMIN_DELETE_TOKEN:
+            session["is_admin"] = True
+            flash(_("Mode administrateur activé."), "success")
+        else:
+            abort(403)
+    comments = Comment.query.order_by(Comment.created_at.desc()).all()
+    return render_template("admin.html", comments=comments)
 
 @app.get("/admin/logout")
 def admin_logout():
@@ -282,13 +222,59 @@ def delete_comment():
     db.session.commit()
     logger.info("comment_deleted id=%s name=%s req_id=%s", c.id, c.name, g.request_id)
     flash(_("Commentaire supprimé."), "success")
+    # si tu supprimes depuis /admin, on te renvoie vers /admin, sinon vers /
+    ref = request.headers.get("Referer", "")
+    if "/admin" in ref:
+        return redirect(url_for("admin"))
     return redirect(url_for("index", lang=get_locale()))
+
+# ------------------------------------------------------------------
+# Seed des anciens avis (à appeler une seule fois)
+# ------------------------------------------------------------------
+@app.get("/admin/seed-default-comments")
+def seed_default_comments():
+    if not session.get("is_admin"):
+        key = request.args.get("key", "")
+        if not (ADMIN_DELETE_TOKEN and key == ADMIN_DELETE_TOKEN):
+            abort(403)
+
+    if Comment.query.count() > 0:
+        flash(_("La base contient déjà des commentaires."), "error")
+        return redirect(url_for("admin") if session.get("is_admin") else url_for("index"))
+
+    defaults = [
+        {"name": "Francis", "country": "Canada", "date_str": "12 mai 2025", "rating": 5, "message": "L’expérience est super. Alejandra prend son temps pour nous expliquer et répondre à nos questions."},
+        {"name": "Katy", "country": "Mexique", "date_str": "21 mars 2023", "rating": 5, "message": "Recommandé. La communication avec Alejandra était excellente avant et pendant, tout ce qui était décrit était respecté et toujours à l'écoute de nos besoins. C’est probablement un lieu que vous devez visiter si vous venez à Bogotá : belles vues et cathédrale de sel à couper le souffle."},
+        {"name": "Liliana", "country": "États-Unis", "date_str": "4 mars 2023", "rating": 4.5, "message": "Expérience incroyable ! Alejandra et son père (Omar) ont pris soin des besoins spéciaux de mon mari, et tout a été fait à 100%. La Catedral de Sal, la cuisine traditionnelle à Brasas del Llano : une expérience culturelle 5 étoiles."},
+        {"name": "Marvin", "country": "Mexique", "date_str": "15 septembre 2022", "rating": 5, "message": "Alejandra et son père sont extraordinaires et nous ont offert une très belle journée à Zipaquirá. Nous repartons avec d’excellents souvenirs. Merci !"},
+        {"name": "Oscar", "country": "Costa Rica", "date_str": "8 janvier 2023", "rating": 4.5, "message": "Merci beaucoup pour votre gentillesse et votre disponibilité. Super recommandé."},
+        {"name": "Sam", "country": "États-Unis", "date_str": "14 août 2022", "rating": 5, "message": "Alejandra et son père Omar ont été des hôtes parfaits, très attentifs à ma manière de vouloir profiter de la visite."},
+        {"name": "Kristina", "country": "Mexique", "date_str": "27 août 2022", "rating": 5, "message": "Nous recommandons cette expérience. Nous avons passé un excellent moment. Alejandra et son père sont polis et sympathiques."},
+        {"name": "Jorge", "country": "Mexique", "date_str": "11 août 2022", "rating": 5, "message": "Hautement recommandé. Alejandra et son père ont été très sympathiques et à notre écoute à tout moment."},
+        {"name": "Fabiola", "country": "Mexique", "date_str": "11 août 2022", "rating": 5, "message": "Du début à la fin, une expérience très agréable. Alejandra et son père Omar ont été très attentifs et gentils."},
+        {"name": "Luna", "country": "Costa Rica", "date_str": "25 juillet 2019", "rating": 5, "message": "Voyage bien planifié. À l’heure pour le pickup à l’hôtel. Pendant le trajet, Alejandra et Omar sont très sympathiques et patients."},
+        {"name": "Yuliana", "country": "Costa Rica", "date_str": "18 juillet 2019", "rating": 5, "message": "Ale et Omar (son papa) sont super sympas et très impliqués pour que vous vous sentiez comme chez vous."},
+        {"name": "Ann", "country": "États-Unis", "date_str": "22 février 2020", "rating": 5, "message": "Sympathiques, réactifs à nos questions, et des sites fascinants que nous n’aurions jamais trouvés seuls."},
+        {"name": "Nancy", "country": "Mexique", "date_str": "30 juillet 2019", "rating": 5, "message": "L’une des meilleures expériences à ne pas manquer. Hospitalité au top, parcours agréable, visite impressionnante de la cathédrale de sel."}
+    ]
+    for d in defaults:
+        db.session.add(Comment(
+            name=d["name"],
+            country=d.get("country",""),
+            date_str=d["date_str"],
+            rating=float(d["rating"]),
+            message=d["message"],
+        ))
+    db.session.commit()
+    flash(_("Avis par défaut importés."), "success")
+    return redirect(url_for("admin") if session.get("is_admin") else url_for("index"))
 
 # ------------------------------------------------------------------
 # Pages
 # ------------------------------------------------------------------
 @app.route("/", endpoint="index")
 def index():
+    # IMPORTANT dans ton index.html, utilise comment.date_str (pas comment.date)
     comments = Comment.query.order_by(Comment.created_at.desc()).all()
     return render_template("index.html", comments=comments)
 
@@ -413,5 +399,4 @@ def server_error(e):
 # ------------------------------------------------------------------
 if __name__ == "__main__":
     app.run(debug=True, use_reloader=False)
-
 
