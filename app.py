@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, url_for, flash, redirect, abort
+from flask import Flask, render_template, request, url_for, flash, redirect, abort, send_from_directory
 from flask_babel import Babel, _
 import os
 import requests
@@ -8,7 +8,8 @@ from base64 import b64encode
 # ------------------------------------------------------------------
 # Flask & Babel
 # ------------------------------------------------------------------
-app = Flask(__name__)
+# 👇 on précise explicitement où sont les templates et les fichiers statiques
+app = Flask(__name__, template_folder="templates", static_folder="static")
 
 # nécessaire pour flash()  ⚠️ remplace en production (ou mets via env SECRET_KEY)
 app.secret_key = os.getenv("SECRET_KEY", "change-me-please")
@@ -172,8 +173,10 @@ def paiement_reussi():
         if status == "APPROVED":
             cap = requests.post(
                 f"{PAYPAL_BASE}/v2/checkout/orders/{order_id}/capture",
-                headers={"Authorization": f"Bearer {token}",
-                         "Content-Type": "application/json"},
+                headers={
+                    "Authorization": f"Bearer {token}",
+                    "Content-Type": "application/json"
+                },
                 timeout=20,
             )
             if cap.status_code in (200, 201):
@@ -203,9 +206,8 @@ def paiement_annule():
     return render_template("cancel.html")
 
 # ------------------------------------------------------------------
-# sitemaps
+# sitemaps & robots
 # ------------------------------------------------------------------
-
 @app.route('/sitemap.xml')
 def sitemap_xml():
     return send_from_directory(app.static_folder, 'sitemap.xml', mimetype='application/xml')
