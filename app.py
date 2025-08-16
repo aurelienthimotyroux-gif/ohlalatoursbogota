@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, url_for, flash, redirect, abort, send_from_directory, g, session
 from flask_babel import Babel, _
-import os, requests, logging, json, tempfile
+import os, requests, logging, json, tempfile, re
 from base64 import b64encode
 from datetime import timedelta, datetime
 from werkzeug.middleware.proxy_fix import ProxyFix
@@ -32,41 +32,41 @@ def get_locale():
     return lang if lang in app.config["BABEL_SUPPORTED_LOCALES"] else app.config["BABEL_DEFAULT_LOCALE"]
 
 app.jinja_env.globals["get_locale"] = get_locale
+
 def lang_url(lang_code: str):
     args = request.args.to_dict(flat=True)
     args["lang"] = lang_code
     endpoint = request.endpoint or "index"
     return url_for(endpoint, **args)
+
 app.jinja_env.globals["lang_url"] = lang_url
+
+# Expose au template si l'admin est actif (pour afficher le bouton Supprimer)
+@app.context_processor
+def inject_is_admin():
+    return {"is_admin": bool(session.get("is_admin"))}
 
 # ------------------------------------------------------------------
 # DB (Postgres via DATABASE_URL, sinon SQLite local)
+# ------------------------------------------------------------------
 from flask_sqlalchemy import SQLAlchemy
-import re
 
 def _normalized_db_url():
+    """Accepte postgres:// … et force le driver psycopg (v3 binaire)."""
     raw = os.getenv("DATABASE_URL", "").strip()
     if not raw:
         return "sqlite:///comments.sqlite3"
 
-    # 1) Render/Heroku donnent souvent "postgres://"
-    raw = re.sub(r"^postgres://", "postgresql://", raw)
-
-    # 2) Si un driver explicite est présent, remplace psycopg2 -> psycopg
+    raw = re.sub(r"^postgres://", "postgresql://", raw)  # compat Render/Heroku
     raw = raw.replace("+psycopg2", "+psycopg")
-
-    # 3) S'il n'y a PAS de driver explicite, ajoute +psycopg
     if raw.startswith("postgresql://") and "+psycopg" not in raw:
         raw = raw.replace("postgresql://", "postgresql+psycopg://", 1)
-
     return raw
 
 app.config["SQLALCHEMY_DATABASE_URI"] = _normalized_db_url()
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 
-# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-# AJOUT : modèle Comment + création de table
 class Comment(db.Model):
     __tablename__ = "comments"
     id = db.Column(db.Integer, primary_key=True)
@@ -77,9 +77,65 @@ class Comment(db.Model):
     message = db.Column(db.Text, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow, index=True)
 
+    # Pour compat avec le template ({{ comment.date }})
+    @property
+    def date(self):
+        return self.date_str
+
 with app.app_context():
     db.create_all()
-# <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+# === Seed des avis par défaut (à lancer une seule fois) =====================
+def _seed_default_comments():
+    defaults = [
+        {"name": "Francis", "country": "Canada", "date": "12 mai 2025", "rating": 5, "message":
+         "L’expérience est super. Alejandra prend son temps pour nous expliquer et répondre à nos questions."},
+        {"name": "Katy", "country": "Mexique", "date": "21 mars 2023", "rating": 5, "message":
+         "Recommandé. La communication avec Alejandra était excellente avant et pendant, tout ce qui était décrit était respecté et toujours à l'écoute de nos besoins. C’est probablement un lieu que vous devez visiter si vous venez à Bogotá : belles vues et cathédrale de sel à couper le souffle."},
+        {"name": "Liliana", "country": "États-Unis", "date": "4 mars 2023", "rating": 4.5, "message":
+         "Expérience incroyable ! Alejandra et son père (Omar) ont pris soin des besoins spéciaux de mon mari, et tout a été fait à 100%. La Catedral de Sal, la cuisine traditionnelle à Brasas del Llano : une expérience culturelle 5 étoiles. Nous recommandons Alejandra si vous voulez une visite avec une amie. Merci beaucoup, à la prochaine !"},
+        {"name": "Marvin", "country": "Mexique", "date": "15 septembre 2022", "rating": 5, "message":
+         "Alejandra et son père sont extraordinaires et nous ont offert une très belle journée à Zipaquirá. Nous repartons avec d’excellents souvenirs. Merci !"},
+        {"name": "Oscar", "country": "Costa Rica", "date": "8 janvier 2023", "rating": 4.5, "message":
+         "Merci beaucoup pour votre gentillesse et votre disponibilité. Super recommandé."},
+        {"name": "Sam", "country": "États-Unis", "date": "14 août 2022", "rating": 5, "message":
+         "Alejandra et son père Omar ont été des hôtes parfaits, très attentifs à ma manière de vouloir profiter de la visite."},
+        {"name": "Kristina", "country": "Mexique", "date": "27 août 2022", "rating": 5, "message":
+         "Nous recommandons cette expérience. Nous avons passé un excellent moment. Alejandra et son père sont polis et sympathiques."},
+        {"name": "Jorge", "country": "Mexique", "date": "11 août 2022", "rating": 5, "message":
+         "Hautement recommandé. Alejandra et son père ont été très sympathiques et à notre écoute à tout moment. Expérience 100% recommandée !"},
+        {"name": "Fabiola", "country": "Mexique", "date": "11 août 2022", "rating": 5, "message":
+         "Du début à la fin, une expérience très agréable. Alejandra et son père Omar ont été très attentifs et gentils. Petit-déjeuner et déjeuner délicieux. Ils nous ont laissé profiter de la cathédrale à notre rythme : apprécié !"},
+        {"name": "Luna", "country": "Costa Rica", "date": "25 juillet 2019", "rating": 5, "message":
+         "Voyage bien planifié. À l’heure pour le pickup à l’hôtel. Pendant le trajet, Alejandra et Omar sont très sympathiques et patients."},
+        {"name": "Yuliana", "country": "Costa Rica", "date": "18 juillet 2019", "rating": 5, "message":
+         "Ale et Omar (son papa) sont super sympas et très impliqués pour que vous vous sentiez comme chez vous."},
+        {"name": "Ann", "country": "États-Unis", "date": "22 février 2020", "rating": 5, "message":
+         "Alejandra et son père ont été sympathiques, réactifs à nos questions, et nous ont emmenés sur des sites fascinants que nous n’aurions jamais trouvés seuls. Une expérience très agréable."},
+        {"name": "Nancy", "country": "Mexique", "date": "30 juillet 2019", "rating": 5, "message":
+         "L’une des meilleures expériences à ne pas manquer. Alejandra et son papa, M. Omar, sont extrêmement gentils, à l’écoute, et très ponctuels. Parcours agréable, café sur la place, échanges culturels, visite impressionnante de la cathédrale de sel, puis déjeuner de plats typiques. Merci pour votre hospitalité, je reviendrais sans hésiter !"},
+    ]
+    for d in defaults:
+        db.session.add(Comment(
+            name=d["name"],
+            country=d["country"],
+            date_str=d["date"],
+            rating=float(d["rating"]),
+            message=d["message"],
+        ))
+    db.session.commit()
+
+@app.get("/admin/seed-default-comments")
+def seed_default_comments():
+    key = request.args.get("key", "")
+    if not (os.getenv("ADMIN_DELETE_TOKEN") and key == os.getenv("ADMIN_DELETE_TOKEN")):
+        abort(403)
+    if Comment.query.count() > 0:
+        flash(_("Il y a déjà des commentaires en base — aucun import fait."), "error")
+        return redirect(url_for("index", lang=get_locale()))
+    _seed_default_comments()
+    flash(_("Commentaires par défaut importés en base."), "success")
+    return redirect(url_for("index", lang=get_locale()))
 
 # ------------------------------------------------------------------
 # PayPal & admin
@@ -127,12 +183,15 @@ _SESSION = requests.Session()
 _RETRY = Retry(total=3, backoff_factor=0.3, status_forcelist=(429, 500, 502, 503, 504), allowed_methods=("GET", "POST"))
 _SESSION.mount("https://", HTTPAdapter(max_retries=_RETRY))
 _DEFAULT_TIMEOUT = int(os.getenv("HTTP_TIMEOUT", "20"))
+
 def _http_get(url: str, **kwargs):
     kwargs.setdefault("timeout", _DEFAULT_TIMEOUT)
     return _SESSION.get(url, **kwargs)
+
 def _http_post(url: str, **kwargs):
     kwargs.setdefault("timeout", _DEFAULT_TIMEOUT)
     return _SESSION.post(url, **kwargs)
+
 def paypal_access_token() -> str:
     if not PAYPAL_CLIENT_ID or not PAYPAL_SECRET:
         raise RuntimeError("Clés PayPal manquantes (PAYPAL_CLIENT_ID/SECRET).")
@@ -187,7 +246,7 @@ def submit_comment():
     return redirect(url_for("index", lang=get_locale()))
 
 # ------------------------------------------------------------------
-# Admin
+# Admin (login/logout/suppression)
 # ------------------------------------------------------------------
 @app.get("/admin")
 def admin_login():
@@ -230,15 +289,7 @@ def delete_comment():
 # ------------------------------------------------------------------
 @app.route("/", endpoint="index")
 def index():
-    try:
-        comments = Comment.query.order_by(Comment.created_at.desc()).all()
-    except Exception as e:
-        # On loggue la stack pour Render, et on n’explose pas la page
-        logger.exception("comments_query_failed req_id=%s", g.request_id)
-        comments = []
-        # Optionnel: petit message informatif pour toi (pas bloquant)
-        flash(_("Impossible de charger les commentaires pour le moment."), "error")
-
+    comments = Comment.query.order_by(Comment.created_at.desc()).all()
     return render_template("index.html", comments=comments)
 
 @app.route("/a-propos", endpoint="about")
@@ -357,6 +408,10 @@ def not_found(e):
 def server_error(e):
     return render_template("500.html"), 500
 
+# ------------------------------------------------------------------
+# Entrée locale
+# ------------------------------------------------------------------
 if __name__ == "__main__":
     app.run(debug=True, use_reloader=False)
+
 
