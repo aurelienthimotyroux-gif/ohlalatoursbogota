@@ -41,35 +41,29 @@ app.jinja_env.globals["lang_url"] = lang_url
 
 # ------------------------------------------------------------------
 # DB (Postgres via DATABASE_URL, sinon SQLite local)
-# ------------------------------------------------------------------
 from flask_sqlalchemy import SQLAlchemy
+import re
 
 def _normalized_db_url():
     raw = os.getenv("DATABASE_URL", "").strip()
     if not raw:
         return "sqlite:///comments.sqlite3"
-    if raw.startswith("postgres://"):
-        raw = raw.replace("postgres://", "postgresql+psycopg2://", 1)
-    elif raw.startswith("postgresql://") and "+psycopg2" not in raw:
-        raw = raw.replace("postgresql://", "postgresql+psycopg2://", 1)
+
+    # 1) Render/Heroku donnent souvent "postgres://"
+    raw = re.sub(r"^postgres://", "postgresql://", raw)
+
+    # 2) Si un driver explicite est présent, remplace psycopg2 -> psycopg
+    raw = raw.replace("+psycopg2", "+psycopg")
+
+    # 3) S'il n'y a PAS de driver explicite, ajoute +psycopg
+    if raw.startswith("postgresql://") and "+psycopg" not in raw:
+        raw = raw.replace("postgresql://", "postgresql+psycopg://", 1)
+
     return raw
 
 app.config["SQLALCHEMY_DATABASE_URI"] = _normalized_db_url()
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
-
-class Comment(db.Model):
-    __tablename__ = "comments"
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(120), nullable=False)
-    country = db.Column(db.String(120), default="")
-    date_str = db.Column(db.String(32), nullable=False)   # “12 mai 2025” (ton format)
-    rating = db.Column(db.Float, default=5.0)
-    message = db.Column(db.Text, nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, index=True)
-
-with app.app_context():
-    db.create_all()
 
 # ------------------------------------------------------------------
 # PayPal & admin
