@@ -275,7 +275,7 @@ def seed_default_comments():
 @app.route("/", endpoint="index")
 def index():
     # ancien -> récent (nouveaux en BAS de la liste)
-    comments = Comment.query.order_by(Comment.created_at.asc()).all()
+    comments = Comment.query.order_by(Comment.created_at.desc()).all()
     return render_template("index.html", comments=comments)
 
 @app.route("/a-propos", endpoint="about")
