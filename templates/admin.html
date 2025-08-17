@@ -1,39 +1,98 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
-<head><meta charset="utf-8"><title>Admin — Commentaires</title></head>
+<head>
+  <meta charset="utf-8">
+  <title>Admin — Commentaires</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root{--bg:#f6f7fb;--card:#fff;--border:#e9ecf2;--text:#1f2d3d;--muted:#6b7280;--accent:#2563eb;--danger:#dc2626}
+    *{box-sizing:border-box} body{margin:0;background:var(--bg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--text)}
+    .wrap{max-width:1100px;margin:40px auto;padding:0 20px}
+    .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+    .top h1{font-size:26px;margin:0}
+    .top a{color:var(--accent);text-decoration:none;margin-left:14px}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px}
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--border);vertical-align:top}
+    th{font-weight:600;color:#374151;background:#fafbff}
+    .note{font-variant-numeric:tabular-nums}
+    .msg{color:var(--text)}
+    .muted{color:var(--muted);font-size:12px}
+    .btn{border:0;padding:8px 12px;border-radius:10px;cursor:pointer}
+    .btn-danger{background:var(--danger);color:#fff}
+    .btn-danger:hover{filter:brightness(.95)}
+    .chips{display:flex;gap:8px;align-items:center}
+    .tag{background:#eef2ff;color:#3730a3;border-radius:999px;padding:2px 8px;font-size:12px}
+    .flash{margin:12px 0;padding:10px 12px;border-radius:10px}
+    .flash-success{background:#ecfdf5;color:#065f46;border:1px solid #a7f3d0}
+    .flash-error{background:#fef2f2;color:#991b1b;border:1px solid #fecaca}
+  </style>
+  <script>
+    function confirmDelete(id){
+      if (confirm("Supprimer ce commentaire ?")) {
+        const f = document.getElementById("del-"+id);
+        f && f.submit();
+      }
+    }
+  </script>
+</head>
 <body>
-  <h1>Commentaires</h1>
+<div class="wrap">
+  <div class="top">
+    <h1>Admin — Commentaires</h1>
+    <div class="chips">
+      <a href="{{ url_for('index') }}">← Retour au site</a>
+      <a href="{{ url_for('admin_logout') }}">Se déconnecter</a>
+      <span class="tag">{{ comments|length }} au total</span>
+    </div>
+  </div>
 
   {% with msgs = get_flashed_messages(with_categories=true) %}
     {% if msgs %}
       {% for cat, msg in msgs %}
-        <div class="flash flash-{{ cat }}">{{ msg }}</div>
+        <div class="flash flash-{{ 'success' if cat=='success' else 'error' }}">{{ msg }}</div>
       {% endfor %}
     {% endif %}
   {% endwith %}
 
-  {% if comments %}
-  <table border="1" cellpadding="6" cellspacing="0">
-    <tr><th>ID</th><th>Nom</th><th>Pays</th><th>Note</th><th>Date</th><th>Message</th><th>Action</th></tr>
-    {% for c in comments %}
-      <tr>
-        <td>{{ c.id }}</td>
-        <td>{{ c.name }}</td>
-        <td>{{ c.country }}</td>
-        <td>{{ c.rating }}</td>
-        <td>{{ c.date_str }}</td>
-        <td style="max-width:500px">{{ c.message }}</td>
-        <td>
-          <form method="POST" action="{{ url_for('delete_comment') }}">
-            <input type="hidden" name="id" value="{{ c.id }}">
-            <button type="submit" onclick="return confirm('Supprimer ?');">🗑 Supprimer</button>
-          </form>
-        </td>
-      </tr>
-    {% endfor %}
-  </table>
-  {% else %}
-    <p>Aucun commentaire.</p>
-  {% endif %}
+  <div class="card">
+    <div class="muted" style="margin-bottom:10px">
+      ⚙️ <a href="{{ url_for('seed_default_comments') }}">Importer les avis par défaut</a> (à utiliser seulement si la base est vide)
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:70px">ID</th>
+          <th>Nom</th>
+          <th style="width:120px">Pays</th>
+          <th style="width:90px">Note</th>
+          <th style="width:140px">Date</th>
+          <th>Message</th>
+          <th style="width:130px">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in comments %}
+        <tr>
+          <td class="muted">#{{ c.id }}</td>
+          <td>{{ c.name }}</td>
+          <td>{{ c.country or "—" }}</td>
+          <td class="note">{{ "%.1f"|format(c.rating) }} / 5</td>
+          <td>{{ c.date_str }}</td>
+          <td class="msg">{{ c.message }}</td>
+          <td>
+            <form id="del-{{ c.id }}" method="post" action="{{ url_for('delete_comment') }}">
+              <input type="hidden" name="id" value="{{ c.id }}">
+              <button type="button" class="btn btn-danger" onclick="confirmDelete('{{ c.id }}')">🗑 Supprimer</button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="7" class="muted">Aucun commentaire en base.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
 </body>
 </html>

@@ -272,11 +272,12 @@ def seed_default_comments():
 # ------------------------------------------------------------------
 # Pages
 # ------------------------------------------------------------------
-@app.route("/", endpoint="index")
+@app.route('/')
 def index():
-    # IMPORTANT dans ton index.html, utilise comment.date_str (pas comment.date)
-    comments = Comment.query.order_by(Comment.created_at.desc()).all()
+    # les plus anciens en premier, donc les nouveaux se mettent à la suite
+    comments = Comment.query.order_by(Comment.created_at.asc()).all()
     return render_template("index.html", comments=comments)
+
 
 @app.route("/a-propos", endpoint="about")
 def about():

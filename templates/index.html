@@ -5,20 +5,20 @@
   <title>{{ _("Accueil") }} — Oh La La Tours Bogotá</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- Meta description (résumé SEO) -->
+  <!-- Meta description (SEO) -->
   <meta name="description" content="{{ _('Visites guidées à Bogotá avec Alejandra, guide locale. Tours privés en français, anglais et espagnol : Candelaria, Monserrate, Zipaquirá, café (Hacienda Coloma), transport et transferts aéroport.') }}">
 
-  <!-- Keywords (facultatif mais ok pour certains moteurs/outils) -->
+  <!-- Keywords (facultatif) -->
   <meta name="keywords" content="visite guidée Bogotá, guide francophone Bogotá, excursion Bogotá, tours privés Bogotá, visiter la Candelaria Bogotá, excursion Zipaquirá depuis Bogotá, randonnée Monserrate Bogotá, café, Bogota, Colombie, Monserrate, Zipaquira, Coloma, Hacienda Coloma, guide, tejo, Chapinero, hôtel, hostel, Alejandra, gastronomie, pesos, taxi, transport, van, aéroport, français, anglais, espagnol, Aguila, Club Colombia, histoire, tours exceptionnels">
 
-  <!-- Canonical + Hreflang (i18n) -->
+  <!-- Canonical + hreflang -->
   <link rel="canonical" href="https://www.ohlalatoursbogota.com{{ request.path }}{% if get_locale()!='fr' %}?lang={{ get_locale() }}{% endif %}">
   <link rel="alternate" href="{{ url_for('index', lang='fr', _external=True) }}" hreflang="fr">
   <link rel="alternate" href="{{ url_for('index', lang='en', _external=True) }}" hreflang="en">
   <link rel="alternate" href="{{ url_for('index', lang='es', _external=True) }}" hreflang="es">
   <link rel="alternate" href="{{ url_for('index', lang='fr', _external=True) }}" hreflang="x-default">
 
-  <!-- Open Graph / Twitter Cards -->
+  <!-- Open Graph -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://www.ohlalatoursbogota.com{{ request.path }}{% if get_locale()!='fr' %}?lang={{ get_locale() }}{% endif %}">
   <meta property="og:site_name" content="Oh La La Tours Bogotá">
@@ -33,6 +33,7 @@
   <meta property="og:locale" content="es_CO">
   {% endif %}
 
+  <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="{{ _('Visites guidées à Bogotá – Guide francophone & tours privés') }}">
   <meta name="twitter:description" content="{{ _('Découvrez Bogotá : Candelaria, Monserrate, Zipaquirá, café à Hacienda Coloma. Visites en français, anglais et espagnol. Transferts aéroport, chauffeur/van privé.') }}">
@@ -41,27 +42,24 @@
   <!-- CSS principal -->
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
-  <!-- Police Poppins -->
+  <!-- Police -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 
   <!-- Sprite d'icônes SVG (étoiles) -->
   <svg xmlns="http://www.w3.org/2000/svg" style="display:none;">
-    <!-- Étoile pleine -->
     <symbol id="icon-star-full" viewBox="0 0 24 24" aria-hidden="true">
       <path fill="#ffb400" d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21z"/>
     </symbol>
-    <!-- Demi étoile -->
     <symbol id="icon-star-half" viewBox="0 0 24 24" aria-hidden="true">
       <path fill="#ffb400" d="M12 17.27V2L9.19 8.62 2 9.24l5.46 4.73L5.82 21z"/>
       <path fill="none" stroke="#ffb400" stroke-width="1.5" d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21z"/>
     </symbol>
-    <!-- Étoile vide -->
     <symbol id="icon-star-empty" viewBox="0 0 24 24" aria-hidden="true">
       <path fill="none" stroke="#ffb400" stroke-width="1.5" d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21z"/>
     </symbol>
   </svg>
 
-  <!-- Styles spécifiques Avis -->
+  <!-- Styles internes spécifiques aux avis -->
   <style>
     .testimonials { background:#fff; padding:40px 20px; margin-top:40px; }
     .testimonials .container { max-width:1000px; margin:0 auto; }
@@ -105,14 +103,8 @@
     .hero .nav-hero a { text-decoration:none; }
     .hero .nav-hero a:focus { outline:2px dashed #333; outline-offset:3px; }
 
-    /* utilitaire accessibilité */
-    .sr-only {
-      position: absolute !important;
-      width: 1px; height: 1px;
-      padding: 0; margin: -1px; overflow: hidden;
-      clip: rect(0,0,1px,1px); white-space: nowrap; border: 0;
-    }
-    /* flashes */
+    .sr-only { position:absolute!important; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,1px,1px); white-space:nowrap; border:0; }
+
     .flash-wrap { max-width:1000px; margin:16px auto; padding:0 20px; }
     .flash { margin:8px 0; padding:10px; border-radius:8px; }
     .flash-success{ background:#eefbf0; border:1px solid #b7ebc6; color:#1b5e20; }
@@ -129,7 +121,7 @@
       var full = textElement.dataset.full || "";
 
       if (!textElement.dataset.preview) {
-        textElement.dataset.preview = textElement.textContent; // sauvegarde l’aperçu
+        textElement.dataset.preview = textElement.textContent;
       }
       var preview = textElement.dataset.preview;
 
@@ -148,7 +140,7 @@
     }
   </script>
 
-  <!-- Données structurées (SEO local) -->
+  <!-- Données structurées -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -202,7 +194,6 @@
       <p>{{ _("Je suis Alejandra, guide locale passionnée, et je vous invite à découvrir une Bogotá authentique, vibrante et pleine de vie.") }}</p>
       <p>{{ _("À travers mes visites en petits groupes, nous explorerons son histoire, sa culture et ses saveurs : balades dans les quartiers historiques, expériences culinaires, escapades en pleine nature et excursions uniques aux alentours, comme la célèbre Cathédrale de sel de Zipaquirá.") }}</p>
       <p>{{ _("Plus qu’une simple visite, je vous propose une immersion vivante et chaleureuse, une expérience à ressentir et à emporter avec vous.") }}</p>
-      <!-- Légère optimisation sémantique/SEO -->
       <p>{{ _("Je propose des visites guidées à Bogotá avec un guide francophone, des tours privés vers la Candelaria, Monserrate et Zipaquirá, ainsi qu’un service de transport (taxi/van) et transferts aéroport.") }}</p>
     </section>
 
@@ -230,7 +221,7 @@
     </div>
   </section>
 
-  <!-- Section Laisser un Commentaire -->
+  <!-- Formulaire Laisser un commentaire -->
   <section style="max-width: 1000px; margin: 30px auto; padding: 0 20px;">
     <h2 class="comment-section-title">{{ _("À votre tour de laisser un joli commentaire") }}</h2>
     <form method="POST" action="{{ url_for('submit_comment', lang=get_locale()) }}" style="background:#fafafa; border-radius:14px; padding:20px; box-shadow:0 6px 18px rgba(0,0,0,0.08); display:grid; gap:12px; max-width:600px;">
@@ -238,7 +229,11 @@
       <label>{{ _("Votre commentaire") }}<br><textarea name="message" rows="4" required aria-required="true"></textarea></label>
       <label>{{ _("Votre note") }}<br>
         <select name="rating" required aria-required="true">
-          <option value="1">★</option><option value="2">★★</option><option value="3">★★★</option><option value="4">★★★★</option><option value="5">★★★★★</option>
+          <option value="1">★</option>
+          <option value="2">★★</option>
+          <option value="3">★★★</option>
+          <option value="4">★★★★</option>
+          <option value="5" selected>★★★★★</option>
         </select>
       </label>
       <button type="submit">{{ _("Envoyer") }}</button>
@@ -250,40 +245,46 @@
     <div class="container">
       <h2>{{ _("Avis des voyageurs") }}</h2>
 
-      {# ===== Affiche d'abord les commentaires dynamiques s'ils existent ===== #}
+      {# ===== Affiche les commentaires de la DB dans l'ordre reçu (pas de tri ici) ===== #}
       {% if comments and comments|length > 0 %}
         <div class="testimonials-grid">
           {% for comment in comments %}
             <div class="testimonial-card">
               <div class="t-head">
-                <div class="t-name">{{ comment.name }}{% if comment.country %} · {{ comment.country }}{% endif %}</div>
-                <div class="t-meta">{{ comment.date_str|default(comment.date, true) }}</div>
+                <div class="t-name">
+                  {{ comment.name }}{% if comment.country %} · {{ comment.country }}{% endif %}
+                </div>
+                <div class="t-meta">{{ comment.date_str }}</div>
               </div>
-              <div class="t-stars" aria-label="{{ comment.rating|float }} / 5">
+
+              <div class="t-stars" aria-label="{{ comment.rating }} / 5">
                 {% for i in range(1, 6) %}
-                  {% if comment.rating|float >= i %}
+                  {% if comment.rating >= i %}
                     <svg><use href="#icon-star-full"></use></svg>
-                  {% elif comment.rating|float >= i - 0.5 %}
+                  {% elif comment.rating >= i - 0.5 %}
                     <svg><use href="#icon-star-half"></use></svg>
                   {% else %}
                     <svg><use href="#icon-star-empty"></use></svg>
                   {% endif %}
                 {% endfor %}
-                <span class="sr-only">{{ comment.rating|float }} / 5</span>
+                <span class="sr-only">{{ comment.rating }} / 5</span>
               </div>
+
+              {# Texte + Lire plus si > 200 caractères #}
+              {% set is_long = (comment.message|length > 200) %}
               <p
-                class="t-text{% if (comment.message or '')|length > 200 %} clamp{% endif %}"
-                id="comment-{{ loop.index0 }}"
-                data-full="{{ (comment.message or '')|e }}"
+                class="t-text{% if is_long %} clamp{% endif %}"
+                id="comment-{{ loop.index }}"
+                data-full="{{ comment.message|e }}"
               >
-                {% if (comment.message or '')|length > 200 %}
-                    {{ (comment.message or '')[:200] }}...
+                {% if is_long %}
+                  {{ comment.message[:200] }}...
                 {% else %}
-                    {{ comment.message }}
+                  {{ comment.message }}
                 {% endif %}
               </p>
-              {% if (comment.message or '')|length > 200 %}
-                <button class="t-toggle" onclick="toggleText('{{ loop.index0 }}')">
+              {% if is_long %}
+                <button class="t-toggle" onclick="toggleText('{{ loop.index }}')">
                   {{ _("Lire plus") }}
                 </button>
               {% endif %}
@@ -292,7 +293,7 @@
         </div>
 
       {% else %}
-        {# ===== Sinon, on garde ta liste statique existante (fallback) ===== #}
+        {# ===== Fallback statique si la base est vide ===== #}
         <div class="testimonials-grid">
           {% set comments = [
           {"name": "Francis", "country": "Canada", "date": "12 mai 2025", "rating": 5, "message": _("L’expérience est super. Alejandra prend son temps pour nous expliquer et répondre à nos questions.")},
@@ -327,19 +328,20 @@
                 {% endfor %}
                 <span class="sr-only">{{ comment.rating }} / 5</span>
               </div>
+              {% set is_long = (comment.message|length > 200) %}
               <p
-                class="t-text{% if comment.message|length > 200 %} clamp{% endif %}"
-                id="comment-{{ loop.index0 }}"
+                class="t-text{% if is_long %} clamp{% endif %}"
+                id="comment-fallback-{{ loop.index }}"
                 data-full="{{ comment.message|e }}"
               >
-                {% if comment.message|length > 200 %}
-                    {{ comment.message[:200] }}...
+                {% if is_long %}
+                  {{ comment.message[:200] }}...
                 {% else %}
-                    {{ comment.message }}
+                  {{ comment.message }}
                 {% endif %}
               </p>
-              {% if comment.message|length > 200 %}
-                <button class="t-toggle" onclick="toggleText('{{ loop.index0 }}')">
+              {% if is_long %}
+                <button class="t-toggle" onclick="toggleText('fallback-{{ loop.index }}')">
                   {{ _("Lire plus") }}
                 </button>
               {% endif %}
@@ -352,6 +354,5 @@
 
 </body>
 </html>
-
 
 
