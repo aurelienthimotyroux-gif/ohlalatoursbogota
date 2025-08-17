@@ -321,24 +321,20 @@ def seed_default_comments():
 # ------------------------------------------------------------------
 @app.route("/", endpoint="index")
 def index():
-    # on récupère tout…
+    # on récupère tous les commentaires
     comments = Comment.query.all()
 
-    # …et on trie par la vraie date visible (si non parsable, on tombe sur created_at)
+    # on définit la clé de tri : d’abord parse la date_str, sinon created_at
     def sort_key(c):
         dt = parse_date_str(c.date_str)
         if dt is None:
             dt = c.created_at or datetime.min
         return dt
 
-    # 👉 Choisis TON ordre :
-    # 1) plus anciens -> plus récents :
-    comments = sorted(comments, key=sort_key)
-    # 2) (alternative) plus récents -> plus anciens :
-    # comments = sorted(comments, key=sort_key, reverse=True)
+    # 👉 tri du plus récent au plus ancien
+    comments = sorted(comments, key=sort_key, reverse=True)
 
     return render_template("index.html", comments=comments)
-
 
 @app.route("/a-propos", endpoint="about")
 def about():
