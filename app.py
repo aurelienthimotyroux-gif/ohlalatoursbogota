@@ -5,11 +5,12 @@ from base64 import b64encode
 from datetime import timedelta, datetime
 from werkzeug.middleware.proxy_fix import ProxyFix
 from requests.adapters import HTTPAdapter
-from urllib3.util.retry import Retry 
+from urllib3.util.retry import Retry
+from flask_sqlalchemy import SQLAlchemy
 
-# --- parsing date_str "22 février 2020", "30 julio 2019", "17 Aug 2025" ---
-from datetime import datetime
-
+# ------------------------------------------------------------------
+# Utils: parser "22 février 2020" / "30 julio 2019" / "17 Aug 2025"
+# ------------------------------------------------------------------
 _MONTHS = {
     # français
     "janvier":1,"février":2,"fevrier":2,"mars":3,"avril":4,"mai":5,"juin":6,
@@ -22,15 +23,10 @@ _MONTHS = {
     "jul":7,"july":7,"aug":8,"august":8,"sep":9,"sept":9,"september":9,"oct":10,"october":10,"nov":11,"november":11,
     "dec":12,"december":12,
 }
-
-import re
 _date_re = re.compile(r"^\s*(\d{1,2})\s+([A-Za-zÀ-ÿ]+)\s+(\d{4})\s*$")
 
 def parse_date_str(date_str: str) -> datetime | None:
-    """
-    Transforme '22 février 2020' / '30 julio 2019' / '17 Aug 2025' en datetime.
-    Retourne None si on n'arrive pas à parser.
-    """
+    """Transforme '22 février 2020' / '30 julio 2019' / '17 Aug 2025' en datetime, sinon None."""
     if not date_str:
         return None
     m = _date_re.match(date_str.strip())
@@ -38,7 +34,9 @@ def parse_date_str(date_str: str) -> datetime | None:
         return None
     day, month_txt, year = m.groups()
     month_key = month_txt.strip().lower()
-    month_key = month_key.replace("á","a").replace("é","e").replace("í","i").replace("ó","o").replace("ú","u").replace("ï","i").replace("ö","o").replace("ê","e").replace("è","e").replace("à","a").replace("ç","c")
+    # normalisation accents
+    for a, b in [("á","a"),("é","e"),("í","i"),("ó","o"),("ú","u"),("ï","i"),("ö","o"),("ê","e"),("è","e"),("à","a"),("ç","c")]:
+        month_key = month_key.replace(a,b)
     month = _MONTHS.get(month_key)
     if not month:
         return None
@@ -46,7 +44,6 @@ def parse_date_str(date_str: str) -> datetime | None:
         return datetime(int(year), int(month), int(day))
     except Exception:
         return None
-
 
 # ------------------------------------------------------------------
 # App & i18n
@@ -60,8 +57,10 @@ app.config.setdefault("PERMANENT_SESSION_LIFETIME", timedelta(days=7))
 if os.getenv("FLASK_ENV") == "production":
     app.config.setdefault("SESSION_COOKIE_SECURE", True)
 
+# Proxy headers (Render/ingress)
 app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1)
 
+# Babel (langues)
 app.config["BABEL_DEFAULT_LOCALE"] = "fr"
 app.config["BABEL_SUPPORTED_LOCALES"] = ["fr", "en", "es"]
 app.config["BABEL_TRANSLATION_DIRECTORIES"] = "translations"
@@ -72,6 +71,7 @@ def get_locale():
     lang = request.args.get("lang")
     return lang if lang in app.config["BABEL_SUPPORTED_LOCALES"] else app.config["BABEL_DEFAULT_LOCALE"]
 
+# Exposer helpers à Jinja
 app.jinja_env.globals["get_locale"] = get_locale
 
 def lang_url(lang_code: str):
@@ -84,8 +84,6 @@ app.jinja_env.globals["lang_url"] = lang_url
 # ------------------------------------------------------------------
 # DB (Postgres via DATABASE_URL, sinon SQLite local)
 # ------------------------------------------------------------------
-from flask_sqlalchemy import SQLAlchemy
-
 def _normalized_db_url():
     raw = os.getenv("DATABASE_URL", "").strip()
     if not raw:
@@ -100,7 +98,6 @@ def _normalized_db_url():
 
 app.config["SQLALCHEMY_DATABASE_URI"] = _normalized_db_url()
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-# Robustesse connexions (utile sur Render)
 app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {"pool_pre_ping": True}
 
 db = SQLAlchemy(app)
@@ -128,6 +125,13 @@ PAYPAL_BASE = "https://api-m.sandbox.paypal.com" if PAYPAL_MODE == "sandbox" els
 PAYPAL_WEBHOOK_ID = os.getenv("PAYPAL_WEBHOOK_ID", "")
 ADMIN_DELETE_TOKEN = os.getenv("ADMIN_DELETE_TOKEN", "")
 
+# Rendre le client-id dispo dans toutes les templates
+@app.context_processor
+def inject_paypal_client_id():
+    return {
+        "paypal_client_id": PAYPAL_CLIENT_ID or "AXcr1vyT3Zx-9XCo6fQLC94tyH4qoqxNAu-V8vVRMtm4kphjbOupFByJl6cAyyppQmE-YiOU7IaLOzuj"
+    }
+
 # ------------------------------------------------------------------
 # Logging & headers
 # ------------------------------------------------------------------
@@ -147,7 +151,7 @@ def _attach_security_headers(resp):
     resp.headers.setdefault("X-Content-Type-Options", "nosniff")
     resp.headers.setdefault("X-Frame-Options", "SAMEORIGIN")
     resp.headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
-    # ✅ CSP élargie pour Swiper (cdn.jsdelivr.net) + Google Fonts
+    # ✅ CSP élargie pour PayPal + jsDelivr + Google Fonts
     csp = (
         "default-src 'self'; "
         "script-src 'self' 'unsafe-inline' https://www.paypal.com https://www.paypalobjects.com https://cdn.jsdelivr.net; "
@@ -321,19 +325,16 @@ def seed_default_comments():
 # ------------------------------------------------------------------
 @app.route("/", endpoint="index")
 def index():
-    # on récupère tous les commentaires
     comments = Comment.query.all()
 
-    # on définit la clé de tri : d’abord parse la date_str, sinon created_at
+    # tri: parse date_str sinon created_at ; du plus récent au plus ancien
     def sort_key(c):
         dt = parse_date_str(c.date_str)
         if dt is None:
             dt = c.created_at or datetime.min
         return dt
 
-    # 👉 tri du plus récent au plus ancien
     comments = sorted(comments, key=sort_key, reverse=True)
-
     return render_template("index.html", comments=comments)
 
 @app.route("/a-propos", endpoint="about")
@@ -348,16 +349,14 @@ def tours_page():
 def contact_page():
     return render_template("contact.html")
 
-@app.route("/reservation", methods=["GET", "POST"], endpoint="reservation")
-def reservation_page():
-    selected_tour = request.args.get("tour")
-    if request.method == "POST":
-        logger.info("reservation_post req_id=%s", g.request_id)
-    return render_template("reservation.html", tours=TOURS_LIST, tour=selected_tour)
-
 @app.route("/transport", endpoint="transport")
 def transport_page():
     return render_template("transport.html")
+
+@app.route("/reservation", methods=["GET","POST"], endpoint="reservation")
+def reservation_page():
+    selected_tour = request.values.get("tour")  # GET ou POST
+    return render_template("reservation.html", tour=selected_tour)
 
 # ------------------------------------------------------------------
 # PayPal return pages
@@ -450,6 +449,7 @@ def not_found(e):
 
 @app.errorhandler(500)
 def server_error(e):
+    # tu peux logger e si besoin
     return render_template("500.html"), 500
 
 # ------------------------------------------------------------------
@@ -457,5 +457,6 @@ def server_error(e):
 # ------------------------------------------------------------------
 if __name__ == "__main__":
     app.run(debug=True, use_reloader=False)
+
 
 
