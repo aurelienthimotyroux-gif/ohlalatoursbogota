@@ -5,7 +5,48 @@ from base64 import b64encode
 from datetime import timedelta, datetime
 from werkzeug.middleware.proxy_fix import ProxyFix
 from requests.adapters import HTTPAdapter
-from urllib3.util.retry import Retry
+from urllib3.util.retry import Retry 
+
+# --- parsing date_str "22 février 2020", "30 julio 2019", "17 Aug 2025" ---
+from datetime import datetime
+
+_MONTHS = {
+    # français
+    "janvier":1,"février":2,"fevrier":2,"mars":3,"avril":4,"mai":5,"juin":6,
+    "juillet":7,"août":8,"aout":8,"septembre":9,"octobre":10,"novembre":11,"décembre":12,"decembre":12,
+    # espagnol
+    "enero":1,"febrero":2,"marzo":3,"abril":4,"mayo":5,"junio":6,"julio":7,
+    "agosto":8,"septiembre":9,"setiembre":9,"octubre":10,"noviembre":11,"diciembre":12,
+    # anglais (abbrev et plein)
+    "jan":1,"january":1,"feb":2,"february":2,"mar":3,"march":3,"apr":4,"april":4,"may":5,"jun":6,"june":6,
+    "jul":7,"july":7,"aug":8,"august":8,"sep":9,"sept":9,"september":9,"oct":10,"october":10,"nov":11,"november":11,
+    "dec":12,"december":12,
+}
+
+import re
+_date_re = re.compile(r"^\s*(\d{1,2})\s+([A-Za-zÀ-ÿ]+)\s+(\d{4})\s*$")
+
+def parse_date_str(date_str: str) -> datetime | None:
+    """
+    Transforme '22 février 2020' / '30 julio 2019' / '17 Aug 2025' en datetime.
+    Retourne None si on n'arrive pas à parser.
+    """
+    if not date_str:
+        return None
+    m = _date_re.match(date_str.strip())
+    if not m:
+        return None
+    day, month_txt, year = m.groups()
+    month_key = month_txt.strip().lower()
+    month_key = month_key.replace("á","a").replace("é","e").replace("í","i").replace("ó","o").replace("ú","u").replace("ï","i").replace("ö","o").replace("ê","e").replace("è","e").replace("à","a").replace("ç","c")
+    month = _MONTHS.get(month_key)
+    if not month:
+        return None
+    try:
+        return datetime(int(year), int(month), int(day))
+    except Exception:
+        return None
+
 
 # ------------------------------------------------------------------
 # App & i18n
@@ -280,8 +321,24 @@ def seed_default_comments():
 # ------------------------------------------------------------------
 @app.route("/", endpoint="index")
 def index():
-    comments = Comment.query.order_by(Comment.created_at.desc()).all()
+    # on récupère tout…
+    comments = Comment.query.all()
+
+    # …et on trie par la vraie date visible (si non parsable, on tombe sur created_at)
+    def sort_key(c):
+        dt = parse_date_str(c.date_str)
+        if dt is None:
+            dt = c.created_at or datetime.min
+        return dt
+
+    # 👉 Choisis TON ordre :
+    # 1) plus anciens -> plus récents :
+    comments = sorted(comments, key=sort_key)
+    # 2) (alternative) plus récents -> plus anciens :
+    # comments = sorted(comments, key=sort_key, reverse=True)
+
     return render_template("index.html", comments=comments)
+
 
 @app.route("/a-propos", endpoint="about")
 def about():
