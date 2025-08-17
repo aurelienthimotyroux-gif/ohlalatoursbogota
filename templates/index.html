@@ -314,7 +314,7 @@
             <div class="testimonial-card">
               <div class="t-head">
                 <div class="t-name">{{ comment.name }} · {{ comment.country }}</div>
-                <div class="t-meta">{{ comment.date }}</div>
+                <div class="t-meta">{{ comment.date_str }}</div>
               </div>
               <div class="t-stars" aria-label="{{ comment.rating }} / 5">
                 {% for i in range(1, 6) %}
