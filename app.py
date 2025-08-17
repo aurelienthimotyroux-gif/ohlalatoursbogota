@@ -59,6 +59,9 @@ def _normalized_db_url():
 
 app.config["SQLALCHEMY_DATABASE_URI"] = _normalized_db_url()
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+# Robustesse connexions (utile sur Render)
+app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {"pool_pre_ping": True}
+
 db = SQLAlchemy(app)
 
 class Comment(db.Model):
@@ -103,12 +106,16 @@ def _attach_security_headers(resp):
     resp.headers.setdefault("X-Content-Type-Options", "nosniff")
     resp.headers.setdefault("X-Frame-Options", "SAMEORIGIN")
     resp.headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
-    csp = ("default-src 'self'; "
-           "script-src 'self' 'unsafe-inline' https://www.paypal.com https://www.paypalobjects.com; "
-           "connect-src 'self' https://api-m.paypal.com https://api-m.sandbox.paypal.com https://www.paypal.com; "
-           "img-src 'self' data: https://www.paypalobjects.com https://www.paypal.com; "
-           "style-src 'self' 'unsafe-inline'; "
-           "frame-src https://www.paypal.com https://www.sandbox.paypal.com;")
+    # ✅ CSP élargie pour Swiper (cdn.jsdelivr.net) + Google Fonts
+    csp = (
+        "default-src 'self'; "
+        "script-src 'self' 'unsafe-inline' https://www.paypal.com https://www.paypalobjects.com https://cdn.jsdelivr.net; "
+        "connect-src 'self' https://api-m.paypal.com https://api-m.sandbox.paypal.com https://www.paypal.com; "
+        "img-src 'self' data: https://www.paypalobjects.com https://www.paypal.com; "
+        "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; "
+        "font-src 'self' data: https://fonts.gstatic.com; "
+        "frame-src https://www.paypal.com https://www.sandbox.paypal.com;"
+    )
     resp.headers.setdefault("Content-Security-Policy", csp)
     resp.headers.setdefault("X-Request-ID", g.request_id)
     return resp
@@ -222,7 +229,6 @@ def delete_comment():
     db.session.commit()
     logger.info("comment_deleted id=%s name=%s req_id=%s", c.id, c.name, g.request_id)
     flash(_("Commentaire supprimé."), "success")
-    # si tu supprimes depuis /admin, on te renvoie vers /admin, sinon vers /
     ref = request.headers.get("Referer", "")
     if "/admin" in ref:
         return redirect(url_for("admin"))
@@ -274,7 +280,6 @@ def seed_default_comments():
 # ------------------------------------------------------------------
 @app.route("/", endpoint="index")
 def index():
-    # ancien -> récent (nouveaux en BAS de la liste)
     comments = Comment.query.order_by(Comment.created_at.desc()).all()
     return render_template("index.html", comments=comments)
 
@@ -399,4 +404,5 @@ def server_error(e):
 # ------------------------------------------------------------------
 if __name__ == "__main__":
     app.run(debug=True, use_reloader=False)
+
 
