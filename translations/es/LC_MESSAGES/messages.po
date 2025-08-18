@@ -861,3 +861,36 @@ msgstr "opcional"
 
 msgid "© 2025 - Tous droits réservés"
 msgstr "© 2025 - Todos los derechos reservados"
+
+msgid "Le temps peut fortement varier selon le trafic : pensez à réserver avec une marge d’avance."
+msgstr "El tiempo de viaje puede variar mucho según el tráfico; reserva con suficiente margen de antelación."
+
+# ——— La Candelaria ———
+msgid "La Candelaria : Histoire, art et secrets du cœur de Bogotá"
+msgstr "La Candelaria: historia, arte y secretos del corazón de Bogotá"
+
+msgid "Laissez-vous séduire par l’âme coloniale de Bogotá et partez à la découverte de La Candelaria, son quartier le plus coloré et vibrant. Entre ruelles pavées, façades colorées et fresques spectaculaires, chaque pas vous plonge dans un voyage à travers l’histoire, l’art et les traditions de la ville. Au fil de notre balade, vous écouterez des légendes fascinantes, revivrez des épisodes marquants de la politique colombienne et admirerez un art urbain qui donne vie aux murs de la capitale. Un moment privilégié pour comprendre Bogotá au-delà des clichés."
+msgstr "Déjate seducir por el alma colonial de Bogotá y descubre La Candelaria, su barrio más colorido y vibrante. Entre calles empedradas, fachadas pintadas y murales espectaculares, cada paso te sumerge en un viaje por la historia, el arte y las tradiciones de la ciudad. A lo largo del recorrido escucharás leyendas fascinantes, revivirás episodios clave de la política colombiana y admirarás el arte urbano que da vida a los muros de la capital. Un momento privilegiado para comprender Bogotá más allá de los clichés."
+
+# ——— Monserrate ———
+msgid "Monserrate : Là où se rencontrent nature, histoire et foi"
+msgstr "Monserrate: donde se encuentran naturaleza, historia y fe"
+
+msgid "Grimpez au sommet le plus emblématique de Bogotá et vivez une expérience unique qui mêle nature, histoire et spiritualité. Nous monterons en téléphérique pour profiter de l’une des plus belles vues sur la capitale, entourés par la luxuriante végétation andine. Au sommet, nous visiterons le Sanctuaire du Señor Caído, haut lieu de ferveur spirituelle, avant de parcourir ses alentours pour admirer le paysage, l’architecture et les traditions qui font de Monserrate un site incontournable."
+msgstr "Asciende al pico más emblemático de Bogotá y vive una experiencia única que combina naturaleza, historia y espiritualidad. Subiremos en teleférico para disfrutar de una de las mejores vistas de la capital, rodeados de la exuberante vegetación andina. En la cima, visitaremos el Santuario del Señor Caído, lugar de gran devoción, y recorreremos los alrededores para admirar el paisaje, la arquitectura y las tradiciones que hacen de Monserrate un sitio imprescindible."
+
+# ——— Zipaquirá ———
+msgid "Cathédrale de Sel de Zipaquirá : un joyau souterrain unique au monde"
+msgstr "Catedral de Sal de Zipaquirá: una joya subterránea única"
+
+msgid "Découvrez les profondeurs de la terre et émerveillez-vous devant l’une des œuvres les plus impressionnantes de Colombie. Creusée dans une ancienne mine de sel, la Cathédrale de Zipaquirá allie grandeur architecturale, spiritualité et histoire minière. Nous parcourrons ses galeries monumentales, illuminées par un spectaculaire jeu de lumières, et admirerons les sculptures taillées dans le sel, témoins du savoir-faire et de la foi de ses bâtisseurs."
+msgstr "Adéntrate en las profundidades de la tierra y maravíllate ante una de las obras más impresionantes de Colombia. Excavada en una antigua mina de sal, la Catedral de Sal de Zipaquirá une grandeza arquitectónica, espiritualidad e historia minera. Recorreremos galerías monumentales iluminadas por un espectacular juego de luces y admiraremos esculturas talladas en sal, testimonio de la destreza y la fe de sus constructores."
+
+# ——— Finca café ———
+msgid "Visite d’une finca de café près de Bogotá"
+msgstr "Visita a una finca de café cerca de Bogotá"
+
+msgid "Découvrez le café colombien depuis sa source : marchez parmi les caféiers, apprenez la plantation, la récolte et la mouture, et dégustez une tasse fraîchement préparée dans un cadre authentique."
+msgstr "Descubre el café colombiano desde su origen: camina entre los cafetales, aprende sobre la siembra, la cosecha y la molienda, y disfruta una taza recién preparada en un entorno auténtico."
+
+

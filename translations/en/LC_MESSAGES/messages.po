@@ -285,18 +285,33 @@ msgstr "Duration: ~7h (transfer included)"
 msgid "Durée : ~7–8h"
 msgstr "Duration: ~7–8h"
 
-msgid "Découvrez Bogotá : Candelaria, Monserrate, Zipaquirá, café à Hacienda Coloma. Visites en français, anglais et espagnol. Transferts aéroport, chauffeur/van privé."
-msgstr "Discover Bogotá: Candelaria, Monserrate, Zipaquirá, coffee at Hacienda Coloma. Tours in French, English and Spanish. Airport transfers, private driver/van."
+# ——— La Candelaria ———
+msgid "La Candelaria : Histoire, art et secrets du cœur de Bogotá"
+msgstr "La Candelaria: history, art and the secrets of Bogotá’s heart"
 
-msgid "Découvrez le café colombien depuis sa source : marchez parmi les caféiers, apprenez la plantation, la récolte et la mouture, et dégustez une tasse fraîchement préparée dans un cadre authentique."
-msgstr "Discover Colombian coffee at the source: walk among coffee plants and enjoy a freshly brewed cup in an authentic setting."
+msgid "Laissez-vous séduire par l’âme coloniale de Bogotá et partez à la découverte de La Candelaria, son quartier le plus coloré et vibrant. Entre ruelles pavées, façades colorées et fresques spectaculaires, chaque pas vous plonge dans un voyage à travers l’histoire, l’art et les traditions de la ville. Au fil de notre balade, vous écouterez des légendes fascinantes, revivrez des épisodes marquants de la politique colombienne et admirerez un art urbain qui donne vie aux murs de la capitale. Un moment privilégié pour comprendre Bogotá au-delà des clichés."
+msgstr "Let yourself be charmed by Bogotá’s colonial soul and set off to discover La Candelaria, its most colourful and vibrant district. Between cobblestone streets, painted façades and spectacular murals, every step draws you into a journey through the city’s history, art and traditions. As we stroll, you’ll hear fascinating legends, relive defining moments of Colombian politics, and admire urban art that brings the capital’s walls to life. A special moment to understand Bogotá beyond the clichés."
+
+# ——— Monserrate ———
+msgid "Monserrate : Là où se rencontrent nature, histoire et foi"
+msgstr "Monserrate: where nature, history and faith meet"
+
+msgid "Grimpez au sommet le plus emblématique de Bogotá et vivez une expérience unique qui mêle nature, histoire et spiritualité. Nous monterons en téléphérique pour profiter de l’une des plus belles vues sur la capitale, entourés par la luxuriante végétation andine. Au sommet, nous visiterons le Sanctuaire du Señor Caído, haut lieu de ferveur spirituelle, avant de parcourir ses alentours pour admirer le paysage, l’architecture et les traditions qui font de Monserrate un site incontournable."
+msgstr "Climb Bogotá’s most iconic summit and enjoy a unique experience that blends nature, history and spirituality. We’ll ride the cable car to one of the finest viewpoints over the capital, surrounded by lush Andean vegetation. At the top, we’ll visit the Sanctuary of the Fallen Lord, a place of deep devotion, before exploring the surroundings to take in the scenery, architecture and traditions that make Monserrate unmissable."
+
+# ——— Zipaquirá ———
+msgid "Cathédrale de Sel de Zipaquirá : un joyau souterrain unique au monde"
+msgstr "Zipaquirá Salt Cathedral: a unique underground gem"
 
 msgid "Découvrez les profondeurs de la terre et émerveillez-vous devant l’une des œuvres les plus impressionnantes de Colombie. Creusée dans une ancienne mine de sel, la Cathédrale de Zipaquirá allie grandeur architecturale, spiritualité et histoire minière. Nous parcourrons ses galeries monumentales, illuminées par un spectaculaire jeu de lumières, et admirerons les sculptures taillées dans le sel, témoins du savoir-faire et de la foi de ses bâtisseurs."
-msgstr "Venture underground and marvel at Zipaquirá’s Salt Cathedral — architectural grandeur, spirituality and mining heritage."
+msgstr "Venture into the depths of the earth and marvel at one of Colombia’s most impressive works. Carved inside a former salt mine, the Zipaquirá Salt Cathedral combines architectural grandeur, spirituality and mining history. We’ll walk through monumental galleries illuminated by a spectacular play of light and admire sculptures hewn from salt—witnesses to the skill and faith of its builders."
 
-msgid "Découvrez nos visites guidées : Candelaria, Monserrate, Cathédrale de sel de Zipaquirá, cascade La Chorrera et finca café. Guides francophones. Transport/van et transferts aéroport."
-msgstr "Discover our guided tours: Candelaria, Monserrate, Zipaquirá Salt Cathedral, La Chorrera waterfall and a coffee farm. French-speaking guides. Transport/van and airport transfers."
+# ——— Finca café ———
+msgid "Visite d’une finca de café près de Bogotá"
+msgstr "Visit a coffee farm near Bogotá"
 
+msgid "Découvrez le café colombien depuis sa source : marchez parmi les caféiers, apprenez la plantation, la récolte et la mouture, et dégustez une tasse fraîchement préparée dans un cadre authentique."
+msgstr "Discover Colombian coffee at the source: walk among the coffee plants, learn about planting, harvesting and milling, and enjoy a freshly brewed cup in an authentic setting."
 msgid "Découvrez une aventure inoubliable au cœur des montagnes andines et contemplez La Chorrera, la plus haute cascade du pays. Nous emprunterons des sentiers bordés d’une végétation luxuriante, en observant la richesse de la faune et de la flore locales. Tout au long de la randonnée, nous profiterons de paysages spectaculaires jusqu’à atteindre la chute vertigineuse de plus de 590 mètres, un spectacle naturel à couper le souffle. Randonnée de difficulté moyenne à 2500m d’altitude : prévoir une veste de pluie, des vêtements et chaussures de rechange, ainsi que de bonnes chaussures de randonnée ou une paire de baskets solides."
 msgstr "Discover an unforgettable adventure in the heart of the Andean mountains and marvel at La Chorrera, the highest waterfall in the country. We will follow trails lined with lush vegetation, observing the richness of the local fauna and flora. Throughout the hike, we will enjoy spectacular landscapes until we reach the vertiginous drop of more than 590 meters — a breathtaking natural sight. Moderate hike at 2,500 m altitude: bring a rain jacket, a change of clothes and shoes, and good hiking boots or a sturdy pair of sneakers."
 
@@ -609,3 +624,7 @@ msgstr "Your turn to leave a nice review"
 
 msgid "Économisez du temps : Arrivez à destination rapidement et facilement."
 msgstr "Save time: arrive at your destination quickly and easily."
+
+msgid "Le temps peut fortement varier selon le trafic : pensez à réserver avec une marge d’avance."
+msgstr "Travel time can vary significantly depending on traffic—please book with extra time in advance."
+
