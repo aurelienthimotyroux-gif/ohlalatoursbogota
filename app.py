@@ -88,31 +88,23 @@ app.jinja_env.globals["lang_url"] = lang_url
 # ------------------------------------------------------------------
 # SQLAlchemy (comments)
 # ------------------------------------------------------------------
-DB_URL = os.getenv("DATABASE_URL", "").replace("postgres://", "postgresql://", 1) if os.getenv("DATABASE_URL") else "sqlite:///local.db"
+# ------------------------------------------------------------------
+# SQLAlchemy (comments)
+# ------------------------------------------------------------------
+raw_db = os.getenv("DATABASE_URL")
+if raw_db:
+    # Render/Heroku donnent parfois "postgres://"
+    raw_db = raw_db.replace("postgres://", "postgresql://", 1)
+    # Forcer le driver psycopg v3 (déjà installé) au lieu du défaut psycopg2
+    if raw_db.startswith("postgresql://"):
+        raw_db = "postgresql+psycopg://" + raw_db.split("://", 1)[1]
+    DB_URL = raw_db
+else:
+    DB_URL = "sqlite:///local.db"
+
 app.config["SQLALCHEMY_DATABASE_URI"] = DB_URL
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
-
-class Comment(db.Model):
-    __tablename__ = "comments"
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(120), default="")
-    country = db.Column(db.String(120), default="")
-    rating = db.Column(db.Float, default=5.0)
-    date_str = db.Column(db.String(120), default="")
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    message = db.Column(db.Text, nullable=False)
-
-class CommentTranslation(db.Model):
-    __tablename__ = "comment_translation"
-    id = db.Column(db.Integer, primary_key=True)
-    comment_id = db.Column(db.Integer, db.ForeignKey('comments.id', ondelete='CASCADE'), nullable=False)
-    lang = db.Column(db.String(5), nullable=False)  # 'fr', 'en', 'es'
-    text = db.Column(db.Text, nullable=False)
-    __table_args__ = (db.UniqueConstraint('comment_id', 'lang', name='uq_comment_lang'),)
-
-with app.app_context():
-    db.create_all()
 
 # ------------------------------------------------------------------
 # Traduction côté serveur (optionnelle)
