@@ -1,137 +1,139 @@
 <!DOCTYPE html>
 <html lang="{{ get_locale() }}">
 <head>
-    <meta charset="UTF-8">
-    <title>{{ _("Types de visites") }} — Oh La La Tours Bogotá</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
+  <title>{{ _("Types de visites") }} — Oh La La Tours Bogotá</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <!-- ✅ Meta SEO -->
-    <meta name="description" content="{{ _('Tours privés à Bogotá : Candelaria, Monserrate, Zipaquirá, La Chorrera et finca café (Hacienda Coloma). Guide francophone, anglais et espagnol. Transport/van et transferts aéroport disponibles.') }}">
-    <meta name="keywords" content="tours privés Bogotá, visite guidée Bogotá, guide francophone Bogotá, excursion Zipaquirá, randonnée Monserrate, Candelaria, Hacienda Coloma, cascade La Chorrera, transport privé Bogotá, van, transfert aéroport Bogotá">
+  <!-- ✅ Meta SEO -->
+  <meta name="description" content="{{ _('Tours privés à Bogotá : Candelaria, Monserrate, Zipaquirá, La Chorrera et finca café (Hacienda Coloma). Guide francophone, anglais et espagnol. Transport/van et transferts aéroport disponibles.') }}">
+  <meta name="keywords" content="tours privés Bogotá, visite guidée Bogotá, guide francophone Bogotá, excursion Zipaquirá, randonnée Monserrate, Candelaria, Hacienda Coloma, cascade La Chorrera, transport privé Bogotá, van, transfert aéroport Bogotá">
 
-    <!-- ✅ Canonical + hreflang -->
-    <link rel="canonical" href="https://www.ohlalatoursbogota.com{{ request.path }}{% if get_locale()!='fr' %}?lang={{ get_locale() }}{% endif %}">
-    <link rel="alternate" href="{{ url_for('tours', lang='fr', _external=True) }}" hreflang="fr">
-    <link rel="alternate" href="{{ url_for('tours', lang='en', _external=True) }}" hreflang="en">
-    <link rel="alternate" href="{{ url_for('tours', lang='es', _external=True) }}" hreflang="es">
-    <link rel="alternate" href="{{ url_for('tours', lang='fr', _external=True) }}" hreflang="x-default">
+  <!-- ✅ Canonical + hreflang -->
+  <link rel="canonical" href="https://www.ohlalatoursbogota.com{{ request.path }}{% if get_locale()!='fr' %}?lang={{ get_locale() }}{% endif %}">
+  <link rel="alternate" href="{{ url_for('tours', lang='fr', _external=True) }}" hreflang="fr">
+  <link rel="alternate" href="{{ url_for('tours', lang='en', _external=True) }}" hreflang="en">
+  <link rel="alternate" href="{{ url_for('tours', lang='es', _external=True) }}" hreflang="es">
+  <link rel="alternate" href="{{ url_for('tours', lang='fr', _external=True) }}" hreflang="x-default">
 
-    <!-- ✅ Open Graph / Twitter -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://www.ohlalatoursbogota.com{{ request.path }}{% if get_locale()!='fr' %}?lang={{ get_locale() }}{% endif %}">
-    <meta property="og:site_name" content="Oh La La Tours Bogotá">
-    <meta property="og:title" content="{{ _('Tours privés à Bogotá – Candelaria, Monserrate, Zipaquirá, café') }}">
-    <meta property="og:description" content="{{ _('Découvrez nos visites guidées : Candelaria, Monserrate, Cathédrale de sel de Zipaquirá, cascade La Chorrera et finca café. Guides francophones. Transport/van et transferts aéroport.') }}">
-    <meta property="og:image" content="{{ url_for('static', filename='images/header_tours.jpg', _external=True) }}">
-    {% if get_locale() == 'fr' %}
+  <!-- ✅ Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.ohlalatoursbogota.com{{ request.path }}{% if get_locale()!='fr' %}?lang={{ get_locale() }}{% endif %}">
+  <meta property="og:site_name" content="Oh La La Tours Bogotá">
+  <meta property="og:title" content="{{ _('Tours privés à Bogotá – Candelaria, Monserrate, Zipaquirá, café') }}">
+  <meta property="og:description" content="{{ _('Découvrez nos visites guidées : Candelaria, Monserrate, Cathédrale de sel de Zipaquirá, cascade La Chorrera et finca café. Guides francophones. Transport/van et transferts aéroport.') }}">
+  <meta property="og:image" content="{{ url_for('static', filename='images/header_tours.jpg', _external=True) }}">
+  {% if get_locale() == 'fr' %}
     <meta property="og:locale" content="fr_FR">
-    {% elif get_locale() == 'en' %}
+  {% elif get_locale() == 'en' %}
     <meta property="og:locale" content="en_US">
-    {% else %}
+  {% else %}
     <meta property="og:locale" content="es_CO">
-    {% endif %}
+  {% endif %}
 
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="{{ _('Tours privés à Bogotá – Candelaria, Monserrate, Zipaquirá, café') }}">
-    <meta name="twitter:description" content="{{ _('Découvrez nos visites guidées : Candelaria, Monserrate, Cathédrale de sel de Zipaquirá, cascade La Chorrera et finca café. Guides francophones. Transport/van et transferts aéroport.') }}">
-    <meta name="twitter:image" content="{{ url_for('static', filename='images/header_tours.jpg', _external=True) }}">
+  <!-- ✅ Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ _('Tours privés à Bogotá – Candelaria, Monserrate, Zipaquirá, café') }}">
+  <meta name="twitter:description" content="{{ _('Découvrez nos visites guidées : Candelaria, Monserrate, Cathédrale de sel de Zipaquirá, cascade La Chorrera et finca café. Guides francophones. Transport/van et transferts aéroport.') }}">
+  <meta name="twitter:image" content="{{ url_for('static', filename='images/header_tours.jpg', _external=True) }}">
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+  <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
 
-    <!-- === Design (consolidé) === -->
-    <style>
-      /* --- POLICE GLOBALE --- */
-      @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
-      body { font-family: 'Poppins', sans-serif; background-color: #f8f0e8; color: #333; line-height: 1.6; }
-      * { margin: 0; padding: 0; box-sizing: border-box; }
-      html, body { height: 100%; }
-      a { color: inherit; text-decoration: none; } a:hover { text-decoration: underline; }
-      img { max-width: 100%; height: auto; display: block; }
+  <!-- === Design (consolidé) === -->
+  <style>
+    /* --- POLICE GLOBALE --- */
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+    body { font-family: 'Poppins', sans-serif; background-color: #f8f0e8; color: #333; line-height: 1.6; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { height: 100%; }
+    a { color: inherit; text-decoration: none; } a:hover { text-decoration: underline; }
+    img { max-width: 100%; height: auto; display: block; }
 
-      /* ========= HERO ========= */
-      .hero { position: relative; width: 100%; height: 50vh; background-position: center; background-size: cover; background-repeat: no-repeat; display: flex; align-items: center; justify-content: center; text-align: center; }
-      .hero::after { content: ""; position: absolute; inset: 0; background: rgba(0,0,0,0.35); }
-      .hero-title { position: relative; z-index: 1; color: #fff; font-size: 2.6rem; line-height: 1.2; text-shadow: 2px 2px 6px rgba(0,0,0,0.7); padding: 0 16px; }
-      .hero-topbar{ position: absolute; top: 12px; left: 0; right: 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 20px; z-index: 2; }
-      #lang-switcher a, .nav-hero a { color: #fff; font-weight: bold; text-shadow: 1px 1px 3px rgba(0,0,0,.6); }
+    /* ========= HERO ========= */
+    .hero { position: relative; width: 100%; height: 50vh; background-position: center; background-size: cover; background-repeat: no-repeat; display: flex; align-items: center; justify-content: center; text-align: center; }
+    .hero::after { content: ""; position: absolute; inset: 0; background: rgba(0,0,0,0.35); }
+    .hero-title { position: relative; z-index: 1; color: #fff; font-size: 2.6rem; line-height: 1.2; text-shadow: 2px 2px 6px rgba(0,0,0,0.7); padding: 0 16px; }
+    .hero-topbar{ position: absolute; top: 12px; left: 0; right: 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 20px; z-index: 2; }
+    #lang-switcher a, .nav-hero a { color: #fff; font-weight: bold; text-shadow: 1px 1px 3px rgba(0,0,0,.6); }
 
-      /* ========= BLOCS GLOBAUX ========= */
-      body, main, section, .container, .testimonials, .testimonial-card, .tour-card .content { background-color: #f8f0e8 !important; }
+    /* ========= BLOCS GLOBAUX ========= */
+    body, main, section, .container, .testimonials, .testimonial-card, .tour-card .content { background-color: #f8f0e8 !important; }
 
-      /* ========= TOURS ========= */
-      #excursions { max-width: 1200px; margin: 50px auto; padding: 0 20px; }
-      .tour-card { display: flex; align-items: center; gap: 20px; margin-bottom: 60px; }
-      .tour-card.left  { flex-direction: row; }
-      .tour-card.right { flex-direction: row-reverse; }
+    /* ========= TOURS ========= */
+    #excursions { max-width: 1200px; margin: 50px auto; padding: 0 20px; }
+    .tour-card { display: flex; align-items: center; gap: 20px; margin-bottom: 60px; }
+    .tour-card.left  { flex-direction: row; }
+    .tour-card.right { flex-direction: row-reverse; }
 
-      /* Swiper */
-      .tour-swiper { width: 50%; height: 350px; border-radius: 10px; overflow: hidden; }
-      .tour-swiper img { width: 100%; height: 100%; object-fit: cover; }
-      .swiper-button-next, .swiper-button-prev { color: #fff !important; text-shadow: 1px 1px 5px rgba(0,0,0,0.6); }
-      .swiper-button-next::after, .swiper-button-prev::after { font-size: 24px; }
+    /* Swiper */
+    .tour-swiper { width: 50%; height: 350px; border-radius: 10px; overflow: hidden; }
+    .tour-swiper img { width: 100%; height: 100%; object-fit: cover; }
+    .swiper-button-next, .swiper-button-prev { color: #fff !important; text-shadow: 1px 1px 5px rgba(0,0,0,0.6); }
+    .swiper-button-next::after, .swiper-button-prev::after { font-size: 24px; }
 
-      /* Contenu cartes tours (titre + lead) */
-      .tour-card .content { width: 50%; padding: 15px; border-radius: 10px; max-width: 680px; }
-      .tour-card h3.tour-title { font-size: clamp(26px, 3.2vw, 36px); line-height: 1.15; margin: 0 0 10px; letter-spacing: .2px; }
-      .tour-lead { font-size: clamp(16px, 1.8vw, 18px); line-height: 1.7; color: rgba(0,0,0,.78); margin: 10px 0 16px; max-width: 62ch; }
+    /* Contenu cartes tours (titre + lead) */
+    .tour-card .content { width: 50%; padding: 15px; border-radius: 10px; max-width: 680px; }
+    .tour-card h3.tour-title { font-size: clamp(26px, 3.2vw, 36px); line-height: 1.15; margin: 0 0 10px; letter-spacing: .2px; }
+    .tour-lead { font-size: clamp(16px, 1.8vw, 18px); line-height: 1.7; color: rgba(0,0,0,.78); margin: 10px 0 16px; max-width: 62ch; }
 
-      /* Bloc "Inclus" (barre orange + ✓) */
-      .tour-includes { position: relative; margin: 14px 0 12px; padding-left: 14px; }
-      .tour-includes::before { content: ""; position: absolute; left: 0; top: 4px; bottom: 4px; width: 4px; border-radius: 4px; background: linear-gradient(180deg, #f59e0b, #f97316); }
-      .includes-title { margin: 0 0 8px; font-size: 14px; letter-spacing: .4px; text-transform: uppercase; opacity: .8; }
-      .includes-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px 14px; grid-template-columns: 1fr; }
-      .includes-list li { position: relative; padding-left: 26px; line-height: 1.6; }
-      .includes-list li::before { content: "✓"; position: absolute; left: 0; top: 0; font-weight: 700; transform: translateY(1px); opacity: .9; }
-      @media (min-width: 900px) { .includes-list { grid-template-columns: 1fr 1fr; } }
+    /* Bloc "Inclus" (barre orange + ✓) */
+    .tour-includes { position: relative; margin: 14px 0 12px; padding-left: 14px; }
+    .tour-includes::before { content: ""; position: absolute; left: 0; top: 4px; bottom: 4px; width: 4px; border-radius: 4px; background: linear-gradient(180deg, #f59e0b, #f97316); }
+    .includes-title { margin: 0 0 8px; font-size: 14px; letter-spacing: .4px; text-transform: uppercase; opacity: .8; }
+    .includes-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px 14px; grid-template-columns: 1fr; }
+    .includes-list li { position: relative; padding-left: 26px; line-height: 1.6; }
+    .includes-list li::before { content: "✓"; position: absolute; left: 0; top: 0; font-weight: 700; transform: translateY(1px); opacity: .9; }
+    @media (min-width: 900px) { .includes-list { grid-template-columns: 1fr 1fr; } }
 
-      /* Chips Durée / Langues / Tarif (texte simple) */
-      .tour-chips { list-style: none; padding: 0; margin: 12px 0 16px; display: flex; flex-wrap: wrap; gap: 16px; }
-      .tour-chips .chip { background: none !important; border: none !important; padding: 0 !important; border-radius: 0 !important; box-shadow: none !important; font-size: 16px; line-height: 1.6; }
-      .tour-chips .chip strong { font-weight: 700; }
+    /* Chips Durée / Langues / Tarif (texte simple) */
+    .tour-chips { list-style: none; padding: 0; margin: 12px 0 16px; display: flex; flex-wrap: wrap; gap: 16px; }
+    .tour-chips .chip { background: none !important; border: none !important; padding: 0 !important; border-radius: 0 !important; box-shadow: none !important; font-size: 16px; line-height: 1.6; }
+    .tour-chips .chip strong { font-weight: 700; }
 
-      /* Bouton primaire */
-      .btn-primary { appearance: none; border: 1px solid rgba(0,0,0,.2); background: #2563eb; color: #fff; padding: 12px 18px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: transform .06s ease, filter .2s ease; }
-      .btn-primary:hover { filter: brightness(1.05); }
-      .btn-primary:active { transform: translateY(1px); }
+    /* Bouton primaire */
+    .btn-primary { appearance: none; border: 1px solid rgba(0,0,0,.2); background: #2563eb; color: #fff; padding: 12px 18px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: transform .06s ease, filter .2s ease; }
+    .btn-primary:hover { filter: brightness(1.05); }
+    .btn-primary:active { transform: translateY(1px); }
 
-      /* Responsive */
-      @media (max-width: 900px){
-        .tour-card{ flex-direction: column !important; }
-        .tour-swiper, .tour-card .content{ width: 100%; }
-        .hero-title{ font-size: 2.1rem; }
-      }
-    </style>
+    /* Responsive */
+    @media (max-width: 900px){
+      .tour-card{ flex-direction: column !important; }
+      .tour-swiper, .tour-card .content{ width: 100%; }
+      .hero-title{ font-size: 2.1rem; }
+    }
+  </style>
 </head>
 <body>
 
-    <!-- Bandeau image avec topbar (lang + nav) et titre -->
-    <header class="hero background-half"
-            style="background-image: url('{{ url_for('static', filename='images/header_tours.jpg') }}');">
+  <!-- Bandeau image avec topbar (lang + nav) et titre -->
+  <header class="hero background-half"
+          style="background-image: url('{{ url_for('static', filename='images/header_tours.jpg') }}');">
 
-        <!-- Topbar sur l'image -->
-        <div class="hero-topbar">
-            <div id="lang-switcher" aria-label="{{ _('Choix de la langue') }}">
-                <a href="{{ lang_url('fr') }}">🇫🇷</a> |
-                <a href="{{ lang_url('en') }}">🇺🇸</a> |
-                <a href="{{ lang_url('es') }}">🇨🇴</a>
-            </div>
+    <!-- Topbar sur l'image -->
+    <div class="hero-topbar">
+      <div id="lang-switcher" aria-label="{{ _('Choix de la langue') }}">
+        <a href="{{ lang_url('fr') }}">🇫🇷</a> |
+        <a href="{{ lang_url('en') }}">🇺🇸</a> |
+        <a href="{{ lang_url('es') }}">🇨🇴</a>
+      </div>
 
-            <nav class="nav-hero" aria-label="{{ _('Navigation principale') }}">
-                <a href="{{ url_for('index', lang=get_locale()) }}">{{ _("Accueil") }}</a> |
-                <a href="{{ url_for('tours', lang=get_locale()) }}">{{ _("Nos tours") }}</a> |
-                <a href="{{ url_for('transport', lang=get_locale()) }}">{{ _("Service de Transport") }}</a> |
-                <a href="{{ url_for('reservation', lang=get_locale()) }}">{{ _("Réservation") }}</a>
-            </nav>
-        </div>
+      <nav class="nav-hero" aria-label="{{ _('Navigation principale') }}">
+        <a href="{{ url_for('index', lang=get_locale()) }}">{{ _("Accueil") }}</a> |
+        <a href="{{ url_for('tours', lang=get_locale()) }}">{{ _("Nos tours") }}</a> |
+        <a href="{{ url_for('transport', lang=get_locale()) }}">{{ _("Service de Transport") }}</a> |
+        <a href="{{ url_for('reservation_page', lang=get_locale()) }}">{{ _("Réservation") }}</a>
+      </nav>
+    </div>
 
-        <!-- Titre centré -->
-        <h1 class="hero-title">{{ _("Nos tours") }}</h1>
-    </header>
+    <!-- Titre centré -->
+    <h1 class="hero-title">{{ _("Nos tours") }}</h1>
+  </header>
 
-    <!-- Liste des excursions -->
-    <main>
-        <section id="excursions">
+  <!-- Liste des excursions -->
+  <main>
+    <section id="excursions">
 
 {% set tours_data = [
   {
@@ -228,99 +230,108 @@
       _("Tarif : à confirmer")
     ],
     "images": ["finca-cafe1.jpg", "finca-cafe2.jpg", "finca-cafe3.jpg"]
-}
-
+  }
 ] %}
-            {% for tour in tours_data %}
-            <div class="tour-card {% if loop.index is odd %}left{% else %}right{% endif %}">
-                <div class="swiper tour-swiper" aria-label="{{ _('Galerie d’images du tour') }} {{ tour.title }}">
-                    <div class="swiper-wrapper">
-                        {% for img in tour.images %}
-                        <div class="swiper-slide">
-                            <img src="{{ url_for('static', filename='images/' ~ img) }}" alt="{{ tour.title }}">
-                        </div>
-                        {% endfor %}
-                    </div>
-                    <div class="swiper-button-next" aria-label="{{ _('Image suivante') }}"></div>
-                    <div class="swiper-button-prev" aria-label="{{ _('Image précédente') }}"></div>
-                </div>
-
-                <div class="content">
-                    <h3 class="tour-title">{{ tour.title }}</h3>
-
-                    <!-- Intro / lead -->
-                    <p class="tour-lead">{{ tour.desc }}</p>
-
-                    <!-- Bloc INCLUS -->
-                    {% if tour.includes is defined and tour.includes %}
-                      <div class="tour-includes">
-                        <h4 class="includes-title">{{ _("Ce qui est inclus :") }}</h4>
-                        <ul class="includes-list">
-                          {% for item in tour.includes %}
-                            <li>{{ item }}</li>
-                          {% endfor %}
-                        </ul>
-                      </div>
-                    {% endif %}
-
-                    <!-- Chips Durée / Langues / Tarif -->
-                    <ul class="tour-chips" aria-label="{{ _('Informations pratiques') }}">
-                      {% for info in tour.infos %}
-                        {% set parts = info.split(':') %}
-                        <li class="chip">
-                          <strong>{{ parts[0] }}:</strong>&nbsp;{{ parts[1] if parts|length > 1 else '' }}
-                        </li>
-                      {% endfor %}
-                    </ul>
-
-                    <a href="{{ url_for('reservation', tour=tour.slug, lang=get_locale()) }}">
-                        <button class="btn-primary">{{ _("Réserver") }}</button>
-                    </a>
-                </div>
-            </div>
+      {% for tour in tours_data %}
+      <div class="tour-card {% if loop.index is odd %}left{% else %}right{% endif %}">
+        <div class="swiper tour-swiper" aria-label="{{ _('Galerie d’images du tour') }} {{ tour.title }}">
+          <div class="swiper-wrapper">
+            {% for img in tour.images %}
+              <div class="swiper-slide">
+                <img src="{{ url_for('static', filename='images/' ~ img) }}" alt="{{ tour.title }}">
+              </div>
             {% endfor %}
+          </div>
+          <div class="swiper-button-next" aria-label="{{ _('Image suivante') }}"></div>
+          <div class="swiper-button-prev" aria-label="{{ _('Image précédente') }}"></div>
+        </div>
 
-        </section>
-    </main>
+        <div class="content">
+          <h3 class="tour-title">{{ tour.title }}</h3>
 
-    <!-- ✅ Données structurées listant les tours (ItemList) -->
-    <script type="application/ld+json">
-    {
-      "@context":"https://schema.org",
-      "@type":"ItemList",
-      "name":"Tours privés à Bogotá",
-      "itemListElement":[
-        {% for tour in tours_data %}
-        {
-          "@type":"ListItem",
-          "position": {{ loop.index }},
-          "item": {
-            "@type":"TouristTrip",
-            "name": {{ tour.title|tojson }},
-            "description": {{ tour.desc|tojson }},
-            "url": "{{ url_for('reservation', tour=tour.slug, _external=True, lang=get_locale()) }}",
-            "touristType": ["Couples","Familles","Groupes","Solo"],
-            "inLanguage": [{% if get_locale() == 'fr' %}"fr"{% elif get_locale() == 'en' %}"en"{% else %}"es"{% endif %}]
-          }
-        }{% if not loop.last %},{% endif %}
-        {% endfor %}
-      ]
-    }
-    </script>
+          <!-- Intro / lead -->
+          <p class="tour-lead">{{ tour.desc }}</p>
 
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-    <script>
-    document.querySelectorAll('.tour-swiper').forEach((slider) => {
-        new Swiper(slider, {
-            loop: true,
-            autoplay: { delay: 3000, disableOnInteraction: false },
-            navigation: {
-                nextEl: slider.querySelector('.swiper-button-next'),
-                prevEl: slider.querySelector('.swiper-button-prev'),
-            },
-        });
+          <!-- Bloc INCLUS -->
+          {% if tour.includes is defined and tour.includes %}
+            <div class="tour-includes">
+              <h4 class="includes-title">{{ _("Ce qui est inclus :") }}</h4>
+              <ul class="includes-list">
+                {% for item in tour.includes %}
+                  <li>{{ item }}</li>
+                {% endfor %}
+              </ul>
+            </div>
+          {% endif %}
+
+          <!-- Chips Durée / Langues / Tarif -->
+          <ul class="tour-chips" aria-label="{{ _('Informations pratiques') }}">
+            {% for info in tour.infos %}
+              {% set parts = info.split(':') %}
+              <li class="chip">
+                <strong>{{ parts[0] }}:</strong>&nbsp;{{ parts[1] if parts|length > 1 else '' }}
+              </li>
+            {% endfor %}
+          </ul>
+
+          <a href="{{ url_for('reservation_page', tour=tour.slug, lang=get_locale()) }}">
+            <button class="btn-primary">{{ _("Réserver") }}</button>
+          </a>
+        </div>
+      </div>
+      {% endfor %}
+
+    </section>
+  </main>
+
+  <!-- ✅ Données structurées : Breadcrumb + Liste des tours -->
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@graph":[
+      {
+        "@type":"BreadcrumbList",
+        "itemListElement":[
+          {"@type":"ListItem","position":1,"name":"Accueil","item":"https://www.ohlalatoursbogota.com/"},
+          {"@type":"ListItem","position":2,"name":"Tours","item":"https://www.ohlalatoursbogota.com/tours"}
+        ]
+      },
+      {
+        "@type":"ItemList",
+        "name":"Tours privés à Bogotá",
+        "itemListElement":[
+          {% for tour in tours_data %}
+          {
+            "@type":"ListItem",
+            "position": {{ loop.index }},
+            "item": {
+              "@type":"TouristTrip",
+              "name": {{ tour.title|tojson }},
+              "description": {{ tour.desc|tojson }},
+              "url": "{{ url_for('reservation_page', tour=tour.slug, _external=True, lang=get_locale()) }}",
+              "touristType": ["Couples","Familles","Groupes","Solo"],
+              "inLanguage": [{% if get_locale() == 'fr' %}"fr"{% elif get_locale() == 'en' %}"en"{% else %}"es"{% endif %}]
+            }
+          }{% if not loop.last %},{% endif %}
+          {% endfor %}
+        ]
+      }
+    ]
+  }
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+  <script>
+  document.querySelectorAll('.tour-swiper').forEach((slider) => {
+    new Swiper(slider, {
+      loop: true,
+      autoplay: { delay: 3000, disableOnInteraction: false },
+      navigation: {
+        nextEl: slider.querySelector('.swiper-button-next'),
+        prevEl: slider.querySelector('.swiper-button-prev'),
+      },
     });
-    </script>
+  });
+  </script>
 </body>
 </html>
-
