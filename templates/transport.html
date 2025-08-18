@@ -58,6 +58,23 @@
     .transport-text h2 {
       margin-top: 0;
     }
+    .transport-service {
+      background-color: #333;
+      color: white;
+      padding: 30px;
+      margin: 30px 0;
+      border-radius: 12px;
+    }
+    .transport-service h2 {
+      color: white;
+      margin-top: 0;
+    }
+    .transport-service ul {
+      margin: 15px 0;
+    }
+    .transport-service li {
+      margin-bottom: 6px;
+    }
   </style>
 </head>
 <body>
@@ -76,9 +93,8 @@
           <nav class="nav-hero">
               <a href="{{ url_for('index', lang=get_locale()) }}">{{ _("Accueil") }}</a>
               <a href="{{ url_for('tours', lang=get_locale()) }}">{{ _("Tours") }}</a>
-              <a href="{{ url_for('reservation', lang=get_locale()) }}">{{ _("Réserver") }}</a>
-              <a href="{{ url_for('transport', lang=get_locale()) }}">{{ _("Transport") }}</a>
-              <a href="{{ url_for('contact', lang=get_locale()) }}">{{ _("Contact") }}</a>
+              <a href="{{ url_for('reservation', lang=get_locale()) }}">{{ _("Réservation") }}</a>
+              <a href="{{ url_for('transport', lang=get_locale()) }}">{{ _("Service de transport") }}</a>
           </nav>
       </div>
 
@@ -103,6 +119,25 @@
       <div class="transport-img">
           <img src="{{ url_for('static', filename='images/transport.jpg') }}" alt="{{ _('Transport privé à Bogotá') }}">
       </div>
+  </section>
+
+  <!-- Nouvelle section : Service de transport Hôtel -> Aéroport -->
+  <section class="transport-service">
+      <h2>Service de transport — Hôtel → Aéroport El Dorado (BOG)</h2>
+      <p>
+        Besoin d’un transfert simple et fiable jusqu’à l’aéroport ? Nous venons vous chercher directement à votre hôtel à Bogotá et vous déposons au terminal de votre vol.
+      </p>
+      <ul>
+        <li><strong>Tarif fixe :</strong> 60 000 COP (1 à 4 personnes)</li>
+        <li>Trajet privé, véhicule confortable</li>
+        <li>Chauffeur ponctuel et professionnel</li>
+        <li>Prise en charge à votre hôtel</li>
+        <li>Durée indicative : 40 à 60 min selon le trafic</li>
+      </ul>
+      <p><strong>Réservation :</strong></p>
+      <p>Email : <a href="mailto:alejandramontana25.18@gmail.com" style="color:white;">alejandramontana25.18@gmail.com</a><br>
+      WhatsApp : <a href="https://wa.me/573505384537" target="_blank" style="color:white;">+57 350 538 4537</a></p>
+      <p><em>Remarques :</em> tarif valable pour une prise en charge dans Bogotá intra-urbain. Suppléments possibles pour adresses périphériques, arrêts supplémentaires ou bagages hors gabarit.</p>
   </section>
 
   <!-- Footer -->
