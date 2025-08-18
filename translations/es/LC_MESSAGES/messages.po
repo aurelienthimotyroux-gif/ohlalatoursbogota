@@ -893,4 +893,103 @@ msgstr "Visita a una finca de café cerca de Bogotá"
 msgid "Découvrez le café colombien depuis sa source : marchez parmi les caféiers, apprenez la plantation, la récolte et la mouture, et dégustez une tasse fraîchement préparée dans un cadre authentique."
 msgstr "Descubre el café colombiano desde su origen: camina entre los cafetales, aprende sobre la siembra, la cosecha y la molienda, y disfruta una taza recién preparada en un entorno auténtico."
 
+msgid "Service de Transport"
+msgstr "Servicio de Transporte"
+
+msgid "Service de Transport — Hôtel ⇄ Aéroport Bogotá"
+msgstr "Servicio de Transporte — Hotel ⇄ Aeropuerto de Bogotá"
+
+msgid "Transfert privé hôtel ⇄ aéroport à Bogotá. Chauffeur professionnel, prix fixe 60 000 COP pour 1 à 4 personnes. Réservation par WhatsApp ou e-mail."
+msgstr "Traslado privado hotel ⇄ aeropuerto en Bogotá. Conductor profesional, precio fijo 60.000 COP para 1 a 4 personas. Reserva por WhatsApp o correo electrónico."
+
+msgid "Transfert privé et sécurisé depuis/vers votre hébergement. Prix fixe 60 000 COP (1 à 4 personnes)."
+msgstr "Traslado privado y seguro desde/hacia su alojamiento. Precio fijo 60.000 COP (1 a 4 personas)."
+
+msgid "Choix de la langue"
+msgstr "Selección de idioma"
+
+msgid "Navigation principale"
+msgstr "Navegación principal"
+
+msgid "Accueil"
+msgstr "Inicio"
+
+msgid "Nos tours"
+msgstr "Nuestros tours"
+
+msgid "Réservation"
+msgstr "Reserva"
+
+msgid "Transfert privé, ponctuel et sécurisé"
+msgstr "Traslado privado, puntual y seguro"
+
+msgid "Profitez d’un trajet confortable entre votre hébergement et l’aéroport El Dorado (BOG). Chauffeur professionnel et courtois, prise en charge à l’heure et service porte-à-porte."
+msgstr "Disfruta de un trayecto cómodo entre tu alojamiento y el aeropuerto El Dorado (BOG). Conductor profesional y amable, recogida puntual y servicio puerta a puerta."
+
+msgid "Ce qui est inclus :"
+msgstr "Incluye:"
+
+msgid "Chauffeur professionnel, véhicule propre et assuré"
+msgstr "Conductor profesional, vehículo limpio y asegurado"
+
+msgid "Prise en charge à votre hôtel/appartement"
+msgstr "Recogida en tu hotel/apartamento"
+
+msgid "Trajet direct vers l’aéroport (ou inversement)"
+msgstr "Trayecto directo al aeropuerto (o viceversa)"
+
+msgid "Assistance pour les bagages"
+msgstr "Asistencia con el equipaje"
+
+msgid "Prix fixe"
+msgstr "Precio fijo"
+
+msgid "60 000 COP"
+msgstr "60.000 COP"
+
+msgid "1 à 4 personnes"
+msgstr "1 a 4 personas"
+
+msgid "Informations pratiques"
+msgstr "Información práctica"
+
+msgid "Durée"
+msgstr "Duración"
+
+msgid "~40–60 min"
+msgstr "~40–60 min"
+
+msgid "Le temps peut fortement varier selon le trafic : pensez à réserver avec une marge d’avance."
+msgstr "El tiempo de viaje puede variar mucho según el tráfico; reserva con suficiente margen de antelación."
+
+msgid "Langues"
+msgstr "Idiomas"
+
+msgid "Tarif"
+msgstr "Tarifa"
+
+msgid "60 000 COP (1 à 4 personnes)"
+msgstr "60.000 COP (1 a 4 personas)"
+
+msgid "Comment réserver ?"
+msgstr "¿Cómo reservar?"
+
+msgid "Réservez facilement par WhatsApp ou e-mail. Indiquez la date, l’heure de prise en charge, le numéro de vol et le nombre de passagers."
+msgstr "Reserva fácilmente por WhatsApp o correo electrónico. Indica la fecha, la hora de recogida, el número de vuelo y el número de pasajeros."
+
+msgid "Réserver sur WhatsApp"
+msgstr "Reservar por WhatsApp"
+
+msgid "Réserver par e-mail"
+msgstr "Reservar por correo electrónico"
+
+msgid "Besoin d’un siège enfant, d’un van ou d’horaires très matinaux ? Dites-le nous lors de la réservation."
+msgstr "¿Necesitas una silla infantil, una furgoneta o horarios muy tempranos? Dínoslo al reservar."
+
+msgid "Service de transport privé à Bogotá"
+msgstr "Servicio de transporte privado en Bogotá"
+
+msgid "Transfert privé hôtel ⇄ aéroport à Bogotá. Prix fixe 60 000 COP pour 1 à 4 personnes."
+msgstr "Traslado privado hotel ⇄ aeropuerto en Bogotá. Precio fijo 60.000 COP para 1 a 4 personas."
+
 

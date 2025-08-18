@@ -535,11 +535,6 @@ msgstr "Transport service"
 msgid "Service de transport privé"
 msgstr "Private transport service"
 
-msgid "Service personnalisé : Un chauffeur professionnel et courtois."
-msgstr "Personalised service: a professional, courteous driver."
-
-msgid "Si vous choisissez d'inclure le service de transport dans votre réservation, nous vous fournirons un véhicule privé pour vous emmener à la destination de votre visite."
-msgstr "If you choose to include transport in your booking, we will provide a private vehicle to take you to your tour destination."
 
 msgid "Snack léger (prévoir un petit encas supplémentaire)"
 msgstr "Light snack (bring an extra bite if you wish)"
@@ -627,4 +622,104 @@ msgstr "Save time: arrive at your destination quickly and easily."
 
 msgid "Le temps peut fortement varier selon le trafic : pensez à réserver avec une marge d’avance."
 msgstr "Travel time can vary significantly depending on traffic—please book with extra time in advance."
+
+msgid "Service de Transport"
+msgstr "Transport Service"
+
+msgid "Service de Transport — Hôtel ⇄ Aéroport Bogotá"
+msgstr "Transport Service — Hotel ⇄ Bogotá Airport"
+
+msgid "Transfert privé hôtel ⇄ aéroport à Bogotá. Chauffeur professionnel, prix fixe 60 000 COP pour 1 à 4 personnes. Réservation par WhatsApp ou e-mail."
+msgstr "Private hotel ⇄ airport transfer in Bogotá. Professional driver, fixed price COP 60,000 for 1–4 people. Booking via WhatsApp or email."
+
+msgid "Transfert privé et sécurisé depuis/vers votre hébergement. Prix fixe 60 000 COP (1 à 4 personnes)."
+msgstr "Private and secure transfer from/to your accommodation. Fixed price COP 60,000 (1–4 people)."
+
+msgid "Choix de la langue"
+msgstr "Language selection"
+
+msgid "Navigation principale"
+msgstr "Main navigation"
+
+msgid "Accueil"
+msgstr "Home"
+
+msgid "Nos tours"
+msgstr "Our tours"
+
+msgid "Réservation"
+msgstr "Booking"
+
+msgid "Transfert privé, ponctuel et sécurisé"
+msgstr "Private, punctual and secure transfer"
+
+msgid "Profitez d’un trajet confortable entre votre hébergement et l’aéroport El Dorado (BOG). Chauffeur professionnel et courtois, prise en charge à l’heure et service porte-à-porte."
+msgstr "Enjoy a comfortable ride between your accommodation and El Dorado Airport (BOG). Professional and courteous driver, on-time pickup and door-to-door service."
+
+msgid "Ce qui est inclus :"
+msgstr "What's included:"
+
+msgid "Chauffeur professionnel, véhicule propre et assuré"
+msgstr "Professional driver, clean and insured vehicle"
+
+msgid "Prise en charge à votre hôtel/appartement"
+msgstr "Pickup at your hotel/apartment"
+
+msgid "Trajet direct vers l’aéroport (ou inversement)"
+msgstr "Direct ride to the airport (or the reverse)"
+
+msgid "Assistance pour les bagages"
+msgstr "Luggage assistance"
+
+msgid "Prix fixe"
+msgstr "Fixed price"
+
+msgid "60 000 COP"
+msgstr "60,000 COP"
+
+msgid "1 à 4 personnes"
+msgstr "1 to 4 people"
+
+msgid "Informations pratiques"
+msgstr "Practical information"
+
+msgid "Durée"
+msgstr "Duration"
+
+msgid "~40–60 min"
+msgstr "~40–60 min"
+
+msgid "Le temps peut fortement varier selon le trafic : pensez à réserver avec une marge d’avance."
+msgstr "Travel time can vary significantly depending on traffic—please book with extra time in advance."
+
+msgid "Langues"
+msgstr "Languages"
+
+msgid "Tarif"
+msgstr "Price"
+
+msgid "60 000 COP (1 à 4 personnes)"
+msgstr "60,000 COP (1–4 people)"
+
+msgid "Comment réserver ?"
+msgstr "How to book?"
+
+msgid "Réservez facilement par WhatsApp ou e-mail. Indiquez la date, l’heure de prise en charge, le numéro de vol et le nombre de passagers."
+msgstr "Book easily via WhatsApp or email. Provide the date, pickup time, flight number, and number of passengers."
+
+msgid "Réserver sur WhatsApp"
+msgstr "Book on WhatsApp"
+
+msgid "Réserver par e-mail"
+msgstr "Book by email"
+
+msgid "Besoin d’un siège enfant, d’un van ou d’horaires très matinaux ? Dites-le nous lors de la réservation."
+msgstr "Need a child seat, a van, or very early hours? Tell us when booking."
+
+msgid "Service de transport privé à Bogotá"
+msgstr "Private transport service in Bogotá"
+
+msgid "Transfert privé hôtel ⇄ aéroport à Bogotá. Prix fixe 60 000 COP pour 1 à 4 personnes."
+msgstr "Private hotel ⇄ airport transfer in Bogotá. Fixed price COP 60,000 for 1–4 people."
+
 
