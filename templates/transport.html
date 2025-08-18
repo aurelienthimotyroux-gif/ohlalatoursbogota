@@ -1,151 +1,144 @@
 <!DOCTYPE html>
 <html lang="{{ get_locale() }}">
 <head>
-  <meta charset="UTF-8">
-  <title>{{ _("Service de Transport") }} — Oh La La Tours Bogotá</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="{{ _('Service de transport privé (taxi/van) pour vos visites et transferts aéroport à Bogotá. Confort, sécurité et chauffeur professionnel.') }}">
+    <meta charset="UTF-8">
+    <title>{{ _("Service de Transport") }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
-  <!-- Canonical + hreflang -->
-  <link rel="canonical" href="https://www.ohlalatoursbogota.com{{ request.path }}{% if get_locale()!='fr' %}?lang={{ get_locale() }}{% endif %}">
-  <link rel="alternate" href="{{ url_for('transport', lang='fr', _external=True) }}" hreflang="fr">
-  <link rel="alternate" href="{{ url_for('transport', lang='en', _external=True) }}" hreflang="en">
-  <link rel="alternate" href="{{ url_for('transport', lang='es', _external=True) }}" hreflang="es">
-  <link rel="alternate" href="{{ url_for('transport', lang='fr', _external=True) }}" hreflang="x-default">
+    <style>
+      /* Titre sur la bannière */
+      .hero-title {
+        color: #fff;
+        text-shadow: 2px 2px 6px rgba(0,0,0,.55);
+      }
 
-  <!-- Open Graph / Twitter -->
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://www.ohlalatoursbogota.com{{ request.path }}{% if get_locale()!='fr' %}?lang={{ get_locale() }}{% endif %}">
-  <meta property="og:site_name" content="Oh La La Tours Bogotá">
-  <meta property="og:title" content="{{ _('Service de Transport – Oh La La Tours Bogotá') }}">
-  <meta property="og:description" content="{{ _('Transport privé à Bogotá pour visites et transferts aéroport. Chauffeur professionnel, confort et sécurité.') }}">
-  <meta property="og:image" content="{{ url_for('static', filename='images/bg_transport.webp', _external=True) }}">
-  {% if get_locale() == 'fr' %}
-  <meta property="og:locale" content="fr_FR">
-  {% elif get_locale() == 'en' %}
-  <meta property="og:locale" content="en_US">
-  {% else %}
-  <meta property="og:locale" content="es_CO">
-  {% endif %}
+      /* Bloc texte + image côte à côte */
+      .transport-description {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 24px;
+        align-items: center;
+        padding: 20px;
+      }
+      .transport-text {
+        flex: 1 1 400px;
+      }
+      .transport-img {
+        flex: 1 1 350px;
+      }
+      .transport-img img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 12px;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+      }
+      .transport-text h2 {
+        margin-top: 0;
+      }
 
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="{{ _('Service de Transport – Oh La La Tours Bogotá') }}">
-  <meta name="twitter:description" content="{{ _('Transport privé à Bogotá pour visites et transferts aéroport. Chauffeur professionnel, confort et sécurité.') }}">
-  <meta name="twitter:image" content="{{ url_for('static', filename='images/bg_transport.webp', _external=True) }}">
-
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-
-  <style>
-    .transport-description {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 24px;
-      align-items: center;
-      padding: 20px;
-    }
-    .transport-text {
-      flex: 1 1 400px;
-    }
-    .transport-img {
-      flex: 1 1 350px;
-    }
-    .transport-img img {
-      max-width: 100%;
-      height: auto;
-      border-radius: 12px;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.15);
-    }
-    .transport-text h2 {
-      margin-top: 0;
-    }
-    .transport-service {
-      background-color: #333;
-      color: white;
-      padding: 30px;
-      margin: 30px 0;
-      border-radius: 12px;
-    }
-    .transport-service h2 {
-      color: white;
-      margin-top: 0;
-    }
-    .transport-service ul {
-      margin: 15px 0;
-    }
-    .transport-service li {
-      margin-bottom: 6px;
-    }
-  </style>
+      /* Offre aéroport : style neutre (pas de texte blanc) */
+      .transport-offer {
+        max-width: 950px;
+        margin: 18px auto 48px;
+        padding: 24px;
+        background: #fff;
+        color: #222;
+        border: 1px solid rgba(0,0,0,.08);
+        border-radius: 12px;
+        box-shadow: 0 6px 18px rgba(0,0,0,.06);
+      }
+      .transport-offer h2 {
+        margin-top: 0;
+      }
+      .transport-offer ul {
+        margin: 10px 0 0 18px;
+        list-style: disc;
+      }
+      .transport-offer li { margin: 6px 0; }
+    </style>
 </head>
 <body>
 
-  <!-- Bandeau image avec topbar (lang + nav) et titre -->
-  <header class="hero background-half"
-          style="background-image: url('{{ url_for('static', filename='images/bg_transport.webp') }}');">
+    <!-- Bandeau image avec topbar (lang + nav) et titre -->
+    <header class="hero background-half"
+            style="background-image: url('{{ url_for('static', filename='images/bg_transport.jpeg') }}');">
 
-      <div class="hero-topbar">
-          <div id="lang-switcher">
-              <a href="{{ lang_url('fr') }}">🇫🇷</a> |
-              <a href="{{ lang_url('en') }}">🇺🇸</a> |
-              <a href="{{ lang_url('es') }}">🇪🇸</a>
-          </div>
+        <div class="hero-topbar">
+            <div id="lang-switcher">
+                <a href="{{ lang_url('fr') }}">🇫🇷</a> |
+                <a href="{{ lang_url('en') }}">🇺🇸</a> |
+                <a href="{{ lang_url('es') }}">🇨🇴</a>
+            </div>
 
-          <nav class="nav-hero">
-              <a href="{{ url_for('index', lang=get_locale()) }}">{{ _("Accueil") }}</a>
-              <a href="{{ url_for('tours', lang=get_locale()) }}">{{ _("Tours") }}</a>
-              <a href="{{ url_for('reservation', lang=get_locale()) }}">{{ _("Réservation") }}</a>
-              <a href="{{ url_for('transport', lang=get_locale()) }}">{{ _("Service de transport") }}</a>
-          </nav>
-      </div>
+            <nav class="nav-hero">
+                <a href="{{ url_for('index', lang=get_locale()) }}">{{ _("Accueil") }}</a> |
+                <a href="{{ url_for('tours', lang=get_locale()) }}">{{ _("Nos tours") }}</a> |
+		        <a href="{{ url_for('transport', lang=get_locale()) }}">{{ _("Service de Transport") }}</a> |
+                <a href="{{ url_for('reservation', lang=get_locale()) }}">{{ _("Réservation") }}</a> 
+            </nav>
+        </div>
 
-      <div class="hero-content">
-          <h1>{{ _("Service de Transport") }}</h1>
-      </div>
-  </header>
+        <h1 class="hero-title">
+            {{ _("Service de Transport") }}
+        </h1>
+    </header>
 
-  <!-- Section descriptive -->
-  <section class="transport-description">
-      <div class="transport-text">
-          <h2>{{ _("Confort et sécurité pour vos trajets à Bogotá") }}</h2>
-          <p>
-              {{ _("Notre service de transport privé vous accompagne lors de vos visites guidées et vos transferts (aéroport, hôtels, excursions). Profitez d’un chauffeur professionnel, d’un véhicule confortable et d’une prise en charge en toute tranquillité.") }}
-          </p>
+    <!-- Description du service de transport -->
+    <main>
+        <section class="transport-description">
+            <div class="transport-text">
+                <h2>{{ _("Qu'est-ce que le service de transport ?") }}</h2>
+                <p>{{ _("Nous proposons un service de transport confortable et sécurisé pour tous nos clients.") }}</p>
+                <p>{{ _("Si vous choisissez d'inclure le service de transport dans votre réservation, nous vous fournirons un véhicule privé pour vous emmener à la destination de votre visite.") }}</p>
+
+                <h2>{{ _("Pourquoi choisir le service de transport ?") }}</h2>
+                <ul>
+                    <li>{{ _("Confort et sécurité : Un véhicule privé pour vous et vos compagnons.") }}</li>
+                    <li>{{ _("Économisez du temps : Arrivez à destination rapidement et facilement.") }}</li>
+                    <li>{{ _("Service personnalisé : Un chauffeur professionnel et courtois.") }}</li>
+                </ul>
+
+                <h2>{{ _("Comment réserver ?") }}</h2>
+                <p>{{ _("Lorsque vous réservez votre visite, vous aurez la possibilité d'ajouter le service de transport à votre réservation.") }}</p>
+                <p>{{ _("Indiquez simplement si vous souhaitez inclure le transport et nous nous occuperons du reste.") }}</p>
+
+                <h2>{{ _("Tarification") }}</h2>
+                <p>{{ _("Le tarif du service de transport dépend de la destination et du nombre de passagers.") }}</p>
+                <p>{{ _("N'hésitez pas à nous contacter pour plus d'informations sur les tarifs.") }}</p>
+            </div>
+
+            <div class="transport-img">
+                <img src="{{ url_for('static', filename='images/transport_service.jpeg') }}" 
+                     alt="{{ _('Service de transport privé') }}">
+            </div>
+        </section>
+
+        <!-- Bloc Offre : Hôtel -> Aéroport -->
+        <section class="transport-offer">
+          <h2>Service de transport — Hôtel → Aéroport El Dorado (BOG)</h2>
+          <p>Besoin d’un transfert simple et fiable jusqu’à l’aéroport ? Nous venons vous chercher directement à votre hôtel à Bogotá et vous déposons au terminal de votre vol.</p>
           <ul>
-              <li>{{ _("Transferts aéroport-hôtel") }}</li>
-              <li>{{ _("Mise à disposition pendant vos tours") }}</li>
-              <li>{{ _("Chauffeurs professionnels et expérimentés") }}</li>
+            <li><strong>Tarif fixe :</strong> 60 000 COP (1 à 4 personnes)</li>
+            <li>Trajet privé, véhicule confortable</li>
+            <li>Chauffeur ponctuel et professionnel</li>
+            <li>Prise en charge à votre hôtel</li>
+            <li>Durée indicative : 40 à 60 min selon le trafic</li>
           </ul>
-      </div>
-      <div class="transport-img">
-          <img src="{{ url_for('static', filename='images/transport.jpg') }}" alt="{{ _('Transport privé à Bogotá') }}">
-      </div>
-  </section>
+          <h3>Réservation</h3>
+          <p>
+            Email : <a href="mailto:alejandramontana25.18@gmail.com">alejandramontana25.18@gmail.com</a><br>
+            WhatsApp : <a href="https://wa.me/573505384537" target="_blank" rel="noopener">+57 350 538 4537</a>
+          </p>
+          <p><em>Remarques :</em> tarif valable pour une prise en charge dans Bogotá intra-urbain. Suppléments possibles pour adresses périphériques, arrêts supplémentaires ou bagages hors gabarit.</p>
+        </section>
+    </main>
 
-  <!-- Nouvelle section : Service de transport Hôtel -> Aéroport -->
-  <section class="transport-service">
-      <h2>Service de transport — Hôtel → Aéroport El Dorado (BOG)</h2>
-      <p>
-        Besoin d’un transfert simple et fiable jusqu’à l’aéroport ? Nous venons vous chercher directement à votre hôtel à Bogotá et vous déposons au terminal de votre vol.
-      </p>
-      <ul>
-        <li><strong>Tarif fixe :</strong> 60 000 COP (1 à 4 personnes)</li>
-        <li>Trajet privé, véhicule confortable</li>
-        <li>Chauffeur ponctuel et professionnel</li>
-        <li>Prise en charge à votre hôtel</li>
-        <li>Durée indicative : 40 à 60 min selon le trafic</li>
-      </ul>
-      <p><strong>Réservation :</strong></p>
-      <p>Email : <a href="mailto:alejandramontana25.18@gmail.com" style="color:white;">alejandramontana25.18@gmail.com</a><br>
-      WhatsApp : <a href="https://wa.me/573505384537" target="_blank" style="color:white;">+57 350 538 4537</a></p>
-      <p><em>Remarques :</em> tarif valable pour une prise en charge dans Bogotá intra-urbain. Suppléments possibles pour adresses périphériques, arrêts supplémentaires ou bagages hors gabarit.</p>
-  </section>
-
-  <!-- Footer -->
-  <footer>
-      <p>© 2025 Oh La La Tours Bogotá</p>
-  </footer>
+    <!-- Footer -->
+    <footer>
+        <p>{{ _("© 2025 - Tous droits réservés") }}</p>
+    </footer>
 
 </body>
 </html>
-
 
