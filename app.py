@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, url_for, flash, redirect, send_from_directory
 from flask_babel import Babel, _
-import os, requests, logging, json, re
+import os, requests, logging, re
 from datetime import datetime
 from werkzeug.middleware.proxy_fix import ProxyFix
 from flask_sqlalchemy import SQLAlchemy
@@ -86,16 +86,13 @@ def lang_url(lang_code: str):
 app.jinja_env.globals["lang_url"] = lang_url
 
 # ------------------------------------------------------------------
-# SQLAlchemy (comments)
-# ------------------------------------------------------------------
-# ------------------------------------------------------------------
-# SQLAlchemy (comments)
+# SQLAlchemy (models AVANT les routes)
 # ------------------------------------------------------------------
 raw_db = os.getenv("DATABASE_URL")
 if raw_db:
     # Render/Heroku donnent parfois "postgres://"
     raw_db = raw_db.replace("postgres://", "postgresql://", 1)
-    # Forcer le driver psycopg v3 (déjà installé) au lieu du défaut psycopg2
+    # Forcer le driver psycopg v3 (installé) au lieu du défaut psycopg2
     if raw_db.startswith("postgresql://"):
         raw_db = "postgresql+psycopg://" + raw_db.split("://", 1)[1]
     DB_URL = raw_db
@@ -106,13 +103,31 @@ app.config["SQLALCHEMY_DATABASE_URI"] = DB_URL
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 
-# ------------------------------------------------------------------
-# Traduction côté serveur (optionnelle)
-# ------------------------------------------------------------------
-# ✅ Par défaut OFF (gratuit, pas d'appels API).
-TRANSLATE_SERVER_ENABLED = os.getenv("TRANSLATE_SERVER_ENABLED", "0") == "1"
+class Comment(db.Model):
+    __tablename__ = "comments"
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(120), default="")
+    country = db.Column(db.String(120), default="")
+    rating = db.Column(db.Float, default=5.0)
+    date_str = db.Column(db.String(120), default="")
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    message = db.Column(db.Text, nullable=False)
 
-# Clés optionnelles si tu veux activer plus tard
+class CommentTranslation(db.Model):
+    __tablename__ = "comment_translation"
+    id = db.Column(db.Integer, primary_key=True)
+    comment_id = db.Column(db.Integer, db.ForeignKey('comments.id', ondelete='CASCADE'), nullable=False)
+    lang = db.Column(db.String(5), nullable=False)  # 'fr', 'en', 'es'
+    text = db.Column(db.Text, nullable=False)
+    __table_args__ = (db.UniqueConstraint('comment_id', 'lang', name='uq_comment_lang'),)
+
+with app.app_context():
+    db.create_all()
+
+# ------------------------------------------------------------------
+# Traduction côté serveur (désactivée par défaut)
+# ------------------------------------------------------------------
+TRANSLATE_SERVER_ENABLED = os.getenv("TRANSLATE_SERVER_ENABLED", "0") == "1"
 DEEPL_API_KEY = os.getenv("DEEPL_API_KEY")
 GOOGLE_TRANSLATE_API_KEY = os.getenv("GOOGLE_TRANSLATE_API_KEY")
 
@@ -120,18 +135,13 @@ if not TRANSLATE_SERVER_ENABLED:
     app.logger.info("Server-side translation DISABLED (use client-side Google Translate button).")
 
 def translate_text_auto(text, target_lang, source_lang=None, timeout=12):
-    """
-    Traduit `text` vers `target_lang` via DeepL/Google si activé et clés dispo.
-    Retourne (translated_text, detected_source_lang) ou (None, None).
-    """
+    """Retourne (translated_text, detected_source_lang) ou (None, None) si OFF/sans clé."""
     if not text or not target_lang:
         return None, None
-
-    # 🚫 Couper toute traduction serveur si désactivée
     if not TRANSLATE_SERVER_ENABLED:
         return None, None
 
-    # DeepL (si clé)
+    # DeepL si clé
     if DEEPL_API_KEY:
         try:
             resp = requests.post(
@@ -151,7 +161,7 @@ def translate_text_auto(text, target_lang, source_lang=None, timeout=12):
         except Exception as e:
             logging.warning("deepl_error: %s", e)
 
-    # Google Cloud Translate (si clé)
+    # Google Cloud si clé
     if GOOGLE_TRANSLATE_API_KEY:
         try:
             resp = requests.post(
@@ -174,7 +184,6 @@ def translate_text_auto(text, target_lang, source_lang=None, timeout=12):
     return None, None
 
 class CommentView:
-    """Objet passé au template avec message potentiellement traduit + méta."""
     def __init__(self, c, display_message, translated=False, source_lang=None):
         self.id = c.id
         self.name = getattr(c, 'name', '')
@@ -208,13 +217,11 @@ def index():
 
     views = []
     for c in comments:
-        # 1) cache DB
         cached = CommentTranslation.query.filter_by(comment_id=c.id, lang=target).first()
         if cached:
             views.append(CommentView(c, cached.text, translated=True))
             continue
 
-        # 2) tentative traduction serveur (si activée + clé)
         translated, detected = translate_text_auto(c.message, target_lang=target)
         if translated:
             try:
@@ -225,7 +232,6 @@ def index():
                 db.session.rollback()
             views.append(CommentView(c, translated, translated=True, source_lang=detected))
         else:
-            # 3) sinon texte original (bouton client fera la traduction si besoin)
             views.append(CommentView(c, c.message, translated=False))
 
     return render_template("index.html", comments=views)
@@ -277,7 +283,7 @@ def submit_comment():
     db.session.add(c)
     db.session.commit()
 
-    # Invalider les caches de traduction éventuels pour ce commentaire
+    # Invalider éventuels caches de traduction
     try:
         CommentTranslation.query.filter_by(comment_id=c.id).delete()
         db.session.commit()
