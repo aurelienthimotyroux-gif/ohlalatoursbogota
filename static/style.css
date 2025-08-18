@@ -727,6 +727,46 @@ a[href="#main-content"]{
   outline: none !important;
   display: inline !important;
 }
+/* === Topbar hard-clean: retire toute "pastille" bleue avant Home === */
+
+/* 1) Réinitialise TOUT descendant de la topbar et de la nav */
+.hero-topbar *, .nav-hero * {
+  background: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  display: inline !important;
+}
+
+/* 2) Supprime toute déco via pseudo-éléments (les "pills" viennent souvent de là) */
+.hero-topbar *::before, .hero-topbar *::after,
+.nav-hero *::before, .nav-hero *::after {
+  content: none !important;
+  background: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+/* 3) Si un élément fantôme est injecté comme premier enfant, on le cache s’il est vide
+      ou purement technique */
+.nav-hero > *:first-child:empty,
+.nav-hero > *:first-child[aria-hidden="true"],
+.nav-hero > *:first-child[href="#"],
+.nav-hero > *:first-child[role="button"] {
+  display: none !important;
+}
+
+/* 4) Assure que SEUL le texte des liens reste visible, sans style bouton */
+.nav-hero a, #lang-switcher a {
+  color: #fff !important;
+  text-shadow: 1px 1px 3px rgba(0,0,0,.6) !important;
+  background: transparent !important;
+  display: inline !important;
+}
 
 
 
