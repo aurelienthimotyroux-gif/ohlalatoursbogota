@@ -147,10 +147,36 @@ logger = logging.getLogger("ohlalatours")
 # ------------------------------------------------------------------
 DEEPL_API_KEY = os.getenv("DEEPL_API_KEY")
 GOOGLE_TRANSLATE_API_KEY = os.getenv("GOOGLE_TRANSLATE_API_KEY")
+# ✅ Fallback gratuit LibreTranslate (aucune clé nécessaire)
+LIBRETRANSLATE_URL = os.getenv("LIBRETRANSLATE_URL", "https://libretranslate.com")
+
+def translate_via_libre(text, target_lang, source_lang=None, timeout=12):
+    """
+    Fallback gratuit via LibreTranslate (instance publique par défaut).
+    target_lang/source_lang: codes 'fr' 'en' 'es'. Retourne (text, None) ou (None, None).
+    """
+    if not text or not target_lang:
+        return None, None
+    try:
+        url = f"{LIBRETRANSLATE_URL.rstrip('/')}/translate"
+        payload = {
+            "q": text,
+            "source": (source_lang or "auto"),
+            "target": target_lang.lower(),
+            "format": "text",
+        }
+        resp = requests.post(url, json=payload, headers={"Content-Type":"application/json"}, timeout=timeout)
+        resp.raise_for_status()
+        data = resp.json()
+        return data.get("translatedText"), None
+    except Exception as e:
+        logging.warning("libretranslate_error: %s", e)
+        return None, None
 
 def translate_text_auto(text, target_lang, source_lang=None, timeout=12):
     """
     Traduit `text` vers `target_lang` en utilisant DeepL ou Google si des clés sont configurées.
+    Fallback gratuit sur LibreTranslate si aucune clé n'est dispo.
     Retourne (translated_text, detected_source_lang) ou (None, None) si non dispo/erreur.
     """
     if not text or not target_lang:
@@ -195,6 +221,11 @@ def translate_text_auto(text, target_lang, source_lang=None, timeout=12):
             return tr['translatedText'], tr.get('detectedSourceLanguage')
         except Exception as e:
             logging.warning("google_translate_error: %s", e)
+
+    # ✅ Fallback gratuit: LibreTranslate (si pas de clés ou échec)
+    tr, det = translate_via_libre(text, target_lang, source_lang=source_lang, timeout=timeout)
+    if tr:
+        return tr, det
 
     return None, None
 
@@ -244,10 +275,11 @@ def set_headers(resp):
         "default-src 'self'; "
         "img-src 'self' data: https:; "
         "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; "
-        # ⬇️ AJOUTE data: et jsDelivr ici
+        # ⬇️ data: et jsDelivr déjà autorisés pour les fonts (Swiper)
         "font-src 'self' data: https://fonts.gstatic.com https://cdn.jsdelivr.net; "
         "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://www.paypal.com; "
-        "connect-src 'self' https://api-free.deepl.com https://translation.googleapis.com https://www.paypal.com; "
+        # ✅ autorise LibreTranslate en sortie
+        "connect-src 'self' https://api-free.deepl.com https://translation.googleapis.com https://www.paypal.com https://libretranslate.com; "
         "frame-src 'self' https://www.paypal.com; "
         "base-uri 'self'; form-action 'self' https://www.paypal.com"
     )
