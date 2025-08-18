@@ -1,12 +1,13 @@
 from flask import Flask, render_template, request, url_for, flash, redirect, abort, send_from_directory, g, session
 from flask_babel import Babel, _
-import os, requests, logging, json, re
+import os, requests, logging, json, re, time
 from base64 import b64encode
 from datetime import timedelta, datetime
 from werkzeug.middleware.proxy_fix import ProxyFix
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 from flask_sqlalchemy import SQLAlchemy
+from urllib.parse import urlparse
 
 # ------------------------------------------------------------------
 # Utils: parser "22 février 2020" / "30 julio 2019" / "17 Aug 2025"
@@ -150,13 +151,24 @@ GOOGLE_TRANSLATE_API_KEY = os.getenv("GOOGLE_TRANSLATE_API_KEY")
 # ✅ Fallback gratuit LibreTranslate (aucune clé nécessaire)
 LIBRETRANSLATE_URL = os.getenv("LIBRETRANSLATE_URL", "https://libretranslate.com")
 
+# ✅ Cooldown après 429 (rate-limit) pour ne pas spammer l'instance publique
+LIBRE_COOLDOWN_SECONDS = int(os.getenv("LIBRE_COOLDOWN_SECONDS", "900"))  # 15 min par défaut
+_last_libre_429 = 0
+
 def translate_via_libre(text, target_lang, source_lang=None, timeout=12):
     """
     Fallback gratuit via LibreTranslate (instance publique par défaut).
-    target_lang/source_lang: codes 'fr' 'en' 'es'. Retourne (text, None) ou (None, None).
+    Si un 429 est reçu, on active un cooldown global pendant LIBRE_COOLDOWN_SECONDS.
+    target_lang/source_lang: 'fr' 'en' 'es'. Retourne (text, None) ou (None, None).
     """
     if not text or not target_lang:
         return None, None
+
+    # ne pas insister si on a récemment été rate-limité
+    now = time.time()
+    if now - _last_libre_429 < LIBRE_COOLDOWN_SECONDS:
+        return None, None
+
     try:
         url = f"{LIBRETRANSLATE_URL.rstrip('/')}/translate"
         payload = {
@@ -165,10 +177,33 @@ def translate_via_libre(text, target_lang, source_lang=None, timeout=12):
             "target": target_lang.lower(),
             "format": "text",
         }
-        resp = requests.post(url, json=payload, headers={"Content-Type":"application/json"}, timeout=timeout)
+        resp = requests.post(
+            url,
+            json=payload,
+            headers={"Content-Type": "application/json"},
+            timeout=timeout
+        )
+
+        if resp.status_code == 429:
+            # activer le cooldown et ne pas réessayer immédiatement
+            global _last_libre_429
+            _last_libre_429 = now
+            logging.warning("libretranslate_rate_limited: 429; cooldown %ss", LIBRE_COOLDOWN_SECONDS)
+            return None, None
+
         resp.raise_for_status()
         data = resp.json()
         return data.get("translatedText"), None
+
+    except requests.exceptions.HTTPError as e:
+        r = getattr(e, "response", None)
+        if r is not None and r.status_code == 429:
+            global _last_libre_429
+            _last_libre_429 = time.time()
+            logging.warning("libretranslate_error 429 -> cooldown %ss", LIBRE_COOLDOWN_SECONDS)
+            return None, None
+        logging.warning("libretranslate_error: %s", e)
+        return None, None
     except Exception as e:
         logging.warning("libretranslate_error: %s", e)
         return None, None
@@ -271,6 +306,15 @@ def get_comment_message_for_lang(comment, target_lang):
 # ------------------------------------------------------------------
 @app.after_request
 def set_headers(resp):
+    # Autoriser automatiquement l'origine définie par LIBRETRANSLATE_URL
+    lt_origin = "https://libretranslate.com"
+    try:
+        p = urlparse(LIBRETRANSLATE_URL)
+        if p.scheme and p.netloc:
+            lt_origin = f"{p.scheme}://{p.netloc}"
+    except Exception:
+        lt_origin = "https://libretranslate.com"
+
     csp = (
         "default-src 'self'; "
         "img-src 'self' data: https:; "
@@ -278,8 +322,8 @@ def set_headers(resp):
         # ⬇️ data: et jsDelivr déjà autorisés pour les fonts (Swiper)
         "font-src 'self' data: https://fonts.gstatic.com https://cdn.jsdelivr.net; "
         "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://www.paypal.com; "
-        # ✅ autorise LibreTranslate en sortie
-        "connect-src 'self' https://api-free.deepl.com https://translation.googleapis.com https://www.paypal.com https://libretranslate.com; "
+        # ✅ autorise l'endpoint de traduction configuré
+        f"connect-src 'self' https://api-free.deepl.com https://translation.googleapis.com https://www.paypal.com {lt_origin}; "
         "frame-src 'self' https://www.paypal.com; "
         "base-uri 'self'; form-action 'self' https://www.paypal.com"
     )
