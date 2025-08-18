@@ -567,5 +567,57 @@ header.hero a::after{
 .hero .btn-black:active{
   transform: translateY(1px);
 }
+/* --- FIX header: ne jamais styler les liens de la topbar comme des boutons --- */
+.hero-topbar .btn,
+.hero-topbar .btn-primary,
+.hero-topbar .btn-secondary,
+.hero-topbar .btn-dark,
+.hero-topbar .btn-outline,
+.hero-topbar .btn-outline-dark,
+.hero-topbar .btn-black,
+.nav-hero .btn{
+  background: transparent !important;
+  color: #fff !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* Neutralise aussi tout focus/active qui donnerait un halo/cadre */
+.hero-topbar a,
+.nav-hero a{
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+.hero-topbar a::before,
+.hero-topbar a::after{ content: none !important; }
+
+/* --- Reste du site : boutons secondaires = bleu primaire --- */
+.btn,
+.btn-secondary,
+.btn-dark,
+.btn-outline,
+.btn-outline-dark,
+.btn-black,
+.btn-default{
+  background: #2563eb !important;
+  color: #fff !important;
+  border: 1px solid rgba(0,0,0,.2) !important;
+  border-radius: 12px !important;
+  padding: 12px 18px !important;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  text-decoration: none !important;
+  cursor: pointer;
+  transition: transform .06s ease, filter .2s ease;
+}
+.btn:hover{ filter: brightness(1.05); }
+.btn:active{ transform: translateY(1px); }
 
 
