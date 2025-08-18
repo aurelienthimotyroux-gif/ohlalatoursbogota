@@ -619,5 +619,114 @@ header.hero a::after{
 }
 .btn:hover{ filter: brightness(1.05); }
 .btn:active{ transform: translateY(1px); }
+/* === KILL le bloc bleu avant "Home" dans la topbar === */
+
+/* 1) Les liens de la topbar et de la nav ne doivent jamais adopter un style "bouton" */
+.hero-topbar a,
+.nav-hero a,
+.hero-topbar a:link,
+.nav-hero a:link,
+.hero-topbar a:visited,
+.nav-hero a:visited,
+.hero-topbar a:hover,
+.nav-hero a:hover,
+.hero-topbar a:active,
+.nav-hero a:active,
+.hero-topbar a:focus,
+.nav-hero a:focus,
+.hero-topbar a:focus-visible,
+.nav-hero a:focus-visible{
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+  outline: none !important;
+  display: inline !important;
+}
+
+/* 2) S'il y a un pseudo-élément décoratif (le fameux "pilule" bleue), on le retire */
+.hero-topbar a::before,
+.hero-topbar a::after,
+.nav-hero a::before,
+.nav-hero a::after{
+  content: none !important;
+  background: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+/* 3) Masquer les ancres "vides" ou techniques (skip link) qui se montreraient */
+.hero-topbar a:empty,
+.nav-hero a:empty,
+a.skip-link,
+a.skip-to-content,
+a[href="#content"],
+a[href="#main"],
+a[href="#main-content"]{
+  display: none !important;
+}
+
+/* 4) Si un lien de la topbar a été balisé en .btn* par mégarde, on le remet en lien simple */
+.hero-topbar .btn,
+.hero-topbar .btn-primary,
+.hero-topbar .btn-secondary,
+.hero-topbar .btn-dark,
+.hero-topbar .btn-outline,
+.hero-topbar .btn-black,
+.nav-hero .btn{
+  background: transparent !important;
+  color: #fff !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* === Hard-fix : enlever la pastille/« pilule » bleue avant "Home" dans la topbar === */
+
+/* Neutralise l'élément placé AVANT le premier lien (souvent un lien/btn vide) */
+.nav-hero > *:first-child{
+  background: transparent !important;
+  box-shadow: none !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  width: auto !important;
+  height: auto !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  display: inline !important;
+}
+
+/* S'il est vide (aucun texte), on le cache proprement */
+.nav-hero > a:first-child:empty,
+.nav-hero > button:first-child:empty,
+.nav-hero > span:first-child:empty{
+  display: none !important;
+}
+
+/* Supprime tout pseudo-élément décoratif (la "pilule") */
+.nav-hero > *:first-child::before,
+.nav-hero > *:first-child::after{
+  content: none !important;
+  background: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+/* Sécurité : les liens du menu ne doivent jamais recevoir un style bouton */
+.nav-hero a{
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+  outline: none !important;
+  display: inline !important;
+}
+
 
 
