@@ -31,13 +31,58 @@
     <meta property="og:locale" content="es_CO">
   {% endif %}
 
-  <!-- ✅ Favicon + CSS -->
+  <!-- ✅ Favicon + CSS global -->
   <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
-  <!-- Petit style discret pour la note de trafic -->
+  <!-- ✅ Styles locaux (on conserve le design : image à droite) -->
   <style>
-    .chip-note { font-size: .95em; opacity: .85; }
+    /* Bloc texte + image côte à côte */
+    .transport-description {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 24px;
+      align-items: center;
+      padding: 20px;
+    }
+    .transport-text { flex: 1 1 400px; }
+    .transport-img  { flex: 1 1 350px; }
+    .transport-img img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 12px;
+      display: block;
+    }
+
+    /* Petites listes / chips déjà présentes dans ton design global */
+    .tour-includes { position: relative; margin: 14px 0 12px; padding-left: 14px; }
+    .tour-includes::before {
+      content: "";
+      position: absolute; left: 0; top: 4px; bottom: 4px; width: 4px;
+      border-radius: 4px; background: linear-gradient(180deg, #f59e0b, #f97316);
+    }
+    .includes-title { margin: 0 0 8px; font-size: 14px; letter-spacing: .4px; text-transform: uppercase; opacity: .8; }
+    .includes-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px 14px; grid-template-columns: 1fr; }
+    .includes-list li { position: relative; padding-left: 26px; line-height: 1.6; }
+    .includes-list li::before { content: "✓"; position: absolute; left: 0; top: 0; font-weight: 700; transform: translateY(1px); opacity: .9; }
+
+    .tour-chips { list-style: none; padding: 0; margin: 12px 0 16px; display: flex; flex-wrap: wrap; gap: 16px; }
+    .tour-chips .chip { background: none; border: none; padding: 0; font-size: 16px; line-height: 1.6; }
+
+    .btn-primary {
+      appearance: none; border: 1px solid rgba(0,0,0,.2);
+      background: #2563eb; color: #fff; padding: 12px 18px;
+      border-radius: 12px; font-weight: 700; cursor: pointer;
+    }
+
+    /* Note discrète à côté de la durée */
+    .chip-note{ font-size:.95em; opacity:.85; }
+
+    /* Responsive : on garde l’image sous le texte en mobile */
+    @media (max-width: 900px){
+      .transport-description { flex-direction: column; }
+      .transport-text, .transport-img { flex: 1 1 auto; }
+    }
   </style>
 </head>
 <body>
@@ -67,7 +112,7 @@
   <main>
     <section id="transport" class="container">
 
-      <!-- Bloc texte + image côte à côte -->
+      <!-- Texte à gauche -->
       <div class="transport-description">
         <div class="transport-text">
           <h2>{{ _("Transfert privé, ponctuel et sécurisé") }}</h2>
@@ -117,6 +162,7 @@
           </p>
         </div>
 
+        <!-- Photo à droite (conservée) -->
         <div class="transport-img">
           <img src="{{ url_for('static', filename='images/transport_van.webp') }}"
                alt="{{ _('Service de transport privé à Bogotá') }}">
