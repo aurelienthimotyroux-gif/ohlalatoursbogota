@@ -366,4 +366,52 @@ button:focus, a:focus { outline: none !important; box-shadow: none !important; }
 /* Le petit paragraphe en dessous respire un peu */
 .transport-text p + p{ margin-top: 10px; }
 
+/* 1) Nav topbar : supprimer le petit "cadre bleu" parasite */
+.hero-topbar a:focus,
+.hero-topbar a:focus-visible{
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* S'il s'agit d'un lien vide résiduel, on le masque proprement */
+.hero-topbar a:empty{
+  display: none !important;
+}
+
+/* Et on s'assure qu'aucun fond ne soit appliqué aux liens du menu */
+.hero-topbar a{
+  background: transparent !important;
+  border: 0 !important;
+  padding: 0 !important;
+}
+
+/* 2) Bouton noir -> bleu (mêmes styles que .btn-primary) */
+.btn-secondary,
+.btn-dark,
+.btn-outline{
+  background: #2563eb !important;
+  color: #fff !important;
+  border: 1px solid rgba(0,0,0,.2) !important;
+  border-radius: 12px;
+  font-weight: 700;
+  padding: 12px 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform .06s ease, filter .2s ease;
+}
+.btn-secondary:hover,
+.btn-dark:hover,
+.btn-outline:hover{
+  filter: brightness(1.05);
+}
+.btn-secondary:active,
+.btn-dark:active,
+.btn-outline:active{
+  transform: translateY(1px);
+}
+
 
