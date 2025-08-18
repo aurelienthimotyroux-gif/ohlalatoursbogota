@@ -244,7 +244,8 @@ def set_headers(resp):
         "default-src 'self'; "
         "img-src 'self' data: https:; "
         "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; "
-        "font-src 'self' https://fonts.gstatic.com; "
+        # ⬇️ AJOUTE data: et jsDelivr ici
+        "font-src 'self' data: https://fonts.gstatic.com https://cdn.jsdelivr.net; "
         "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://www.paypal.com; "
         "connect-src 'self' https://api-free.deepl.com https://translation.googleapis.com https://www.paypal.com; "
         "frame-src 'self' https://www.paypal.com; "
