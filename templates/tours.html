@@ -136,20 +136,172 @@
     <section id="excursions">
 
 {% set tours_data = [
-  ... autres tours ...,
-  { "slug": "la-chorrera", "title": _("Cascade de La Chorrera : la plus haute chute d’eau de Colombie"),
-    "desc": _("Découvrez une aventure inoubliable au cœur des montagnes andines et contemplez La Chorrera, la plus haute cascade du pays. Nous emprunterons des sentiers bordés d’une végétation luxuriante, en observant la richesse de la faune et de la flore locales. Tout au long de la randonnée, nous profiterons de paysages spectaculaires jusqu’à atteindre la chute vertigineuse de plus de 590 mètres, un spectacle naturel à couper le souffle. Randonnée de difficulté moyenne à 2500m d’altitude : prévoir une veste de pluie, des vêtements et chaussures de rechange, ainsi que de bonnes chaussures de randonnée ou une paire de baskets solides."),
+  { "slug": "candelaria", "title": _("La Candelaria : Histoire, art et secrets du cœur de Bogotá"),
+    "desc": _("Laissez-vous séduire par l’âme coloniale de Bogotá et partez à la découverte de La Candelaria, son quartier le plus coloré et vibrant. Entre ruelles pavées, façades colorées et fresques spectaculaires, chaque pas vous plonge dans un voyage à travers l’histoire, l’art et les traditions de la ville. Au fil de notre balade, vous écouterez des légendes fascinantes, revivrez des épisodes marquants de la politique colombienne et admirerez un art urbain qui donne vie aux murs de la capitale. Un moment privilégié pour comprendre Bogotá au-delà des clichés."),
+    "includes": [
+      _("Transport aller-retour depuis votre hébergement"),
+      _("Guide locale passionnée et experte"),
+      _("Visite à pied des sites historiques et culturels emblématiques"),
+      _("Exploration des fresques et du street art"),
+      _("Récits authentiques sur l’histoire, la politique et les traditions"),
+      _("Dégustation de café colombien d’exception"),
+      _("Conseils personnalisés pour vos découvertes gastronomiques et culturelles")
+    ],
+    "infos": [ _("Durée : ~3h30 heures"), _("Langues : 🇪🇸 🇫🇷 🇺🇸"), _("Tarif : à confirmer") ],
+    "images": ["candelaria1.jpg", "candelaria2.jpg", "candelaria3.jpg"]
+  },
+  { "slug": "monserrate", "title": _("Monserrate : Là où se rencontrent nature, histoire et foi"),
+    "desc": _("Grimpez au sommet le plus emblématique de Bogotá et vivez une expérience unique qui mêle nature, histoire et spiritualité. Nous monterons en téléphérique pour profiter de l’une des plus belles vues sur la capitale, entourés par la luxuriante végétation andine. Au sommet, nous visiterons le Sanctuaire du Señor Caído, haut lieu de ferveur spirituelle, avant de parcourir ses alentours pour admirer le paysage, l’architecture et les traditions qui font de Monserrate un site incontournable."),
+    "includes": [
+      _("Guide locale experte"),
+      _("Montée en téléphérique et descente en funiculaire"),
+      _("Récits historiques, culturels et spirituels"),
+      _("Dégustation de café colombien au sommet"),
+      _("Transport aller-retour depuis votre hébergement (optionnel)")
+    ],
+    "infos": [ _("Durée : ~2h30 heures"), _("Langues : 🇪🇸 🇫🇷 🇺🇸"), _("Tarif : à confirmer") ],
+    "images": ["monserrate1.jpg", "monserrate2.jpg", "monserrate3.jpg", "monserrate4.jpg"]
+  },
+  { "slug": "zipaquira", "title": _("Cathédrale de Sel de Zipaquirá : un joyau souterrain unique au monde"),
+    "desc": _("Découvrez les profondeurs de la terre et émerveillez-vous devant l’une des œuvres les plus impressionnantes de Colombie. Creusée dans une ancienne mine de sel, la Cathédrale de Zipaquirá allie grandeur architecturale, spiritualité et histoire minière. Nous parcourrons ses galeries monumentales, illuminées par un spectaculaire jeu de lumières, et admirerons les sculptures taillées dans le sel, témoins du savoir-faire et de la foi de ses bâtisseurs."),
     "includes": [
       _("Guide locale passionnée et experte"),
-      _("Entrée au parc naturel"),
-      _("Informations sur la faune, la flore et l’histoire du site"),
-      _("Snack léger (prévoir un petit encas supplémentaire)"),
-      _("Pause pour se reposer et admirer la vue"),
+      _("Entrée à la Cathédrale de Sel"),
+      _("Récits historiques, culturels et spirituels"),
+      _("Déjeuner traditionnel"),
+      _("Temps libre pour explorer et prendre des photos"),
       _("Transport aller-retour depuis votre hébergement")
     ],
-    "infos": [ _("Durée : ~7–8h"), _("Langues : 🇫🇷 🇪🇸 🇺🇸"), _("Tarif : à confirmer") ],
-    "images": ["chorrera1.jpg", "chorrera2.jpeg", "chorrera3.jpeg"]
+    "infos": [ _("Durée : ~7h (transfert inclus)"), _("Langues : 🇫🇷 🇪🇸 🇺🇸"), _("Tarif : à confirmer") ],
+    "images": ["zipaquira1.jpg", "zipaquira2.jpg", "zipaquira3.jpg"]
   },
-  ... suite des tours ...
+  { "slug": "la-chorrera", "title": _("Cascade de La Chorrera : la plus haute chute d’eau de Colombie"),
+  "desc": _("Découvrez une aventure inoubliable au cœur des montagnes andines et contemplez La Chorrera, la plus haute cascade du pays. Nous emprunterons des sentiers bordés d’une végétation luxuriante, en observant la richesse de la faune et de la flore locales. Tout au long de la randonnée, nous profiterons de paysages spectaculaires jusqu’à atteindre la chute vertigineuse de plus de 590 mètres, un spectacle naturel à couper le souffle. Randonnée de difficulté moyenne à 2500m d’altitude : prévoir une veste de pluie, des vêtements et chaussures de rechange, ainsi que de bonnes chaussures de randonnée ou une paire de baskets solides."),
+  "includes": [
+    _("Guide locale passionnée et experte"),
+    _("Entrée au parc naturel"),
+    _("Informations sur la faune, la flore et l’histoire du site"),
+    _("Snack léger (prévoir un petit encas supplémentaire)"),
+    _("Pause pour se reposer et admirer la vue"),
+    _("Transport aller-retour depuis votre hébergement")
+  ],
+  "infos": [ _("Durée : ~7–8h"), _("Langues : 🇫🇷 🇪🇸 🇺🇸"), _("Tarif : à confirmer") ],
+  "images": ["chorrera1.jpg", "chorrera2.jpeg", "chorrera3.jpeg"]
+},
+  { "slug": "finca-cafe", "title": _("Visite d’une finca de café près de Bogotá"),
+    "desc": _("Découvrez le café colombien depuis sa source : marchez parmi les caféiers, apprenez la plantation, la récolte et la mouture, et dégustez une tasse fraîchement préparée dans un cadre authentique."),
+    "includes": [
+      _("Petit-déjeuner typique colombien"),
+      _("Entrée à la finca de café"),
+      _("Visite guidée de la plantation et des installations"),
+      _("Explication du processus de production du café"),
+      _("Dégustation de café fraîchement préparé"),
+      _("Transport aller-retour depuis Bogotá")
+    ],
+    "infos": [ _("Durée : ~7–8h"), _("Langues : 🇫🇷 🇪🇸 🇺🇸"), _("Tarif : à confirmer") ],
+    "images": ["finca-cafe1.jpg", "finca-cafe2.jpg", "finca-cafe3.jpg"]
+  }
 ] %}
+      {% for tour in tours_data %}
+      <div class="tour-card {% if loop.index is odd %}left{% else %}right{% endif %}">
+        <div class="swiper tour-swiper" aria-label="{{ _('Galerie d’images du tour') }} {{ tour.title }}">
+          <div class="swiper-wrapper">
+            {% for img in tour.images %}
+              <div class="swiper-slide">
+                <img src="{{ url_for('static', filename='images/' ~ img) }}" alt="{{ tour.title }}">
+              </div>
+            {% endfor %}
+          </div>
+          <div class="swiper-button-next" aria-label="{{ _('Image suivante') }}"></div>
+          <div class="swiper-button-prev" aria-label="{{ _('Image précédente') }}"></div>
+        </div>
 
+        <div class="content">
+          <h3 class="tour-title">{{ tour.title }}</h3>
+
+          <!-- Intro / lead -->
+          <p class="tour-lead">{{ tour.desc }}</p>
+
+          <!-- Bloc INCLUS -->
+          {% if tour.includes is defined and tour.includes %}
+            <div class="tour-includes">
+              <h4 class="includes-title">{{ _("Ce qui est inclus :") }}</h4>
+              <ul class="includes-list">
+                {% for item in tour.includes %}
+                  <li>{{ item }}</li>
+                {% endfor %}
+              </ul>
+            </div>
+          {% endif %}
+
+          <!-- Chips Durée / Langues / Tarif -->
+          <ul class="tour-chips" aria-label="{{ _('Informations pratiques') }}">
+            {% for info in tour.infos %}
+              {% set parts = info.split(':') %}
+              <li class="chip">
+                <strong>{{ parts[0] }}:</strong>&nbsp;{{ parts[1] if parts|length > 1 else '' }}
+              </li>
+            {% endfor %}
+          </ul>
+
+          <a href="{{ url_for('reservation', tour=tour.slug, lang=get_locale()) }}">
+            <button class="btn-primary">{{ _("Réserver") }}</button>
+          </a>
+        </div>
+      </div>
+      {% endfor %}
+
+    </section>
+  </main>
+
+  <!-- ✅ Données structurées : Breadcrumb + Liste des tours -->
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@graph":[
+      {
+        "@type":"BreadcrumbList",
+        "itemListElement":[
+          {"@type":"ListItem","position":1,"name":"Accueil","item":"https://www.ohlalatoursbogota.com/"},
+          {"@type":"ListItem","position":2,"name":"Tours","item":"https://www.ohlalatoursbogota.com/tours"}
+        ]
+      },
+      {
+        "@type":"ItemList",
+        "name":"Tours privés à Bogotá",
+        "itemListElement":[
+          {% for tour in tours_data %}
+          {
+            "@type":"ListItem",
+            "position": {{ loop.index }},
+            "item": {
+              "@type":"TouristTrip",
+              "name": {{ tour.title|tojson }},
+              "description": {{ tour.desc|tojson }},
+              "url": "{{ url_for('reservation', tour=tour.slug, _external=True, lang=get_locale()) }}",
+              "touristType": ["Couples","Familles","Groupes","Solo"],
+              "inLanguage": [{% if get_locale() == 'fr' %}"fr"{% elif get_locale() == 'en' %}"en"{% else %}"es"{% endif %}]
+            }
+          }{% if not loop.last %},{% endif %}
+          {% endfor %}
+        ]
+      }
+    ]
+  }
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+  <script>
+  document.querySelectorAll('.tour-swiper').forEach((slider) => {
+    new Swiper(slider, {
+      loop: true,
+      autoplay: { delay: 3000, disableOnInteraction: false },
+      navigation: {
+        nextEl: slider.querySelector('.swiper-button-next'),
+        prevEl: slider.querySelector('.swiper-button-prev'),
+      },
+    });
+  });
+  </script>
+</body>
+</html>
