@@ -21,24 +21,18 @@
         align-items: center;
         padding: 20px;
       }
-      .transport-text {
-        flex: 1 1 400px;
-      }
-      .transport-img {
-        flex: 1 1 350px;
-      }
+      .transport-text { flex: 1 1 400px; }
+      .transport-img  { flex: 1 1 350px; }
       .transport-img img {
         max-width: 100%;
         height: auto;
         border-radius: 12px;
         box-shadow: 0 4px 14px rgba(0,0,0,0.15);
       }
-      .transport-text h2 {
-        margin-top: 0;
-      }
+      .transport-text h2 { margin-top: 0; }
 
       /* Offre aéroport : style neutre (pas de texte blanc) */
-      .transport-offer {
+      .transport-offer{
         max-width: 950px;
         margin: 18px auto 48px;
         padding: 24px;
@@ -48,21 +42,16 @@
         border-radius: 12px;
         box-shadow: 0 6px 18px rgba(0,0,0,.06);
       }
-      .transport-offer h2 {
-        margin-top: 0;
-      }
-      .transport-offer ul {
-        margin: 10px 0 0 18px;
-        list-style: disc;
-      }
-      .transport-offer li { margin: 6px 0; }
+      .transport-offer h2{ margin-top:0; }
+      .transport-offer ul{ margin:10px 0 0 18px; list-style:disc; }
+      .transport-offer li{ margin:6px 0; }
     </style>
 </head>
 <body>
 
     <!-- Bandeau image avec topbar (lang + nav) et titre -->
     <header class="hero background-half"
-            style="background-image: url('{{ url_for('static', filename='images/bg_transport.jpeg') }}');">
+            style="background-image: url('{{ url_for('static', filename='images/bg_transport.jpg') }}');">
 
         <div class="hero-topbar">
             <div id="lang-switcher">
@@ -75,13 +64,11 @@
                 <a href="{{ url_for('index', lang=get_locale()) }}">{{ _("Accueil") }}</a> |
                 <a href="{{ url_for('tours', lang=get_locale()) }}">{{ _("Nos tours") }}</a> |
 		        <a href="{{ url_for('transport', lang=get_locale()) }}">{{ _("Service de Transport") }}</a> |
-                <a href="{{ url_for('reservation', lang=get_locale()) }}">{{ _("Réservation") }}</a> 
+                <a href="{{ url_for('reservation', lang=get_locale()) }}">{{ _("Réservation") }}</a>
             </nav>
         </div>
 
-        <h1 class="hero-title">
-            {{ _("Service de Transport") }}
-        </h1>
+        <h1 class="hero-title">{{ _("Service de Transport") }}</h1>
     </header>
 
     <!-- Description du service de transport -->
@@ -109,36 +96,35 @@
             </div>
 
             <div class="transport-img">
-                <img src="{{ url_for('static', filename='images/transport_service.jpeg') }}" 
+                <img src="{{ url_for('static', filename='images/transport_service.jpeg') }}"
                      alt="{{ _('Service de transport privé') }}">
             </div>
         </section>
 
         <!-- Bloc Offre : Hôtel -> Aéroport -->
         <section class="transport-offer">
-          <h2>Service de transport — Hôtel → Aéroport El Dorado (BOG)</h2>
-          <p>Besoin d’un transfert simple et fiable jusqu’à l’aéroport ? Nous venons vous chercher directement à votre hôtel à Bogotá et vous déposons au terminal de votre vol.</p>
+          <h2>{{ _("Service de transport — Hôtel → Aéroport El Dorado (BOG)") }}</h2>
+          <p>{{ _("Besoin d’un transfert simple et fiable jusqu’à l’aéroport ? Nous venons vous chercher directement à votre hôtel à Bogotá et vous déposons au terminal de votre vol.") }}</p>
           <ul>
-            <li><strong>Tarif fixe :</strong> 60 000 COP (1 à 4 personnes)</li>
-            <li>Trajet privé, véhicule confortable</li>
-            <li>Chauffeur ponctuel et professionnel</li>
-            <li>Prise en charge à votre hôtel</li>
-            <li>Durée indicative : 40 à 60 min selon le trafic</li>
+            <li><strong>{{ _("Tarif fixe") }} :</strong> {{ _("60 000 COP (1 à 4 personnes)") }}</li>
+            <li>{{ _("Trajet privé, véhicule confortable") }}</li>
+            <li>{{ _("Chauffeur ponctuel et professionnel") }}</li>
+            <li>{{ _("Prise en charge à votre hôtel") }}</li>
+            <li>{{ _("Durée indicative : 40 à 60 min selon le trafic") }}</li>
           </ul>
-          <h3>Réservation</h3>
+          <h3>{{ _("Réservation") }}</h3>
           <p>
-            Email : <a href="mailto:alejandramontana25.18@gmail.com">alejandramontana25.18@gmail.com</a><br>
-            WhatsApp : <a href="https://wa.me/573505384537" target="_blank" rel="noopener">+57 350 538 4537</a>
+            <strong>{{ _("Email") }} :</strong> <a href="mailto:alejandramontana25.18@gmail.com">alejandramontana25.18@gmail.com</a><br>
+            <strong>WhatsApp :</strong> <a href="https://wa.me/573505384537" target="_blank" rel="noopener">+57 350 538 4537</a>
           </p>
-          <p><em>Remarques :</em> tarif valable pour une prise en charge dans Bogotá intra-urbain. Suppléments possibles pour adresses périphériques, arrêts supplémentaires ou bagages hors gabarit.</p>
+          <p><em>{{ _("Remarques") }} :</em> {{ _("tarif valable pour une prise en charge dans Bogotá intra-urbain. Suppléments possibles pour adresses périphériques, arrêts supplémentaires ou bagages hors gabarit.") }}</p>
         </section>
     </main>
 
-    <!-- Footer -->
     <footer>
         <p>{{ _("© 2025 - Tous droits réservés") }}</p>
     </footer>
-
 </body>
 </html>
+
 

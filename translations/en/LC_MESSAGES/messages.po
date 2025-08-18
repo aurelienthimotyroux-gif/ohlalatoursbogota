@@ -492,3 +492,40 @@ msgstr "Languages: 🇫🇷 🇪🇸 🇺🇸"
 
 msgid "Tarif : à confirmer"
 msgstr "Price: to be confirmed"
+
+# NEW transport-offer
+msgid "Service de transport — Hôtel → Aéroport El Dorado (BOG)"
+msgstr "Transport service — Hotel → El Dorado Airport (BOG)"
+
+msgid "Besoin d’un transfert simple et fiable jusqu’à l’aéroport ? Nous venons vous chercher directement à votre hôtel à Bogotá et vous déposons au terminal de votre vol."
+msgstr "Need a simple and reliable airport transfer? We pick you up directly from your hotel in Bogotá and drop you off at your flight’s terminal."
+
+msgid "Tarif fixe"
+msgstr "Fixed fare"
+
+msgid "60 000 COP (1 à 4 personnes)"
+msgstr "60,000 COP (1 to 4 people)"
+
+msgid "Trajet privé, véhicule confortable"
+msgstr "Private ride, comfortable vehicle"
+
+msgid "Chauffeur ponctuel et professionnel"
+msgstr "Punctual, professional driver"
+
+msgid "Prise en charge à votre hôtel"
+msgstr "Hotel pick-up"
+
+msgid "Durée indicative : 40 à 60 min selon le trafic"
+msgstr "Estimated duration: 40–60 min depending on traffic"
+
+msgid "Réservation"
+msgstr "Booking"
+
+msgid "Email"
+msgstr "Email"
+
+msgid "Remarques"
+msgstr "Notes"
+
+msgid "tarif valable pour une prise en charge dans Bogotá intra-urbain. Suppléments possibles pour adresses périphériques, arrêts supplémentaires ou bagages hors gabarit."
+msgstr "Fare applies to pick-ups within Bogotá city. Extra fees may apply for outlying areas, additional stops, or oversized luggage."

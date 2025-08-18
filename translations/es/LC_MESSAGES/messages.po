@@ -486,3 +486,40 @@ msgstr "Degustación de café recién preparado"
 msgid "Transport aller-retour depuis Bogotá"
 msgstr "Transporte ida y regreso desde Bogotá"
 
+# NEW transport-offer
+msgid "Service de transport — Hôtel → Aéroport El Dorado (BOG)"
+msgstr "Servicio de transporte — Hotel → Aeropuerto El Dorado (BOG)"
+
+msgid "Besoin d’un transfert simple et fiable jusqu’à l’aéroport ? Nous venons vous chercher directement à votre hôtel à Bogotá et vous déposons au terminal de votre vol."
+msgstr "¿Necesitas un traslado sencillo y fiable al aeropuerto? Te recogemos directamente en tu hotel de Bogotá y te dejamos en la terminal de tu vuelo."
+
+msgid "Tarif fixe"
+msgstr "Tarifa fija"
+
+msgid "60 000 COP (1 à 4 personnes)"
+msgstr "60.000 COP (1 a 4 personas)"
+
+msgid "Trajet privé, véhicule confortable"
+msgstr "Trayecto privado, vehículo cómodo"
+
+msgid "Chauffeur ponctuel et professionnel"
+msgstr "Conductor puntual y profesional"
+
+msgid "Prise en charge à votre hôtel"
+msgstr "Recogida en tu hotel"
+
+msgid "Durée indicative : 40 à 60 min selon le trafic"
+msgstr "Duración estimada: 40 a 60 min según el tráfico"
+
+msgid "Réservation"
+msgstr "Reserva"
+
+msgid "Email"
+msgstr "Correo electrónico"
+
+msgid "Remarques"
+msgstr "Notas"
+
+msgid "tarif valable pour une prise en charge dans Bogotá intra-urbain. Suppléments possibles pour adresses périphériques, arrêts supplémentaires ou bagages hors gabarit."
+msgstr "La tarifa aplica para recogidas dentro del casco urbano de Bogotá. Pueden aplicarse suplementos por direcciones periféricas, paradas adicionales o equipaje de gran tamaño."
+
