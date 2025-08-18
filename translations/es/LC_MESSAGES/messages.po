@@ -1,249 +1,130 @@
-# Spanish translations for PROJECT.
-# Copyright (C) 2025 ORGANIZATION
-# This file is distributed under the same license as the PROJECT project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
-#
 msgid ""
 msgstr ""
-"Project-Id-Version: PROJECT VERSION\n"
-"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-08-09 18:25+0200\n"
-"PO-Revision-Date: 2025-08-15 18:45+0200\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Project-Id-Version: ohlalatoursbogota\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-08-18 00:00+0000\n"
+"PO-Revision-Date: 2025-08-18 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: Spanish\n"
 "Language: es\n"
-"Language-Team: es <LL@li.org>\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.17.0\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: templates/base.html:5 templates/base.html:42 templates/index.html:5
-#: templates/index.html:74 templates/reservation.html:24
-#: templates/tours.html:25
+# ---------- Navigation / UI ----------
 msgid "Accueil"
 msgstr "Inicio"
 
-#: templates/base.html:7 templates/index.html:7
-msgid "Visites guidées à Bogotá avec Alejandra, guide locale."
-msgstr "Visitas guiadas en Bogotá con Alejandra, guía local."
+msgid "Nos tours"
+msgstr "Nuestros tours"
 
-#: templates/base.html:43 templates/index.html:75 templates/reservation.html:25
-#: templates/tours.html:5 templates/tours.html:26 templates/tours.html:32
-msgid "Types de visites"
-msgstr "Tipos de visitas"
+msgid "Service de Transport"
+msgstr "Servicio de transporte"
 
-#: templates/base.html:44 templates/index.html:76 templates/reservation.html:26
-#: templates/tours.html:27
+msgid "Service de transport"
+msgstr "Servicio de transporte"
+
 msgid "Réservation"
 msgstr "Reserva"
 
-#: templates/base.html:48 templates/index.html:81
-msgid "Bienvenue à Bogotá !"
-msgstr "¡Bienvenidos a Bogotá!"
+msgid "Choix de la langue"
+msgstr "Selección de idioma"
 
-#: templates/base.html:63 templates/index.html:111
-msgid "Alejandra, votre guide à Bogotá"
-msgstr "Alejandra, tu guía en Bogotá"
+msgid "Navigation principale"
+msgstr "Navegación principal"
 
-#: templates/base.html:71 templates/index.html:117
-msgid "Contact"
-msgstr "Contacto"
+msgid "Galerie d’images du tour"
+msgstr "Galería de imágenes del tour"
 
-#: templates/base.html:73 templates/index.html:119
-#: templates/reservation.html:48
-msgid "Email"
-msgstr "Correo electrónico"
+msgid "Image suivante"
+msgstr "Imagen siguiente"
 
-#: templates/base.html:77 templates/index.html:123
-msgid "WhatsApp"
-msgstr "WhatsApp"
-
-msgid "Je suis Alejandra, guide locale passionnée, et je vous invite à découvrir une Bogotá authentique, vibrante et pleine de vie."
-msgstr "Soy Alejandra, guía local apasionada, y te invito a descubrir una Bogotá auténtica, vibrante y llena de vida."
-
-msgid "À travers mes visites en petits groupes, nous explorerons son histoire, sa culture et ses saveurs : balades dans les quartiers historiques, expériences culinaires, escapades en pleine nature et excursions uniques aux alentours, comme la célèbre Cathédrale de sel de Zipaquirá."
-msgstr "A través de mis recorridos en pequeños grupos, exploraremos su historia, su cultura y sus sabores: paseos por barrios históricos, experiencias culinarias, escapadas a la naturaleza y excursiones únicas en los alrededores, como la famosa Catedral de Sal de Zipaquirá."
-
-msgid "Plus qu’une simple visite, je vous propose une immersion vivante et chaleureuse, une expérience à ressentir et à emporter avec vous."
-msgstr "Más que una simple visita, te propongo una inmersión viva y acogedora, una experiencia para sentir y llevar contigo."
-
-#: templates/index.html:96
-msgid "Voir les types de visites"
-msgstr "Ver tipos de visitas"
-
-#: templates/index.html:99
-msgid "Réserver maintenant"
-msgstr "Reservar ahora"
-
-#: templates/index.html:126
-msgid "N’hésitez pas à me contacter pour toute question ou réservation."
-msgstr "No dudes en contactarme para cualquier pregunta o reserva."
-
-#: templates/index.html:134
-msgid "Avis des voyageurs"
-msgstr "Opiniones de viajeros"
-
-#: templates/index.html:140
-msgid "Canada"
-msgstr "Canadá"
-
-#: templates/index.html:141
-msgid "mai"
-msgstr "mayo"
-
-#: templates/index.html:144
-msgid "L’expérience est super. Alejandra prend son temps pour nous expliquer et répondre à nos questions."
-msgstr "La experiencia fue excelente. Alejandra se toma su tiempo para explicar y responder nuestras preguntas."
-
-#: templates/index.html:150 templates/index.html:171 templates/index.html:201
-#: templates/index.html:211 templates/index.html:221 templates.index.html:261
-msgid "Mexique"
-msgstr "México"
-
-#: templates/index.html:151 templates.index.html:161
-msgid "mars"
-msgstr "marzo"
-
-#: templates/index.html:154
-msgid ""
-"Recommandé. La communication avec Alejandra était excellente avant et "
-"pendant, tout ce qui était décrit était respecté et toujours à l'écoute "
-"de nos besoins. C’est probablement un lieu que vous devez visiter si vous"
-" venez à Bogotá : belles vues et cathédrale de sel à couper le souffle."
-msgstr "Recomendado. La comunicación con Alejandra fue excelente antes y durante el tour; todo lo descrito se cumplió y siempre estuvo atenta a nuestras necesidades. Es probablemente un lugar que debes visitar si vienes a Bogotá: hermosas vistas y una catedral de sal impresionante."
-
-#: templates/index.html:160 templates.index.html:191 templates.index.html:251
-msgid "États-Unis"
-msgstr "Estados Unidos"
-
-#: templates/index.html:164
-#, python-format
-msgid ""
-"Expérience incroyable ! Alejandra et son père (Omar) ont pris soin des "
-"besoins spéciaux de mon mari, et tout a été fait à 100%%. La Catedral de "
-"Sal, la cuisine traditionnelle à Brasas del Llano : une expérience "
-"culturelle 5 étoiles. Nous recommandons Alejandra si vous voulez une "
-"visite avec une amie. Merci beaucoup, à la prochaine !"
-msgstr "¡Experiencia increíble! Alejandra y su padre (Omar) cuidaron con esmero las necesidades especiales de mi esposo y todo se hizo al 100%%. La Catedral de Sal y la comida tradicional en Brasas del Llano fueron una experiencia cultural de 5 estrellas. Recomendamos a Alejandra si quieres una visita con un toque de amistad. ¡Muchas gracias, hasta la próxima!"
-
-#: templates/index.html:172
-msgid "septembre"
-msgstr "septiembre"
-
-#: templates/index.html:175
-msgid ""
-"Alejandra et son père sont extraordinaires et nous ont offert une très "
-"belle journée à Zipaquirá. Nous repartons avec d’excellents souvenirs. "
-"Merci !"
-msgstr "Alejandra y su padre son extraordinarios y nos brindaron un día muy hermoso en Zipaquirá. Nos vamos con excelentes recuerdos. ¡Gracias!"
-
-#: templates/index.html:181 templates.index.html:231 templates.index.html:241
-msgid "Costa Rica"
-msgstr "Costa Rica"
-
-#: templates/index.html:182
-msgid "janvier"
-msgstr "enero"
-
-#: templates/index.html:185
-msgid "Merci beaucoup pour votre gentillesse et votre disponibilité. Super recommandé."
-msgstr "Muchas gracias por tu amabilidad y disponibilidad. Muy recomendado."
-
-#: templates/index.html:192 templates.index.html:202 templates.index.html:212
-#: templates.index.html:222
-msgid "août"
-msgstr "agosto"
-
-#: templates/index.html:195
-msgid "Alejandra et son père Omar ont été des hôtes parfaits, très attentifs à ma manière de vouloir profiter de la visite."
-msgstr "Alejandra y su padre Omar fueron anfitriones perfectos, muy atentos a mi manera de querer disfrutar la visita."
-
-#: templates/index.html:205
-msgid "Nous recommandons cette expérience. Nous avons passé un excellent moment. Alejandra et son père sont polis et sympathiques."
-msgstr "Recomendamos esta experiencia. Pasamos un momento excelente. Alejandra y su padre son amables y simpáticos."
-
-#: templates/index.html:215
-#, python-format
-msgid "Hautement recommandé. Alejandra et son père ont été très sympathiques et à notre écoute à tout moment. Expérience 100 %% recommandée !"
-msgstr "Muy recomendado. Alejandra y su padre fueron muy simpáticos y atentos en todo momento. ¡Experiencia 100%% recomendada!"
-
-#: templates/index.html:225
-msgid ""
-"Du début à la fin, une expérience très agréable. Alejandra et son père "
-"Omar ont été très attentifs et gentils. Petit-déjeuner et déjeuner "
-"délicieux. Ils nous ont laissé profiter de la cathédrale à notre rythme :"
-" apprécié !"
-msgstr "De principio a fin, una experiencia muy agradable. Alejandra y su padre Omar fueron muy atentos y amables. Desayuno y almuerzo deliciosos. Nos dejaron disfrutar de la catedral a nuestro ritmo, ¡lo apreciamos mucho!"
-
-#: templates/index.html:232 templates.index.html:242 templates.index.html:262
-msgid "juillet"
-msgstr "julio"
-
-#: templates/index.html:235
-msgid "Voyage bien planifié. À l’heure pour le pickup à l’hôtel. Pendant le trajet, Alejandra et Omar sont très sympathiques et patients."
-msgstr "Viaje bien planificado. Puntuales para recogernos en el hotel. Durante el trayecto, Alejandra y Omar fueron muy simpáticos y pacientes."
-
-#: templates/index.html:245
-msgid "Ale et Omar (son papa) sont super sympas et très impliqués pour que vous vous sentiez comme chez vous."
-msgstr "Ale y Omar (su papá) son muy simpáticos y están muy comprometidos en hacerte sentir como en casa."
-
-#: templates/index.html:252
-msgid "février"
-msgstr "febrero"
-
-#: templates/index.html:255
-msgid "Alejandra et son père ont été sympathiques, réactifs à nos questions, et nous ont emmenés sur des sites fascinants que nous n’aurions jamais trouvés seuls. Une expérience très agréable."
-msgstr "Alejandra y su padre fueron simpáticos, respondieron a nuestras preguntas y nos llevaron a lugares fascinantes que nunca habríamos encontrado por nuestra cuenta. Una experiencia muy agradable."
-
-#: templates/index.html:265
-msgid ""
-"L’une des meilleures expériences à ne pas manquer. Alejandra et son papa, M. Omar, sont extrêmement gentils, à l’écoute, et très ponctuels. Parcours agréable, café sur la place, échanges culturels, visite impressionnante de la cathédrale de sel, puis déjeuner de plats typiques. Merci pour votre hospitalité, je reviendrais sans hésiter !"
-msgstr "Una de las mejores experiencias que no te puedes perder. Alejandra y su papá, el Sr. Omar, son extremadamente amables, atentos y muy puntuales. Recorrido agradable, café en la plaza con intercambio cultural, visita impresionante a la Catedral de Sal y luego almuerzo de platos típicos. Gracias por su hospitalidad, ¡volvería sin dudarlo!"
-
-#: templates/index.html:276
-msgid "Lire plus"
-msgstr "Leer más"
-
-#: templates/index.html:277
-msgid "Lire moins"
-msgstr "Leer menos"
-
-#: templates/reservation.html:5 templates/reservation.html:33
-msgid "Réserver votre visite"
-msgstr "Reservar tu visita"
-
-#: templates/reservation.html:45
-msgid "Nom"
-msgstr "Nombre"
-
-#: templates/reservation.html:51
-msgid "Date souhaitée"
-msgstr "Fecha deseada"
-
-#: templates/reservation.html:54
-msgid "Message"
-msgstr "Mensaje"
-
-#: templates/reservation.html:57
-msgid "Envoyer"
-msgstr "Enviar"
-
-# --- Tours (Candelaria) ---
-msgid "La Candelaria : Histoire, art et secrets du cœur de Bogotá"
-msgstr "La Candelaria: Historia, arte y secretos del corazón de Bogotá"
+msgid "Image précédente"
+msgstr "Imagen anterior"
 
 msgid "Ce qui est inclus :"
-msgstr "Incluye:"
+msgstr "Qué incluye:"
 
+msgid "Informations pratiques"
+msgstr "Información práctica"
+
+msgid "Réserver"
+msgstr "Reservar"
+
+msgid "© 2025 - Tous droits réservés"
+msgstr "© 2025 - Todos los derechos reservados"
+
+msgid "Service de transport privé"
+msgstr "Servicio de transporte privado"
+
+# ---------- SEO / Titles ----------
+msgid "Types de visites"
+msgstr "Tipos de visitas"
+
+msgid "Tours privés à Bogotá – Candelaria, Monserrate, Zipaquirá, café"
+msgstr "Tours privados en Bogotá – Candelaria, Monserrate, Zipaquirá, café"
+
+msgid "Découvrez nos visites guidées : Candelaria, Monserrate, Cathédrale de sel de Zipaquirá, cascade La Chorrera et finca café. Guides francophones. Transport/van et transferts aéroport."
+msgstr "Descubre nuestras visitas guiadas: Candelaria, Monserrate, Catedral de Sal de Zipaquirá, cascada La Chorrera y finca cafetera. Guías francófonos. Transporte/van y traslados al aeropuerto."
+
+# ---------- JSON-LD helpers ----------
+msgid "Tours privés à Bogotá"
+msgstr "Tours privados en Bogotá"
+
+msgid "Couples"
+msgstr "Parejas"
+
+msgid "Familles"
+msgstr "Familias"
+
+msgid "Groupes"
+msgstr "Grupos"
+
+msgid "Solo"
+msgstr "Individual"
+
+# ---------- TOURS: titles ----------
+msgid "La Candelaria : Histoire, art et secrets du cœur de Bogotá"
+msgstr "La Candelaria: historia, arte y secretos del corazón de Bogotá"
+
+msgid "Monserrate : Là où se rencontrent nature, histoire et foi"
+msgstr "Monserrate: donde se encuentran naturaleza, historia y fe"
+
+msgid "Cathédrale de Sel de Zipaquirá : un joyau souterrain unique au monde"
+msgstr "Catedral de Sal de Zipaquirá: una joya subterránea única"
+
+msgid "Cascade de La Chorrera : la plus haute chute d’eau de Colombie"
+msgstr "Cascada La Chorrera: la caída de agua más alta de Colombia"
+
+msgid "Visite d’une finca de café près de Bogotá"
+msgstr "Visita a una finca de café cerca de Bogotá"
+
+# ---------- TOURS: descriptions ----------
+msgid "Laissez-vous séduire par l’âme coloniale de Bogotá et partez à la découverte de La Candelaria, son quartier le plus coloré et vibrant. Entre ruelles pavées, façades colorées et fresques spectaculaires, chaque pas vous plonge dans un voyage à travers l’histoire, l’art et les traditions de la ville. Au fil de notre balade, vous écouterez des légendes fascinantes, revivrez des épisodes marquants de la politique colombienne et admirerez un art urbain qui donne vie aux murs de la capitale. Un moment privilégié pour comprendre Bogotá au-delà des clichés."
+msgstr "Déjate seducir por el alma colonial de Bogotá y descubre La Candelaria, su barrio más colorido y vibrante. Entre calles empedradas, fachadas de colores y murales espectaculares, cada paso te sumerge en un viaje por la historia, el arte y las tradiciones de la ciudad. A lo largo del recorrido escucharás leyendas fascinantes, revivirás episodios clave de la política colombiana y admirarás el arte urbano que da vida a los muros de la capital. Un momento privilegiado para comprender Bogotá más allá de los clichés."
+
+msgid "Grimpez au sommet le plus emblématique de Bogotá et vivez une expérience unique qui mêle nature, histoire et spiritualité. Nous monterons en téléphérique pour profiter de l’une des plus belles vues sur la capitale, entourés par la luxuriante végétation andine. Au sommet, nous visiterons le Sanctuaire du Señor Caído, haut lieu de ferveur spirituelle, avant de parcourir ses alentours pour admirer le paysage, l’architecture et les traditions qui font de Monserrate un site incontournable."
+msgstr "Asciende al pico más emblemático de Bogotá y vive una experiencia única que combina naturaleza, historia y espiritualidad. Subiremos en teleférico para disfrutar de una de las mejores vistas de la capital, rodeados de la exuberante vegetación andina. En la cima, visitaremos el Santuario del Señor Caído, lugar de gran devoción, y recorreremos sus alrededores para admirar el paisaje, la arquitectura y las tradiciones que hacen de Monserrate un sitio imprescindible."
+
+msgid "Découvrez les profondeurs de la terre et émerveillez-vous devant l’une des œuvres les plus impressionnantes de Colombie. Creusée dans une ancienne mine de sel, la Cathédrale de Zipaquirá allie grandeur architecturale, spiritualité et histoire minière. Nous parcourrons ses galeries monumentales, illuminées par un spectaculaire jeu de lumières, et admirerons les sculptures taillées dans le sel, témoins du savoir-faire et de la foi de ses bâtisseurs."
+msgstr "Descubre las profundidades de la tierra y maravíllate ante una de las obras más impresionantes de Colombia. Excavada en una antigua mina de sal, la Catedral de Sal de Zipaquirá combina grandeza arquitectónica, espiritualidad e historia minera. Recorreremos sus galerías monumentales, iluminadas por un espectacular juego de luces, y admiraremos esculturas talladas en sal, testimonio de la destreza y la fe de sus constructores."
+
+msgid "Découvrez une aventure inoubliable au cœur des montagnes andines et contemplez La Chorrera, la plus haute cascade du pays. Nous emprunterons des sentiers bordés d’une végétation luxuriante, en observant la richesse de la faune et de la flore locales. Tout au long de la randonnée, nous profiterons de paysages spectaculaires jusqu’à atteindre la chute vertigineuse de plus de 590 mètres, un spectacle naturel à couper le souffle."
+msgstr "Vive una aventura inolvidable en el corazón de las montañas andinas y contempla La Chorrera, la cascada más alta del país. Recorreremos senderos rodeados de vegetación exuberante, observando la rica flora y fauna locales. Durante toda la caminata disfrutaremos de paisajes espectaculares hasta llegar a la caída de más de 590 metros: un espectáculo natural impresionante."
+
+msgid "Découvrez le café colombien depuis sa source : marchez parmi les caféiers, apprenez la plantation, la récolte et la mouture, et dégustez une tasse fraîchement préparée dans un cadre authentique."
+msgstr "Descubre el café colombiano desde su origen: camina entre los cafetales, aprende sobre la siembra, la cosecha y la molienda, y degusta una taza recién preparada en un entorno auténtico."
+
+# ---------- TOURS: includes bullets ----------
 msgid "Transport aller-retour depuis votre hébergement"
-msgstr "Transporte ida y vuelta desde su alojamiento"
+msgstr "Transporte ida y vuelta desde tu alojamiento"
 
 msgid "Guide locale passionnée et experte"
 msgstr "Guía local apasionada y experta"
 
 msgid "Visite à pied des sites historiques et culturels emblématiques"
-msgstr "Recorrido a pie por sitios históricos y culturales emblemáticos"
+msgstr "Visita a pie por los sitios históricos y culturales emblemáticos"
 
 msgid "Exploration des fresques et du street art"
 msgstr "Exploración de murales y arte urbano"
@@ -257,46 +138,20 @@ msgstr "Degustación de café colombiano de excepción"
 msgid "Conseils personnalisés pour vos découvertes gastronomiques et culturelles"
 msgstr "Consejos personalizados para tus descubrimientos gastronómicos y culturales"
 
-msgid "Durée : 3 heures"
-msgstr "Duración: 3 horas"
-
-msgid "Langues : 🇪🇸 🇫🇷 🇺🇸"
-msgstr "Idiomas: 🇪🇸 🇫🇷 🇺🇸"
-
-msgid "Tarif : à confirmer"
-msgstr "Tarifa: por confirmar"
-
-# --- Tours (Monserrate) ---
-msgid "Monserrate : Là où se rencontrent nature, histoire et foi"
-msgstr "Monserrate: Donde se encuentran naturaleza, historia y fe"
-
-msgid "Grimpez au sommet le plus emblématique de Bogotá et vivez une expérience unique qui mêle nature, histoire et spiritualité. Nous monterons en téléphérique pour profiter de l’une des plus belles vues sur la capitale, entourés par la luxuriante végétation andine. Au sommet, nous visiterons le Sanctuaire du Señor Caído, haut lieu de ferveur spirituelle, avant de parcourir ses alentours pour admirer le paysage, l’architecture et les traditions qui font de Monserrate un site incontournable."
-msgstr "Asciende a la cima más emblemática de Bogotá y vive una experiencia única que combina naturaleza, historia y espiritualidad. Subiremos en teleférico para disfrutar de una de las mejores vistas de la capital, rodeados por la exuberante vegetación andina. En la cima, visitaremos el Santuario del Señor Caído, lugar de gran fervor espiritual, antes de recorrer sus alrededores para admirar el paisaje, la arquitectura y las tradiciones que hacen de Monserrate un sitio imprescindible."
-
 msgid "Guide locale experte"
 msgstr "Guía local experta"
 
 msgid "Montée en téléphérique et descente en funiculaire"
 msgstr "Subida en teleférico y bajada en funicular"
 
+msgid "Récits historiques, culturels et spirituels"
+msgstr "Relatos históricos, culturales y espirituales"
+
 msgid "Dégustation de café colombien au sommet"
 msgstr "Degustación de café colombiano en la cima"
 
 msgid "Transport aller-retour depuis votre hébergement (optionnel)"
-msgstr "Transporte ida y vuelta desde su alojamiento (opcional)"
-
-msgid "Durée : 2 heures"
-msgstr "Duración: 2 horas"
-
-msgid "Langues : 🇪🇸 🇫🇷 🇺🇸"
-msgstr "Idiomas: 🇪🇸 🇫🇷 🇺🇸"
-
-# --- Tours (Zipaquirá) ---
-msgid "Cathédrale de Sel de Zipaquirá : un joyau souterrain unique au monde"
-msgstr "Catedral de Sal de Zipaquirá: una joya subterránea única en el mundo"
-
-msgid "Découvrez les profondeurs de la terre et émerveillez-vous devant l’une des œuvres les plus impressionnantes de Colombie. Creusée dans une ancienne mine de sel, la Cathédrale de Zipaquirá allie grandeur architecturale, spiritualité et histoire minière. Nous parcourrons ses galeries monumentales, illuminées par un spectaculaire jeu de lumières, et admirerons les sculptures taillées dans le sel, témoins du savoir-faire et de la foi de ses bâtisseurs."
-msgstr "Descubre las profundidades de la tierra y maravíllate con una de las obras más impresionantes de Colombia. Excavada en una antigua mina de sal, la Catedral de Zipaquirá combina grandeza arquitectónica, espiritualidad e historia minera. Recorreremos sus monumentales galerías, iluminadas por un espectacular juego de luces, y admiraremos las esculturas talladas en sal, testigos del saber hacer y la fe de sus constructores."
+msgstr "Transporte ida y vuelta desde tu alojamiento (opcional)"
 
 msgid "Entrée à la Cathédrale de Sel"
 msgstr "Entrada a la Catedral de Sal"
@@ -307,19 +162,6 @@ msgstr "Almuerzo tradicional"
 msgid "Temps libre pour explorer et prendre des photos"
 msgstr "Tiempo libre para explorar y tomar fotos"
 
-msgid "Durée : 6h (transfert inclus)"
-msgstr "Duración: 6h (transporte incluido)"
-
-msgid "Langues : 🇫🇷 🇪🇸 🇺🇸"
-msgstr "Idiomas: 🇫🇷 🇪🇸 🇺🇸"
-
-# --- Tours (La Chorrera) ---
-msgid "Cascade de La Chorrera : la plus haute chute d’eau de Colombie"
-msgstr "Cascada de La Chorrera: la caída de agua más alta de Colombia"
-
-msgid "Découvrez une aventure inoubliable au cœur des montagnes andines et contemplez La Chorrera, la plus haute cascade du pays. Nous emprunterons des sentiers bordés d’une végétation luxuriante, en observant la richesse de la faune et de la flore locales. Tout au long de la randonnée, nous profiterons de paysages spectaculaires jusqu’à atteindre la chute vertigineuse de plus de 590 mètres, un spectacle naturel à couper le souffle."
-msgstr "Descubre una aventura inolvidable en el corazón de las montañas andinas y contempla La Chorrera, la cascada más alta del país. Caminaremos por senderos rodeados de una exuberante vegetación, observando la riqueza de la fauna y flora locales. A lo largo de la caminata, disfrutaremos de paisajes espectaculares hasta llegar a la imponente caída de más de 590 metros, un espectáculo natural impresionante."
-
 msgid "Entrée au parc naturel"
 msgstr "Entrada al parque natural"
 
@@ -327,72 +169,49 @@ msgid "Informations sur la faune, la flore et l’histoire du site"
 msgstr "Información sobre la fauna, la flora y la historia del lugar"
 
 msgid "Snack léger (prévoir un petit encas supplémentaire)"
-msgstr "Merienda ligera (llevar un refrigerio adicional)"
+msgstr "Snack ligero (lleva algo extra si quieres)"
 
 msgid "Pause pour se reposer et admirer la vue"
 msgstr "Pausa para descansar y admirar la vista"
 
-msgid "Durée : 7–8h"
-msgstr "Duración: 7–8h"
+msgid "Transport aller-retour depuis Bogotá"
+msgstr "Transporte ida y vuelta desde Bogotá"
 
-# --- Commun / CTA / autres ---
-msgid "Prix : 40 €"
-msgstr "Precio: 40 €"
+msgid "Entrée à la finca de café"
+msgstr "Entrada a la finca cafetera"
 
-msgid "Réserver"
-msgstr "Reservar"
+msgid "Visite guidée de la plantation et des installations"
+msgstr "Visita guiada por la plantación y las instalaciones"
 
-msgid "À votre tour de laisser un joli commentaire"
-msgstr "Es tu turno de dejar un bonito comentario"
+msgid "Explication du processus de production du café"
+msgstr "Explicación del proceso de producción del café"
 
-msgid "Votre nom et pays"
-msgstr "tu nombre y pais"
+msgid "Dégustation de café fraîchement préparé"
+msgstr "Degustación de café recién preparado"
 
-msgid "Votre commentaire"
-msgstr "Tu comentario"
+# ---------- TOURS: info chips ----------
+msgid "Durée : ~3h30 heures"
+msgstr "Duración: ~3 h 30"
 
-msgid "Merci pour votre joli commentaire ! ❤️"
-msgstr "¡Gracias por tu bonito comentario! ❤️"
+msgid "Durée : ~2h30 heures"
+msgstr "Duración: ~2 h 30"
 
-msgid "Nombre de personnes (max 6)"
-msgstr "Número de personas (máximo 6)"
+msgid "Durée : ~7h (transfert inclus)"
+msgstr "Duración: ~7 h (con traslado)"
 
-msgid "Mode de paiement"
-msgstr "Modo de pago"
+msgid "Durée : ~7–8h"
+msgstr "Duración: ~7–8 h"
 
-msgid "Cash"
-msgstr "Efectivo"
+msgid "Langues : 🇪🇸 🇫🇷 🇺🇸"
+msgstr "Idiomas: 🇪🇸 🇫🇷 🇺🇸"
 
-msgid "PayPal"
-msgstr "PayPal"
+msgid "Langues : 🇫🇷 🇪🇸 🇺🇸"
+msgstr "Idiomas: 🇫🇷 🇪🇸 🇺🇸"
 
-msgid "Carte de crédit"
-msgstr "Tarjeta de crédito"
+msgid "Tarif : à confirmer"
+msgstr "Tarifa: por confirmar"
 
-msgid "Email PayPal"
-msgstr "Correo electrónico de PayPal"
-
-msgid "Numéro de carte"
-msgstr "Número de tarjeta"
-
-msgid "Date d'expiration"
-msgstr "Fecha de caducidad"
-
-msgid "Code CVC"
-msgstr "Código CVC"
-
-msgid "Service de transport inclus ?"
-msgstr "¿Servicio de transporte incluido?"
-
-msgid "Oui"
-msgstr "Sí"
-
-msgid "Non"
-msgstr "No"
-
-msgid "Service de Transport"
-msgstr "Servicio de Transporte"
-
+# ---------- TRANSPORT page: generic texts ----------
 msgid "Qu'est-ce que le service de transport ?"
 msgstr "¿Qué es el servicio de transporte?"
 
@@ -400,7 +219,7 @@ msgid "Nous proposons un service de transport confortable et sécurisé pour tou
 msgstr "Ofrecemos un servicio de transporte cómodo y seguro para todos nuestros clientes."
 
 msgid "Si vous choisissez d'inclure le service de transport dans votre réservation, nous vous fournirons un véhicule privé pour vous emmener à la destination de votre visite."
-msgstr "Si eliges incluir el servicio de transporte en tu reserva, te proporcionaremos un vehículo privado para llevarte al destino de tu visita."
+msgstr "Si decides incluir el transporte en tu reserva, te proporcionaremos un vehículo privado para llevarte a tu destino."
 
 msgid "Pourquoi choisir le service de transport ?"
 msgstr "¿Por qué elegir el servicio de transporte?"
@@ -409,7 +228,7 @@ msgid "Confort et sécurité : Un véhicule privé pour vous et vos compagnons."
 msgstr "Comodidad y seguridad: un vehículo privado para ti y tus acompañantes."
 
 msgid "Économisez du temps : Arrivez à destination rapidement et facilement."
-msgstr "Ahorra tiempo: llega a tu destino rápidamente y con facilidad."
+msgstr "Ahorra tiempo: llega a tu destino de forma rápida y sencilla."
 
 msgid "Service personnalisé : Un chauffeur professionnel et courtois."
 msgstr "Servicio personalizado: un conductor profesional y amable."
@@ -418,13 +237,13 @@ msgid "Comment réserver ?"
 msgstr "¿Cómo reservar?"
 
 msgid "Lorsque vous réservez votre visite, vous aurez la possibilité d'ajouter le service de transport à votre réservation."
-msgstr "Cuando reserves tu visita, tendrás la opción de agregar el servicio de transporte a tu reserva."
+msgstr "Al reservar tu tour, tendrás la posibilidad de añadir el servicio de transporte a tu reserva."
 
 msgid "Indiquez simplement si vous souhaitez inclure le transport et nous nous occuperons du reste."
-msgstr "Simplemente indica si deseas incluir el transporte y nosotros nos encargaremos del resto."
+msgstr "Indica simplemente que deseas incluir el transporte y nosotros nos ocuparemos del resto."
 
 msgid "Tarification"
-msgstr "Tarificación"
+msgstr "Tarifas"
 
 msgid "Le tarif du service de transport dépend de la destination et du nombre de passagers."
 msgstr "La tarifa del servicio de transporte depende del destino y del número de pasajeros."
@@ -432,61 +251,7 @@ msgstr "La tarifa del servicio de transporte depende del destino y del número d
 msgid "N'hésitez pas à nous contacter pour plus d'informations sur les tarifs."
 msgstr "No dudes en contactarnos para más información sobre las tarifas."
 
-msgid "Type de visite"
-msgstr "Tipo de tour"
-
-msgid "Choisissez un type de visite"
-msgstr "Elige un tipo de visita"
-
-msgid "Votre note"
-msgstr "Su calificación"
-
-msgid "Nos tours"
-msgstr "Nuestros tours"
-
-msgid "Choisissez un tour"
-msgstr "Elija un tour"
-
-msgid "-- Sélectionnez --"
-msgstr "-- Seleccione --"
-
-msgid "Infos utiles, horaires, etc."
-msgstr "Información útil, horarios, etc."
-
-msgid "Laissez-vous séduire par l’âme coloniale de Bogotá et partez à la découverte de La Candelaria, son quartier le plus coloré et vibrant. Entre ruelles pavées, façades colorées et fresques spectaculaires, chaque pas vous plonge dans un voyage à travers l’histoire, l’art et les traditions de la ville. Au fil de notre balade, vous écouterez des légendes fascinantes, revivrez des épisodes marquants de la politique colombienne et admirerez un art urbain qui donne vie aux murs de la capitale. Un moment privilégié pour comprendre Bogotá au-delà des clichés."
-msgstr "Déjate seducir por el alma colonial de Bogotá y descubre La Candelaria, su barrio más colorido y vibrante. Entre calles empedradas, fachadas coloridas y murales espectaculares, cada paso te sumerge en un viaje a través de la historia, el arte y las tradiciones de la ciudad. A lo largo de nuestro recorrido, escucharás leyendas fascinantes, revivirás episodios clave de la política colombiana y admirarás un arte urbano que da vida a las paredes de la capital. Un momento privilegiado para comprender Bogotá más allá de los clichés."
-
-msgid "Optionnel"
-msgstr "Opcional"
-
-msgid "Pas de compte PayPal ? Choisissez l’option carte bancaire sur l’écran PayPal."
-msgstr "¿No tienes cuenta de PayPal? Elige la opción de tarjeta bancaria en la pantalla de PayPal."
-
-msgid "Visite d’une finca de café près de Bogotá"
-msgstr "Visita a una finca cafetera cerca de Bogotá"
-
-msgid "Découvrez le café colombien depuis sa source : marchez parmi les caféiers, apprenez la plantation, la récolte et la mouture, et dégustez une tasse fraîchement préparée dans un cadre authentique."
-msgstr "Descubre el café colombiano desde su origen: camina entre cafetales, aprende sobre la siembra, la cosecha y la molienda, y disfruta de una taza recién preparada en un entorno auténtico."
-
-msgid "Petit-déjeuner typique colombien"
-msgstr "Desayuno típico colombiano"
-
-msgid "Entrée à la finca de café"
-msgstr "Entrada a la finca cafetera"
-
-msgid "Visite guidée de la plantation et des installations"
-msgstr "Visita guiada de la plantación y las instalaciones"
-
-msgid "Explication du processus de production du café"
-msgstr "Explicación del proceso de producción del café"
-
-msgid "Dégustation de café fraîchement préparé"
-msgstr "Degustación de café recién preparado"
-
-msgid "Transport aller-retour depuis Bogotá"
-msgstr "Transporte ida y regreso desde Bogotá"
-
-# NEW transport-offer
+# ---------- TRANSPORT offer: Hotel -> Airport ----------
 msgid "Service de transport — Hôtel → Aéroport El Dorado (BOG)"
 msgstr "Servicio de transporte — Hotel → Aeropuerto El Dorado (BOG)"
 
@@ -509,7 +274,7 @@ msgid "Prise en charge à votre hôtel"
 msgstr "Recogida en tu hotel"
 
 msgid "Durée indicative : 40 à 60 min selon le trafic"
-msgstr "Duración estimada: 40 a 60 min según el tráfico"
+msgstr "Duración estimada: 40–60 min según el tráfico"
 
 msgid "Réservation"
 msgstr "Reserva"
@@ -522,4 +287,3 @@ msgstr "Notas"
 
 msgid "tarif valable pour une prise en charge dans Bogotá intra-urbain. Suppléments possibles pour adresses périphériques, arrêts supplémentaires ou bagages hors gabarit."
 msgstr "La tarifa aplica para recogidas dentro del casco urbano de Bogotá. Pueden aplicarse suplementos por direcciones periféricas, paradas adicionales o equipaje de gran tamaño."
-
