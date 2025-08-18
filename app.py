@@ -156,15 +156,11 @@ LIBRE_COOLDOWN_SECONDS = int(os.getenv("LIBRE_COOLDOWN_SECONDS", "900"))  # 15 m
 _last_libre_429 = 0
 
 def translate_via_libre(text, target_lang, source_lang=None, timeout=12):
-    """
-    Fallback gratuit via LibreTranslate (instance publique par défaut).
-    Si un 429 est reçu, on active un cooldown global pendant LIBRE_COOLDOWN_SECONDS.
-    target_lang/source_lang: 'fr' 'en' 'es'. Retourne (text, None) ou (None, None).
-    """
+    global _last_libre_429   # ✅ déclare la globale AVANT toute référence
+
     if not text or not target_lang:
         return None, None
 
-    # ne pas insister si on a récemment été rate-limité
     now = time.time()
     if now - _last_libre_429 < LIBRE_COOLDOWN_SECONDS:
         return None, None
@@ -185,9 +181,7 @@ def translate_via_libre(text, target_lang, source_lang=None, timeout=12):
         )
 
         if resp.status_code == 429:
-            # activer le cooldown et ne pas réessayer immédiatement
-            global _last_libre_429
-            _last_libre_429 = now
+            _last_libre_429 = now            # ⬅️ plus besoin de 'global' ici
             logging.warning("libretranslate_rate_limited: 429; cooldown %ss", LIBRE_COOLDOWN_SECONDS)
             return None, None
 
@@ -198,8 +192,7 @@ def translate_via_libre(text, target_lang, source_lang=None, timeout=12):
     except requests.exceptions.HTTPError as e:
         r = getattr(e, "response", None)
         if r is not None and r.status_code == 429:
-            global _last_libre_429
-            _last_libre_429 = time.time()
+            _last_libre_429 = time.time()     # ⬅️ plus besoin de 'global' ici
             logging.warning("libretranslate_error 429 -> cooldown %ss", LIBRE_COOLDOWN_SECONDS)
             return None, None
         logging.warning("libretranslate_error: %s", e)
