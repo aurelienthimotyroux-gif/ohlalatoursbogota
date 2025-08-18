@@ -495,5 +495,77 @@ button.btn:active,
   white-space: nowrap;
 }
 .transport-text p{ margin: 0 0 12px; }
+/* === FIX topbar & bouton secondaire (ajouté en fin de fichier) === */
+
+/* 1) Petit cadre bleu en haut à droite (liens du header/hero) */
+header.hero a,
+header.hero a:link,
+header.hero a:visited,
+header.hero a:hover,
+header.hero a:active,
+header.hero a:focus,
+header.hero a:focus-visible{
+  background-color: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  border: 0 !important;
+}
+
+/* Neutralise d'éventuels pseudo-éléments décoratifs bleus */
+header.hero a::before,
+header.hero a::after{
+  content: none !important;
+  background: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+/* Assure que les liens du menu ne ressemblent pas à des boutons */
+.hero-topbar a,
+.nav-hero a{
+  background: transparent !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+}
+
+/* 2) Bouton noir -> style bleu primaire (mêmes specs que .btn-primary) */
+.hero .btn,
+.hero .btn-dark,
+.hero .btn-secondary,
+.hero .btn-outline,
+.hero .btn-outline-dark,
+.hero .btn-black{
+  background: #2563eb !important;
+  color: #fff !important;
+  border: 1px solid rgba(0,0,0,.2) !important;
+  border-radius: 12px !important;
+  font-weight: 700 !important;
+  padding: 12px 18px !important;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  text-decoration: none !important;
+  cursor: pointer;
+  transition: transform .06s ease, filter .2s ease;
+}
+.hero .btn:hover,
+.hero .btn-dark:hover,
+.hero .btn-secondary:hover,
+.hero .btn-outline:hover,
+.hero .btn-outline-dark:hover,
+.hero .btn-black:hover{
+  filter: brightness(1.05);
+}
+.hero .btn:active,
+.hero .btn-dark:active,
+.hero .btn-secondary:active,
+.hero .btn-outline:active,
+.hero .btn-outline-dark:active,
+.hero .btn-black:active{
+  transform: translateY(1px);
+}
 
 
