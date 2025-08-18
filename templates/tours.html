@@ -63,18 +63,18 @@
 
     /* ========= TOURS ========= */
     #excursions { max-width: 1200px; margin: 50px auto; padding: 0 20px; }
-    .tour-card { display: flex; align-items: center; gap: 20px; margin-bottom: 60px; }
+    .tour-card { display: flex; align-items: flex-start; gap: 20px; margin-bottom: 60px; } /* align-items patch */
     .tour-card.left  { flex-direction: row; }
     .tour-card.right { flex-direction: row-reverse; }
 
     /* Swiper */
-    .tour-swiper { width: 50%; height: 350px; border-radius: 10px; overflow: hidden; }
+    .tour-swiper { width: 50%; height: auto; min-height: 350px; border-radius: 10px; overflow: hidden; } /* height auto + min-height */
     .tour-swiper img { width: 100%; height: 100%; object-fit: cover; }
     .swiper-button-next, .swiper-button-prev { color: #fff !important; text-shadow: 1px 1px 5px rgba(0,0,0,0.6); }
     .swiper-button-next::after, .swiper-button-prev::after { font-size: 24px; }
 
     /* Contenu cartes tours (titre + lead) */
-    .tour-card .content { width: 50%; padding: 15px; border-radius: 10px; max-width: 680px; }
+    .tour-card .content { width: 50%; padding: 15px; border-radius: 10px; max-width: 680px; overflow: visible; } /* overflow visible */
     .tour-card h3.tour-title { font-size: clamp(26px, 3.2vw, 36px); line-height: 1.15; margin: 0 0 10px; letter-spacing: .2px; }
     .tour-lead { font-size: clamp(16px, 1.8vw, 18px); line-height: 1.7; color: rgba(0,0,0,.78); margin: 10px 0 16px; max-width: 62ch; }
 
@@ -102,6 +102,15 @@
       .tour-card{ flex-direction: column !important; }
       .tour-swiper, .tour-card .content{ width: 100%; }
       .hero-title{ font-size: 2.1rem; }
+    }
+
+    /* ➕ Ajustements supplémentaires anti-troncature */
+    @media (min-width: 900px){
+      .tour-card .content{ min-height: 350px; } /* colonne texte au moins aussi haute que l'image */
+    }
+    .tour-lead, .includes-list li, .tour-chips .chip{
+      overflow-wrap: anywhere;
+      word-break: break-word;
     }
   </style>
 </head>
@@ -176,18 +185,18 @@
     "images": ["zipaquira1.jpg", "zipaquira2.jpg", "zipaquira3.jpg"]
   },
   { "slug": "la-chorrera", "title": _("Cascade de La Chorrera : la plus haute chute d’eau de Colombie"),
-  "desc": _("Découvrez une aventure inoubliable au cœur des montagnes andines et contemplez La Chorrera, la plus haute cascade du pays. Nous emprunterons des sentiers bordés d’une végétation luxuriante, en observant la richesse de la faune et de la flore locales. Tout au long de la randonnée, nous profiterons de paysages spectaculaires jusqu’à atteindre la chute vertigineuse de plus de 590 mètres, un spectacle naturel à couper le souffle. Randonnée de difficulté moyenne à 2500m d’altitude : prévoir une veste de pluie, des vêtements et chaussures de rechange, ainsi que de bonnes chaussures de randonnée ou une paire de baskets solides."),
-  "includes": [
-    _("Guide locale passionnée et experte"),
-    _("Entrée au parc naturel"),
-    _("Informations sur la faune, la flore et l’histoire du site"),
-    _("Snack léger (prévoir un petit encas supplémentaire)"),
-    _("Pause pour se reposer et admirer la vue"),
-    _("Transport aller-retour depuis votre hébergement")
-  ],
-  "infos": [ _("Durée : ~7–8h"), _("Langues : 🇫🇷 🇪🇸 🇺🇸"), _("Tarif : à confirmer") ],
-  "images": ["chorrera1.jpg", "chorrera2.jpeg", "chorrera3.jpeg"]
-},
+    "desc": _("Découvrez une aventure inoubliable au cœur des montagnes andines et contemplez La Chorrera, la plus haute cascade du pays. Nous emprunterons des sentiers bordés d’une végétation luxuriante, en observant la richesse de la faune et de la flore locales. Tout au long de la randonnée, nous profiterons de paysages spectaculaires jusqu’à atteindre la chute vertigineuse de plus de 590 mètres, un spectacle naturel à couper le souffle. Randonnée de difficulté moyenne à 2500m d’altitude : prévoir une veste de pluie, des vêtements et chaussures de rechange, ainsi que de bonnes chaussures de randonnée ou une paire de baskets solides."),
+    "includes": [
+      _("Guide locale passionnée et experte"),
+      _("Entrée au parc naturel"),
+      _("Informations sur la faune, la flore et l’histoire du site"),
+      _("Snack léger (prévoir un petit encas supplémentaire)"),
+      _("Pause pour se reposer et admirer la vue"),
+      _("Transport aller-retour depuis votre hébergement")
+    ],
+    "infos": [ _("Durée : ~7–8h"), _("Langues : 🇫🇷 🇪🇸 🇺🇸"), _("Tarif : à confirmer") ],
+    "images": ["chorrera1.jpg", "chorrera2.jpeg", "chorrera3.jpeg"]
+  },
   { "slug": "finca-cafe", "title": _("Visite d’une finca de café près de Bogotá"),
     "desc": _("Découvrez le café colombien depuis sa source : marchez parmi les caféiers, apprenez la plantation, la récolte et la mouture, et dégustez une tasse fraîchement préparée dans un cadre authentique."),
     "includes": [
