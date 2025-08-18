@@ -1,98 +1,114 @@
 <!DOCTYPE html>
 <html lang="{{ get_locale() }}">
 <head>
-    <meta charset="UTF-8">
-    <title>{{ _("Service de Transport") }}</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <meta charset="UTF-8">
+  <title>{{ _("Service de Transport") }} — Oh La La Tours Bogotá</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="{{ _('Service de transport privé (taxi/van) pour vos visites et transferts aéroport à Bogotá. Confort, sécurité et chauffeur professionnel.') }}">
 
-    <style>
-      /* Bloc texte + image côte à côte */
-      .transport-description {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 24px;
-        align-items: center;
-        padding: 20px;
-      }
-      .transport-text {
-        flex: 1 1 400px;
-      }
-      .transport-img {
-        flex: 1 1 350px;
-      }
-      .transport-img img {
-        max-width: 100%;
-        height: auto;
-        border-radius: 12px;
-        box-shadow: 0 4px 14px rgba(0,0,0,0.15);
-      }
-      .transport-text h2 {
-        margin-top: 0;
-      }
-    </style>
+  <!-- Canonical + hreflang -->
+  <link rel="canonical" href="https://www.ohlalatoursbogota.com{{ request.path }}{% if get_locale()!='fr' %}?lang={{ get_locale() }}{% endif %}">
+  <link rel="alternate" href="{{ url_for('transport', lang='fr', _external=True) }}" hreflang="fr">
+  <link rel="alternate" href="{{ url_for('transport', lang='en', _external=True) }}" hreflang="en">
+  <link rel="alternate" href="{{ url_for('transport', lang='es', _external=True) }}" hreflang="es">
+  <link rel="alternate" href="{{ url_for('transport', lang='fr', _external=True) }}" hreflang="x-default">
+
+  <!-- Open Graph / Twitter -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.ohlalatoursbogota.com{{ request.path }}{% if get_locale()!='fr' %}?lang={{ get_locale() }}{% endif %}">
+  <meta property="og:site_name" content="Oh La La Tours Bogotá">
+  <meta property="og:title" content="{{ _('Service de Transport – Oh La La Tours Bogotá') }}">
+  <meta property="og:description" content="{{ _('Transport privé à Bogotá pour visites et transferts aéroport. Chauffeur professionnel, confort et sécurité.') }}">
+  <meta property="og:image" content="{{ url_for('static', filename='images/bg_transport.webp', _external=True) }}">
+  {% if get_locale() == 'fr' %}
+  <meta property="og:locale" content="fr_FR">
+  {% elif get_locale() == 'en' %}
+  <meta property="og:locale" content="en_US">
+  {% else %}
+  <meta property="og:locale" content="es_CO">
+  {% endif %}
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ _('Service de Transport – Oh La La Tours Bogotá') }}">
+  <meta name="twitter:description" content="{{ _('Transport privé à Bogotá pour visites et transferts aéroport. Chauffeur professionnel, confort et sécurité.') }}">
+  <meta name="twitter:image" content="{{ url_for('static', filename='images/bg_transport.webp', _external=True) }}">
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+  <style>
+    .transport-description {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 24px;
+      align-items: center;
+      padding: 20px;
+    }
+    .transport-text {
+      flex: 1 1 400px;
+    }
+    .transport-img {
+      flex: 1 1 350px;
+    }
+    .transport-img img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 12px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+    }
+    .transport-text h2 {
+      margin-top: 0;
+    }
+  </style>
 </head>
 <body>
 
-    <!-- Bandeau image avec topbar (lang + nav) et titre -->
-    <header class="hero background-half"
-            style="background-image: url('{{ url_for('static', filename='images/bg_transport.webp') }}');">
+  <!-- Bandeau image avec topbar (lang + nav) et titre -->
+  <header class="hero background-half"
+          style="background-image: url('{{ url_for('static', filename='images/bg_transport.webp') }}');">
 
-        <div class="hero-topbar">
-            <div id="lang-switcher">
-                <a href="{{ lang_url('fr') }}">🇫🇷</a> |
-                <a href="{{ lang_url('en') }}">🇺🇸</a> |
-                <a href="{{ lang_url('es') }}">🇨🇴</a>
-            </div>
+      <div class="hero-topbar">
+          <div id="lang-switcher">
+              <a href="{{ lang_url('fr') }}">🇫🇷</a> |
+              <a href="{{ lang_url('en') }}">🇺🇸</a> |
+              <a href="{{ lang_url('es') }}">🇪🇸</a>
+          </div>
 
-            <nav class="nav-hero">
-                <a href="{{ url_for('index', lang=get_locale()) }}">{{ _("Accueil") }}</a> |
-                <a href="{{ url_for('tours', lang=get_locale()) }}">{{ _("Nos tours") }}</a> |
-		        <a href="{{ url_for('transport', lang=get_locale()) }}">{{ _("Service de Transport") }}</a> |
-                <a href="{{ url_for('reservation', lang=get_locale()) }}">{{ _("Réservation") }}</a> 
-            </nav>
-        </div>
+          <nav class="nav-hero">
+              <a href="{{ url_for('index', lang=get_locale()) }}">{{ _("Accueil") }}</a>
+              <a href="{{ url_for('tours', lang=get_locale()) }}">{{ _("Tours") }}</a>
+              <a href="{{ url_for('reservation_page', lang=get_locale()) }}">{{ _("Réserver") }}</a>
+              <a href="{{ url_for('transport', lang=get_locale()) }}">{{ _("Transport") }}</a>
+              <a href="{{ url_for('contact', lang=get_locale()) }}">{{ _("Contact") }}</a>
+          </nav>
+      </div>
 
-        <h1 class="hero-title">
-            {{ _("Service de Transport") }}
-        </h1>
-    </header>
+      <div class="hero-content">
+          <h1>{{ _("Service de Transport") }}</h1>
+      </div>
+  </header>
 
-    <!-- Description du service de transport -->
-    <main>
-        <section class="transport-description">
-            <div class="transport-text">
-                <h2>{{ _("Qu'est-ce que le service de transport ?") }}</h2>
-                <p>{{ _("Nous proposons un service de transport confortable et sécurisé pour tous nos clients.") }}</p>
-                <p>{{ _("Si vous choisissez d'inclure le service de transport dans votre réservation, nous vous fournirons un véhicule privé pour vous emmener à la destination de votre visite.") }}</p>
+  <!-- Section descriptive -->
+  <section class="transport-description">
+      <div class="transport-text">
+          <h2>{{ _("Confort et sécurité pour vos trajets à Bogotá") }}</h2>
+          <p>
+              {{ _("Notre service de transport privé vous accompagne lors de vos visites guidées et vos transferts (aéroport, hôtels, excursions). Profitez d’un chauffeur professionnel, d’un véhicule confortable et d’une prise en charge en toute tranquillité.") }}
+          </p>
+          <ul>
+              <li>{{ _("Transferts aéroport-hôtel") }}</li>
+              <li>{{ _("Mise à disposition pendant vos tours") }}</li>
+              <li>{{ _("Chauffeurs professionnels et expérimentés") }}</li>
+          </ul>
+      </div>
+      <div class="transport-img">
+          <img src="{{ url_for('static', filename='images/transport.jpg') }}" alt="{{ _('Transport privé à Bogotá') }}">
+      </div>
+  </section>
 
-                <h2>{{ _("Pourquoi choisir le service de transport ?") }}</h2>
-                <ul>
-                    <li>{{ _("Confort et sécurité : Un véhicule privé pour vous et vos compagnons.") }}</li>
-                    <li>{{ _("Économisez du temps : Arrivez à destination rapidement et facilement.") }}</li>
-                    <li>{{ _("Service personnalisé : Un chauffeur professionnel et courtois.") }}</li>
-                </ul>
-
-                <h2>{{ _("Comment réserver ?") }}</h2>
-                <p>{{ _("Lorsque vous réservez votre visite, vous aurez la possibilité d'ajouter le service de transport à votre réservation.") }}</p>
-                <p>{{ _("Indiquez simplement si vous souhaitez inclure le transport et nous nous occuperons du reste.") }}</p>
-
-                <h2>{{ _("Tarification") }}</h2>
-                <p>{{ _("Le tarif du service de transport dépend de la destination et du nombre de passagers.") }}</p>
-                <p>{{ _("N'hésitez pas à nous contacter pour plus d'informations sur les tarifs.") }}</p>
-            </div>
-
-            <div class="transport-img">
-                <img src="{{ url_for('static', filename='images/transport_service.jpeg') }}" 
-                     alt="{{ _('Service de transport privé') }}">
-            </div>
-        </section>
-    </main>
-
-    <!-- Footer -->
-    <footer>
-        <p>{{ _("© 2025 - Tous droits réservés") }}</p>
-    </footer>
+  <!-- Footer -->
+  <footer>
+      <p>© 2025 Oh La La Tours Bogotá</p>
+  </footer>
 
 </body>
 </html>
