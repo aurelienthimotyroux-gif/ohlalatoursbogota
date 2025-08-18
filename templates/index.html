@@ -39,8 +39,20 @@
   <meta name="twitter:description" content="{{ _('Découvrez Bogotá : Candelaria, Monserrate, Zipaquirá, café à Hacienda Coloma. Visites en français, anglais et espagnol. Transferts aéroport, chauffeur/van privé.') }}">
   <meta name="twitter:image" content="{{ url_for('static', filename='images/accueil.jpg', _external=True) }}">
 
+  <!-- ✅ Perf & UI mobile -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <meta name="theme-color" content="#0e7490" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0b4654" media="(prefers-color-scheme: dark)">
+  <!-- <link rel="preload" href="URL_DE_TA_POLICE.woff2" as="font" type="font/woff2" crossorigin> -->
+
   <!-- CSS principal -->
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+  <!-- ✅ Pack mobile chargé uniquement sur mobile -->
+  <link rel="stylesheet"
+        href="{{ url_for('static', filename='mobile-pack.css', v=1) }}"
+        media="(max-width: 767px)">
 
   <!-- Police -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -109,6 +121,11 @@
     .flash { margin:8px 0; padding:10px; border-radius:8px; }
     .flash-success{ background:#eefbf0; border:1px solid #b7ebc6; color:#1b5e20; }
     .flash-error{ background:#fdeaea; border:1px solid #f5c2c2; color:#8a1f1f; }
+
+    /* ✅ Cache la sticky bar sur desktop ; elle s'affiche sur mobile via mobile-pack.css */
+    @media (min-width: 768px){
+      .sticky-cta { display: none; }
+    }
   </style>
 
   <!-- JS Lire plus / Lire moins -->
@@ -166,7 +183,15 @@
         <a href="{{ lang_url('en') }}" aria-label="English">🇺🇸</a> |
         <a href="{{ lang_url('es') }}" aria-label="Español">🇨🇴</a>
       </div>
-      <nav class="nav-hero" aria-label="{{ _('Navigation principale') }}">
+
+      <!-- ✅ Bouton burger ajouté (n'affecte rien si non utilisé) -->
+      <button class="burger" id="burger" aria-expanded="false" aria-controls="nav-menu" style="margin-left:auto; margin-right:8px;">
+        <span></span><span></span><span></span>
+        <span class="sr-only">{{ _("Ouvrir le menu") }}</span>
+      </button>
+
+      <!-- Ajout de l'id pour le JS mobile -->
+      <nav class="nav-hero" id="nav-menu" aria-label="{{ _('Navigation principale') }}">
         <a href="{{ url_for('index', lang=get_locale()) }}">{{ _("Accueil") }}</a> |
         <a href="{{ url_for('tours', lang=get_locale()) }}">{{ _("Nos tours") }}</a> |
         <a href="{{ url_for('transport', lang=get_locale()) }}">{{ _("Service de Transport") }}</a> |
@@ -210,6 +235,7 @@
         <img 
           src="{{ url_for('static', filename='images/alejandra.jpg') }}"
           alt="{{ _('Alejandra, votre guide à Bogotá') }}"
+          loading="lazy" decoding="async" width="800" height="600"
           style="display: block; width: 100%; height: 100%; object-fit: cover; border-radius: 10px; background: #ddd;">
       </div>
       <div style="flex: 1; min-width: 250px;">
@@ -245,7 +271,6 @@
     <div class="container">
       <h2>{{ _("Avis des voyageurs") }}</h2>
 
-      {# ===== Affiche les commentaires de la DB dans l'ordre reçu (pas de tri ici) ===== #}
       {% if comments and comments|length > 0 %}
         <div class="testimonials-grid">
           {% for comment in comments %}
@@ -270,7 +295,6 @@
                 <span class="sr-only">{{ comment.rating }} / 5</span>
               </div>
 
-              {# Texte + Lire plus si > 200 caractères #}
               {% set is_long = (comment.message|length > 200) %}
               <p
                 class="t-text{% if is_long %} clamp{% endif %}"
@@ -293,7 +317,6 @@
         </div>
 
       {% else %}
-        {# ===== Fallback statique si la base est vide ===== #}
         <div class="testimonials-grid">
           {% set comments = [
           {"name": "Francis", "country": "Canada", "date": "12 mai 2025", "rating": 5, "message": _("L’expérience est super. Alejandra prend son temps pour nous expliquer et répondre à nos questions.")},
@@ -351,6 +374,38 @@
       {% endif %}
     </div>
   </section>
+
+  <!-- ✅ Sticky bar mobile uniquement -->
+  <div class="sticky-cta">
+    <div class="container row">
+      <a class="btn btn-outline"
+         href="https://wa.me/573505384537?text={{ _('Bonjour Alejandra ! Je suis intéressé par une visite 🤗') | urlencode }}"
+         target="_blank" rel="noopener">WhatsApp</a>
+      <a class="btn" href="{{ url_for('reservation', lang=get_locale()) }}">{{ _("Réserver") }}</a>
+    </div>
+  </div>
+
+  <!-- ✅ Script burger minimal (sans impact si #burger / #nav-menu absents) -->
+  <script>
+    (function(){
+      var burger = document.getElementById('burger');
+      var nav = document.getElementById('nav-menu');
+      if (!burger || !nav) return;
+      burger.addEventListener('click', function(){
+        var expanded = burger.getAttribute('aria-expanded') === 'true';
+        burger.setAttribute('aria-expanded', String(!expanded));
+        nav.classList.toggle('open');
+        document.body.classList.toggle('no-scroll', !expanded);
+      });
+      nav.addEventListener('click', function(e){
+        var a = e.target.closest('a');
+        if (!a) return;
+        burger.setAttribute('aria-expanded', 'false');
+        nav.classList.remove('open');
+        document.body.classList.remove('no-scroll');
+      });
+    })();
+  </script>
 
 </body>
 </html>
