@@ -76,7 +76,7 @@
           <nav class="nav-hero">
               <a href="{{ url_for('index', lang=get_locale()) }}">{{ _("Accueil") }}</a>
               <a href="{{ url_for('tours', lang=get_locale()) }}">{{ _("Tours") }}</a>
-              <a href="{{ url_for('reservation_page', lang=get_locale()) }}">{{ _("Réserver") }}</a>
+              <a href="{{ url_for('reservation', lang=get_locale()) }}">{{ _("Réserver") }}</a>
               <a href="{{ url_for('transport', lang=get_locale()) }}">{{ _("Transport") }}</a>
               <a href="{{ url_for('contact', lang=get_locale()) }}">{{ _("Contact") }}</a>
           </nav>
@@ -112,4 +112,5 @@
 
 </body>
 </html>
+
 
