@@ -319,3 +319,51 @@ button:focus, a:focus { outline: none !important; box-shadow: none !important; }
   .tour-swiper, .tour-card .content{ width: 100%; }
 }
 
+/* rangée de boutons propre, sur sa ligne */
+.cta-row{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 12px 0 8px;
+  align-items: center;
+  clear: both;           /* au cas où du contenu précédent flotte */
+}
+
+/* boutons robustes (pas inline) */
+.btn-primary{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  text-decoration: none;
+}
+
+/* évite que les paragraphes collent visuellement aux boutons */
+.transport-text p{ margin: 0 0 12px; }
+
+/* Met la ligne des boutons sur sa propre rangée */
+.transport-text p:has(> .btn-primary){
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  margin: 14px 0 10px;
+  clear: both;
+}
+
+/* Boutons robustes (pas inline qui chevauche le texte) */
+.btn-primary{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+  position: relative;
+  z-index: 1; /* reste au-dessus sans écraser le texte */
+}
+
+/* Le petit paragraphe en dessous respire un peu */
+.transport-text p + p{ margin-top: 10px; }
+
+
