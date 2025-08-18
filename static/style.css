@@ -413,5 +413,87 @@ button:focus, a:focus { outline: none !important; box-shadow: none !important; }
 .btn-outline:active{
   transform: translateY(1px);
 }
+/* === PATCH — à coller tout en bas de style.css === */
+
+/* 1) Topbar : neutraliser toute apparence "bouton" et cadre bleu */
+.hero-topbar a,
+.nav-hero a{
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  outline: none !important;
+  padding: 0 !important;
+}
+
+/* Si des classes .btn* ont été appliquées aux liens du menu, on les remet en liens simples */
+.hero-topbar .btn,
+.hero-topbar .btn-primary,
+.hero-topbar .btn-secondary,
+.hero-topbar .btn-dark,
+.hero-topbar .btn-outline,
+.hero-topbar .btn-outline-dark,
+.hero-topbar .btn-black,
+.nav-hero .btn,
+.nav-hero .btn-primary{
+  background: transparent !important;
+  color: #fff !important;
+  border: 0 !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+/* 2) Partout ailleurs : bouton "noir" -> bleu primaire (mêmes specs que .btn-primary) */
+a.btn,
+button.btn,
+.btn,
+.btn-secondary,
+.btn-dark,
+.btn-outline,
+.btn-outline-dark,
+.btn-black,
+.btn-default{
+  background: #2563eb !important;
+  color: #fff !important;
+  border: 1px solid rgba(0,0,0,.2) !important;
+  border-radius: 12px !important;
+  font-weight: 700 !important;
+  padding: 12px 18px !important;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  text-decoration: none !important;
+  cursor: pointer;
+  transition: transform .06s ease, filter .2s ease;
+}
+a.btn:hover,
+button.btn:hover,
+.btn-secondary:hover,
+.btn-dark:hover,
+.btn-outline:hover,
+.btn-outline-dark:hover,
+.btn-black:hover,
+.btn-default:hover{
+  filter: brightness(1.05);
+}
+a.btn:active,
+button.btn:active,
+.btn-secondary:active,
+.btn-dark:active,
+.btn-outline:active,
+.btn-outline-dark:active,
+.btn-black:active,
+.btn-default:active{
+  transform: translateY(1px);
+}
+
+/* 3) Transport : robustesse anti-chevauchement même sans :has() */
+.transport-text p > a.btn-primary{
+  display: inline-flex;
+  margin-right: 12px;
+  white-space: nowrap;
+}
+.transport-text p{ margin: 0 0 12px; }
 
 
