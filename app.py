@@ -1,9 +1,10 @@
-from flask import Flask, render_template, request, url_for, flash, redirect, send_from_directory
+from flask import Flask, render_template, request, url_for, flash, redirect, send_from_directory, session, make_response
 from flask_babel import Babel, _
 import os, requests, logging, re
 from datetime import datetime
 from werkzeug.middleware.proxy_fix import ProxyFix
 from flask_sqlalchemy import SQLAlchemy
+from functools import wraps
 
 # ------------------------------------------------------------------
 # Utils: parser "22 février 2020" / "30 julio 2019" / "17 Aug 2025"
@@ -206,6 +207,98 @@ def inject_globals():
     return {
         "paypal_client_id": PAYPAL_CLIENT_ID,
     }
+
+# ------------------------------------------------------------------
+# ==== ADMIN MINIMAL (ajouté, sans supprimer ton code) ====
+# - /admin/login  : formulaire simple (inline si template absent)
+# - /admin/       : mini dashboard (protégé)
+# - /admin/logout : sortir
+# - /admin        : redirection vers /admin/
+# ------------------------------------------------------------------
+ADMIN_USER = os.getenv("ADMIN_USER", "admin")
+ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD")  # à définir en prod
+
+def admin_required(fn):
+    @wraps(fn)
+    def _wrap(*args, **kwargs):
+        if session.get("is_admin"):
+            return fn(*args, **kwargs)
+        return redirect(url_for("admin_login", next=request.url))
+    return _wrap
+
+def _inline_html(title, body):
+    return f"""<!doctype html>
+<html lang="fr"><meta charset="utf-8">
+<title>{title}</title>
+<style>
+body{{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:#0f172a;color:#e5e7eb;margin:0;padding:32px}}
+.card{{background:#111827;border:1px solid #1f2937;border-radius:12px;padding:20px;max-width:860px;margin:auto}}
+h1{{margin:0 0 10px;font-size:22px}}
+a{{color:#93c5fd;text-decoration:none}} a:hover{{text-decoration:underline}}
+.btn{{display:inline-block;background:#2563eb;color:#fff;padding:10px 14px;border-radius:10px}}
+.small{{opacity:.8;font-size:14px}}
+table{{width:100%;margin-top:10px;border-collapse:collapse}}
+td,th{{padding:8px 10px;border-bottom:1px solid #1f2937;text-align:left}}
+</style>
+<div class="card">{body}</div></html>"""
+
+@app.route("/admin/login", methods=["GET","POST"])
+def admin_login():
+    if request.method == "POST":
+        user = (request.form.get("user") or "").strip()
+        pw = request.form.get("password") or ""
+        if ADMIN_PASSWORD and user == ADMIN_USER and pw == ADMIN_PASSWORD:
+            session["is_admin"] = True
+            return redirect(request.args.get("next") or url_for("admin_home"))
+        flash(_("Identifiants invalides"), "error")
+    # template si présent, sinon HTML inline
+    if os.path.exists(os.path.join(app.root_path, "templates", "admin_login.html")):
+        return render_template("admin_login.html")
+    body = """
+      <h1>Connexion admin</h1>
+      <form method="post">
+        <p><label>Utilisateur:<br><input name="user" required></label></p>
+        <p><label>Mot de passe:<br><input name="password" type="password" required></label></p>
+        <p><button class="btn" type="submit">Se connecter</button></p>
+        <p class="small">Définis les variables d'environnement <code>ADMIN_USER</code> (optionnel) et <code>ADMIN_PASSWORD</code> (obligatoire)</p>
+      </form>
+    """
+    return _inline_html("Login admin", body)
+
+@app.route("/admin/logout")
+def admin_logout():
+    session.pop("is_admin", None)
+    return redirect(url_for("index", lang=get_locale()))
+
+@app.route("/admin")
+def admin_root():
+    return redirect(url_for("admin_home"))
+
+@app.route("/admin/")
+@admin_required
+def admin_home():
+    comments_count = Comment.query.count()
+    translations_count = CommentTranslation.query.count()
+    body = f"""
+      <h1>Panneau d’administration</h1>
+      <p class="small">Base: <code>{DB_URL}</code></p>
+      <table>
+        <tr><th>Commentaires</th><td>{comments_count}</td></tr>
+        <tr><th>Traductions en cache</th><td>{translations_count}</td></tr>
+        <tr><th>Mode PayPal</th><td>{PAYPAL_MODE}</td></tr>
+      </table>
+      <p style="margin-top:16px">
+        <a class="btn" href="{url_for('admin_logout')}">Se déconnecter</a>
+        &nbsp; <a href="{url_for('index', lang=get_locale())}">← Retour au site</a>
+      </p>
+    """
+    return _inline_html("Admin", body)
+
+# (outil de debug routes – pratique si 404) :
+@app.route("/_routes")
+def _routes():
+    lines = sorted(str(r) for r in app.url_map.iter_rules())
+    return make_response("<pre>" + "\n".join(lines) + "</pre>", 200)
 
 # ------------------------------------------------------------------
 # Routes
