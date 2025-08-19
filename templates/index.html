@@ -40,8 +40,6 @@
       anonymize_ip: true
     });
   </script>
-</head>
-
 
   <!-- Canonical + hreflang -->
   <link rel="canonical" href="https://www.ohlalatoursbogota.com{{ request.path }}{% if get_locale()!='fr' %}?lang={{ get_locale() }}{% endif %}">
@@ -90,25 +88,11 @@
 
   <!-- ▶️ Accueil uniquement — rendre les 3 traits du burger blancs -->
   <style>
+    /* Burger visible blanc sur le hero */
     .hero-topbar .burger span { background: #fff !important; }
     #burger[aria-expanded="true"] span { background: #fff !important; }
 
-  <!-- Sprite d'icônes SVG (étoiles) -->
-  <svg xmlns="http://www.w3.org/2000/svg" style="display:none;">
-    <symbol id="icon-star-full" viewBox="0 0 24 24" aria-hidden="true">
-      <path fill="#ffb400" d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21z"/>
-    </symbol>
-    <symbol id="icon-star-half" viewBox="0 0 24 24" aria-hidden="true">
-      <path fill="#ffb400" d="M12 17.27V2L9.19 8.62 2 9.24l5.46 4.73L5.82 21z"/>
-      <path fill="none" stroke="#ffb400" stroke-width="1.5" d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21z"/>
-    </symbol>
-    <symbol id="icon-star-empty" viewBox="0 0 24 24" aria-hidden="true">
-      <path fill="none" stroke="#ffb400" stroke-width="1.5" d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21z"/>
-    </symbol>
-  </svg>
-
-  <!-- Styles internes spécifiques aux avis -->
-  <style>
+    /* Styles internes spécifiques aux avis + divers */
     .testimonials { background:#fff; padding:40px 20px; margin-top:40px; }
     .testimonials .container { max-width:1000px; margin:0 auto; }
     .testimonials h2 { text-align:center; margin-bottom:22px; font-size:28px; }
@@ -145,8 +129,23 @@
     .flash-success{ background:#eefbf0; border:1px solid #b7ebc6; color:#1b5e20; }
     .flash-error{ background:#fdeaea; border:1px solid #f5c2c2; color:#8a1f1f; }
 
+    /* Cache la sticky bar sur desktop ; visible sur mobile via mobile-pack.css */
     @media (min-width: 768px){ .sticky-cta { display: none; } }
   </style>
+
+  <!-- Sprite d'icônes SVG (étoiles) -->
+  <svg xmlns="http://www.w3.org/2000/svg" style="display:none;">
+    <symbol id="icon-star-full" viewBox="0 0 24 24" aria-hidden="true">
+      <path fill="#ffb400" d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21z"/>
+    </symbol>
+    <symbol id="icon-star-half" viewBox="0 0 24 24" aria-hidden="true">
+      <path fill="#ffb400" d="M12 17.27V2L9.19 8.62 2 9.24l5.46 4.73L5.82 21z"/>
+      <path fill="none" stroke="#ffb400" stroke-width="1.5" d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21z"/>
+    </symbol>
+    <symbol id="icon-star-empty" viewBox="0 0 24 24" aria-hidden="true">
+      <path fill="none" stroke="#ffb400" stroke-width="1.5" d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21z"/>
+    </symbol>
+  </svg>
 
   <!-- JS Lire plus / Lire moins -->
   <script>
