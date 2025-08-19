@@ -279,17 +279,12 @@
     </form>
   </section>
 
-  <!-- Section Commentaires -->
-  <section class="testimonials">
-    <div class="container">
-      <h2>{{ _("Avis des voyageurs") }}</h2>
-
 <!-- Section Commentaires -->
 <section class="testimonials">
   <div class="container">
     <h2>{{ _("Avis des voyageurs") }}</h2>
 
-    {# Fallback en langues d'origine — NE PAS envelopper dans _() #}
+    {# Fallback en langues d'origine — ne pas envelopper dans _() #}
     {% set fallback_comments = [
       {"name":"Francis","country":"Canada","date":"12 mai 2025","rating":5,"message":"L’expérience est super. Alejandra prend son temps pour nous expliquer et répondre à nos questions."},
       {"name":"Katy","country":"Mexique","date":"21 mars 2023","rating":5,"message":"Recomendado. La comunicación con Alejandra fue excelente antes y durante; todo lo descrito se cumplió y siempre estuvo atenta a nuestras necesidades. Probablemente es un lugar que debes visitar si vienes a Bogotá: hermosas vistas y una catedral de sal impresionante."},
@@ -306,7 +301,27 @@
       {"name":"Yuliana","country":"Costa Rica","date":"18 juillet 2019","rating":5,"message":"Ale y Omar (su papá) son súper simpáticos y se esfuerzan para que te sientas como en casa."}
     ] %}
 
-    {# Index fallback: par clé complète et par (nom|pays) #}
+    {# Mois FR/ES/EN pour parser "12 mai 2025", "21 marzo 2023", ..." #}
+    {% set month_map = {
+      'janvier':1,'février':2,'fevrier':2,'mars':3,'avril':4,'mai':5,'juin':6,'juillet':7,'août':8,'aout':8,'septembre':9,'octobre':10,'novembre':11,'décembre':12,'decembre':12,
+      'enero':1,'febrero':2,'marzo':3,'abril':4,'mayo':5,'junio':6,'julio':7,'agosto':8,'septiembre':9,'setiembre':9,'octubre':10,'noviembre':11,'diciembre':12,
+      'january':1,'february':2,'march':3,'april':4,'may':5,'june':6,'july':7,'august':8,'september':9,'october':10,'november':11,'december':12
+    } %}
+
+    {% macro ts_from(date_str) -%}
+      {%- set s = (date_str or '') -%}
+      {%- set parts = s.split() -%}
+      {%- if parts|length >= 3 -%}
+        {%- set day = parts[0]|int -%}
+        {%- set month = month_map.get(parts[1]|lower, 1) -%}
+        {%- set year = parts[2]|int -%}
+        {{ (year * 10000 + month * 100 + day) }}
+      {%- else -%}
+        0
+      {%- endif -%}
+    {%- endmacro %}
+
+    {# Index des fallback pour remplacer message DB si même personne #}
     {% set fb_full = namespace(map={}) %}
     {% set fb_pair = namespace(map={}) %}
     {% for c in fallback_comments %}
@@ -316,7 +331,7 @@
       {% set _ = fb_pair.map.update({kp: c}) %}
     {% endfor %}
 
-    {# Conserver les clés déjà présentes dans la base pour éviter les doublons #}
+    {# Enregistrer ce que la DB contient pour éviter doublons #}
     {% set db_full = namespace(seen={}) %}
     {% set db_pair = namespace(seen={}) %}
     {% for c in comments or [] %}
@@ -326,91 +341,80 @@
       {% set _ = db_pair.seen.update({kp: 1}) %}
     {% endfor %}
 
-    <div class="testimonials-grid">
-      {# 1) Rendre les avis DB ; si on a une version langue d'origine, on remplace le message #}
-      {% for comment in comments or [] %}
-        {% set kf = comment.name ~ '|' ~ (comment.country or '') ~ '|' ~ (comment.date_str or '') %}
-        {% set kp = comment.name ~ '|' ~ (comment.country or '') %}
-        {% set fb = fb_full.map.get(kf) or fb_pair.map.get(kp) %}
-        {% set display_message = (fb.message if fb else comment.message) %}
+    {# Fusion DB + fallback (remplacement du message si dispo), puis tri par date desc #}
+    {% set merged = [] %}
 
+    {# 1) DB d'abord (avec message remplacé si on a une version langue d'origine) #}
+    {% for c in comments or [] %}
+      {% set kf = c.name ~ '|' ~ (c.country or '') ~ '|' ~ (c.date_str or '') %}
+      {% set kp = c.name ~ '|' ~ (c.country or '') %}
+      {% set fb = fb_full.map.get(kf) or fb_pair.map.get(kp) %}
+      {% set msg = (fb.message if fb else c.message) %}
+      {% set merged = merged + [{
+        'name': c.name,
+        'country': c.country,
+        'date': c.date_str,
+        'rating': c.rating,
+        'message': msg,
+        'ts': (ts_from(c.date_str)|int)
+      }] %}
+    {% endfor %}
+
+    {# 2) Ajouter les fallback manquants (pas présents en DB) #}
+    {% for fb in fallback_comments %}
+      {% set kf = fb.name ~ '|' ~ fb.country ~ '|' ~ fb.date %}
+      {% set kp = fb.name ~ '|' ~ fb.country %}
+      {% if not (kf in db_full.seen or kp in db_pair.seen) %}
+        {% set merged = merged + [{
+          'name': fb.name,
+          'country': fb.country,
+          'date': fb.date,
+          'rating': fb.rating,
+          'message': fb.message,
+          'ts': (ts_from(fb.date)|int)
+        }] %}
+      {% endif %}
+    {% endfor %}
+
+    {% set merged = merged|sort(attribute='ts', reverse=true) %}
+
+    <div class="testimonials-grid">
+      {% for c in merged %}
         <div class="testimonial-card">
           <div class="t-head">
-            <div class="t-name">
-              {{ comment.name }}{% if comment.country %} · {{ comment.country }}{% endif %}
-            </div>
-            <div class="t-meta">{{ comment.date_str }}</div>
+            <div class="t-name">{{ c.name }}{% if c.country %} · {{ c.country }}{% endif %}</div>
+            <div class="t-meta">{{ c.date }}</div>
           </div>
 
-          <div class="t-stars" aria-label="{{ comment.rating }} / 5">
+          <div class="t-stars" aria-label="{{ c.rating }} / 5">
             {% for i in range(1, 6) %}
-              {% if comment.rating >= i %}
+              {% if c.rating >= i %}
                 <svg><use href="#icon-star-full"></use></svg>
-              {% elif comment.rating >= i - 0.5 %}
+              {% elif c.rating >= i - 0.5 %}
                 <svg><use href="#icon-star-half"></use></svg>
               {% else %}
                 <svg><use href="#icon-star-empty"></use></svg>
               {% endif %}
             {% endfor %}
-            <span class="sr-only">{{ comment.rating }} / 5</span>
+            <span class="sr-only">{{ c.rating }} / 5</span>
           </div>
 
-          {% set is_long = (display_message|length > 200) %}
+          {% set is_long = (c.message|length > 200) %}
           <p class="t-text{{ ' clamp' if is_long else '' }}"
-             id="comment-db-{{ loop.index }}"
-             data-full="{{ display_message|e }}">
-            {{ (display_message[:200] ~ '...') if is_long else display_message }}
+             id="comment-{{ loop.index }}"
+             data-full="{{ c.message|e }}">
+            {{ (c.message[:200] ~ '...') if is_long else c.message }}
           </p>
           <button class="t-toggle"
-                  onclick="toggleText('db-{{ loop.index }}')"
+                  onclick="toggleText('{{ loop.index }}')"
                   style="{{ '' if is_long else 'display:none;' }}">
             {{ _("Lire plus") }}
           </button>
         </div>
       {% endfor %}
-
-      {# 2) Ajouter les fallback manquants (ex. Francis) s'ils ne sont pas en base #}
-      {% for fb in fallback_comments %}
-        {% set kf = fb.name ~ '|' ~ fb.country ~ '|' ~ fb.date %}
-        {% set kp = fb.name ~ '|' ~ fb.country %}
-        {% if not (kf in db_full.seen or kp in db_pair.seen) %}
-          <div class="testimonial-card">
-            <div class="t-head">
-              <div class="t-name">{{ fb.name }} · {{ fb.country }}</div>
-              <div class="t-meta">{{ fb.date }}</div>
-            </div>
-
-            <div class="t-stars" aria-label="{{ fb.rating }} / 5">
-              {% for i in range(1, 6) %}
-                {% if fb.rating >= i %}
-                  <svg><use href="#icon-star-full"></use></svg>
-                {% elif fb.rating >= i - 0.5 %}
-                  <svg><use href="#icon-star-half"></use></svg>
-                {% else %}
-                  <svg><use href="#icon-star-empty"></use></svg>
-                {% endif %}
-              {% endfor %}
-              <span class="sr-only">{{ fb.rating }} / 5</span>
-            </div>
-
-            {% set is_long = (fb.message|length > 200) %}
-            <p class="t-text{{ ' clamp' if is_long else '' }}"
-               id="comment-fb-{{ loop.index }}"
-               data-full="{{ fb.message|e }}">
-              {{ (fb.message[:200] ~ '...') if is_long else fb.message }}
-            </p>
-            <button class="t-toggle"
-                    onclick="toggleText('fb-{{ loop.index }}')"
-                    style="{{ '' if is_long else 'display:none;' }}">
-              {{ _("Lire plus") }}
-            </button>
-          </div>
-        {% endif %}
-      {% endfor %}
     </div>
   </div>
 </section>
-
 
 
   <!-- ✅ Sticky bar mobile uniquement -->
