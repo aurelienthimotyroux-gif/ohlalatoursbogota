@@ -767,6 +767,18 @@ a[href="#main-content"]{
   background: transparent !important;
   display: inline !important;
 }
+/* --- Burger visible + barres blanches sur le hero --- */
+.hero .hero-topbar { position: relative; z-index: 10; }
+.hero .burger { display: inline-grid !important; gap: 4px; padding: .5rem; background: transparent; border: 0; z-index: 20; }
+.hero .burger span { width: 26px; height: 2px; background: #fff !important; display: block; }
+
+/* Animation état ouvert (si déjà utilisée) */
+.burger[aria-expanded="true"] span:nth-child(1){ transform: translateY(6px) rotate(45deg); }
+.burger[aria-expanded="true"] span:nth-child(2){ opacity: 0; }
+.burger[aria-expanded="true"] span:nth-child(3){ transform: translateY(-6px) rotate(-45deg); }
+
+/* Cacher le burger sur desktop uniquement */
+@media (min-width: 768px){ .burger{ display: none !important; } }
 
 
 
