@@ -722,4 +722,7 @@ msgstr "Private transport service in Bogotá"
 msgid "Transfert privé hôtel ⇄ aéroport à Bogotá. Prix fixe 60 000 COP pour 1 à 4 personnes."
 msgstr "Private hotel ⇄ airport transfer in Bogotá. Fixed price COP 60,000 for 1–4 people."
 
+#: templates/tours.html
+msgid "Découvrez une aventure inoubliable au cœur des montagnes andines et contemplez La Chorrera, la plus haute cascade du pays. Nous emprunterons des sentiers bordés d’une végétation luxuriante, en observant la richesse de la faune et de la flore locales. Tout au long de la randonnée, nous profiterons de paysages spectaculaires jusqu’à atteindre la chute vertigineuse de plus de 590 mètres, un spectacle naturel à couper le souffle."
+msgstr "Discover an unforgettable adventure in the heart of the Andean mountains and marvel at La Chorrera, the tallest waterfall in the country. We will follow trails lined with lush vegetation, observing the richness of local wildlife and flora. Throughout the hike, we will enjoy spectacular scenery until we reach the breathtaking drop of over 590 meters — a natural spectacle that will take your breath away."
 
