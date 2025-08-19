@@ -315,6 +315,127 @@ def _csrf_check(tok: str) -> bool:
     return bool(tok) and tok == session.get("_csrf")
 
 # ---------------- ADMIN : Commentaires (inchangé) ----------------
+# ==== ADMIN MINIMAL (sans rien supprimer) ====
+# (Assure-toi d'avoir `import secrets` en haut du fichier.)
+from sqlalchemy import inspect  # import local OK même si déjà importé ailleurs
+
+ADMIN_USER = os.getenv("ADMIN_USER", "admin")
+ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD")  # à définir en prod
+
+def admin_required(fn):
+    @wraps(fn)
+    def _wrap(*args, **kwargs):
+        if session.get("is_admin"):
+            return fn(*args, **kwargs)
+        return redirect(url_for("admin_login", next=request.url))
+    return _wrap
+
+def _inline_html(title, body):
+    return f"""<!doctype html>
+<html lang="fr"><meta charset="utf-8">
+<title>{title}</title>
+<style>
+body{{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:#0f172a;color:#e5e7eb;margin:0;padding:32px}}
+.card{{background:#111827;border:1px solid #1f2937;border-radius:12px;padding:20px;max-width:1060px;margin:auto}}
+h1{{margin:0 0 10px;font-size:22px}}
+a{{color:#93c5fd;text-decoration:none}} a:hover{{text-decoration:underline}}
+.btn{{display:inline-block;background:#2563eb;color:#fff;padding:10px 14px;border-radius:10px}}
+.small{{opacity:.8;font-size:14px}}
+table{{width:100%;margin-top:10px;border-collapse:collapse;font-size:15px}}
+td,th{{padding:8px 10px;border-bottom:1px solid #1f2937;text-align:left;vertical-align:top}}
+.badge{{display:inline-block;background:#1f2937;border:1px solid #334155;border-radius:8px;padding:2px 8px}}
+details summary{{cursor:pointer}}
+</style>
+<div class="card">{body}</div></html>"""
+
+@app.route("/admin/login", methods=["GET","POST"])
+def admin_login():
+    if request.method == "POST":
+        user = (request.form.get("user") or "").strip()
+        pw = request.form.get("password") or ""
+        if ADMIN_PASSWORD and user == ADMIN_USER and pw == ADMIN_PASSWORD:
+            session["is_admin"] = True
+            return redirect(request.args.get("next") or url_for("admin_home"))
+        flash(_("Identifiants invalides"), "error")
+    if os.path.exists(os.path.join(app.root_path, "templates", "admin_login.html")):
+        return render_template("admin_login.html")
+    body = """
+      <h1>Connexion admin</h1>
+      <form method="post">
+        <p><label>Utilisateur:<br><input name="user" required></label></p>
+        <p><label>Mot de passe:<br><input name="password" type="password" required></label></p>
+        <p><button class="btn" type="submit">Se connecter</button></p>
+        <p class="small">Définis les variables d'environnement <code>ADMIN_USER</code> (optionnel) et <code>ADMIN_PASSWORD</code> (obligatoire)</p>
+      </form>
+    """
+    return _inline_html("Login admin", body)
+
+@app.route("/admin/logout")
+def admin_logout():
+    session.pop("is_admin", None)
+    return redirect(url_for("index", lang=get_locale()))
+
+@app.route("/admin")
+def admin_root():
+    return redirect(url_for("admin_home"))
+
+# ---------------- Auto ensure tables (incl. transfers) ----------------
+def _ensure_tables():
+    """Crée les tables manquantes (dont 'transfers') si besoin, sans casser l'app."""
+    try:
+        with app.app_context():
+            insp = inspect(db.engine)
+            # si un modèle n'existe pas encore, db.create_all() l'ajoute simplement
+            if not (insp.has_table("comments") and insp.has_table("comment_translation")):
+                db.create_all()
+            # on essaie aussi de créer au cas où 'transfers' vient d'être ajouté
+            if not insp.has_table("transfers"):
+                db.create_all()
+    except Exception as e:
+        app.logger.warning("ensure_tables_failed: %s", e)
+
+@app.route("/admin/")
+@admin_required
+def admin_home():
+    # s'assure que les tables existent — évite les 500 sur le compteur
+    _ensure_tables()
+    comments_count     = Comment.query.count()
+    translations_count = CommentTranslation.query.count()
+    # si le modèle Transfer n'est pas (encore) défini, on évite le NameError
+    transfers_count    = Transfer.query.count() if 'Transfer' in globals() else 0
+    body = f"""
+      <h1>Panneau d’administration</h1>
+      <p class="small">Base: <code>{DB_URL}</code></p>
+      <table>
+        <tr><th>Commentaires</th><td><span class="badge">{comments_count}</span> – <a class="btn" href="{url_for('admin_comments')}">Gérer les commentaires</a></td></tr>
+        <tr><th>Traductions en cache</th><td><span class="badge">{translations_count}</span></td></tr>
+        <tr><th>Transferts</th><td><span class="badge">{transfers_count}</span> – <a class="btn" href="{url_for('admin_transfers')}">Voir la liste</a></td></tr>
+        <tr><th>Mode PayPal</th><td>{PAYPAL_MODE}</td></tr>
+      </table>
+      <p style="margin-top:16px">
+        <a class="btn" href="{url_for('admin_logout')}" style="background:#4b5563">Se déconnecter</a>
+        &nbsp; <a href="{url_for('index', lang=get_locale())}">← Retour au site</a>
+      </p>
+    """
+    return _inline_html("Admin", body)
+
+@app.route("/_routes")
+def _routes():
+    lines = sorted(str(r) for r in app.url_map.iter_rules())
+    return make_response("<pre>" + "\n".join(lines) + "</pre>", 200)
+
+# ---------------- CSRF helpers ----------------
+def _csrf_get():
+    tok = session.get("_csrf")
+    if not tok:
+        tok = secrets.token_hex(16)
+        session["_csrf"] = tok
+    return tok
+
+def _csrf_check(tok: str) -> bool:
+    return bool(tok) and tok == session.get("_csrf")
+
+# ---------------- ADMIN : Commentaires ----------------
 @app.get("/admin/comments")
 @admin_required
 def admin_comments():
@@ -374,12 +495,63 @@ def admin_delete_comment(comment_id: int):
         flash(_("Suppression impossible."), "error")
     return redirect(url_for("admin_comments"))
 
-# ---------------- ADMIN : Transferts (NOUVEAU, ajoute sans rien supprimer) ----------------
+# ---------------- PUBLIC : soumission d’un transfert (robuste) ----------------
+@app.post("/transfer")
+def submit_transfer():
+    f = request.form
+
+    def g(*keys, default=""):
+        for k in keys:
+            v = f.get(k)
+            if v:
+                return v
+        return default
+
+    try:
+        pax = int(g("passengers","pax","persons","people","personnes", default="1"))
+    except Exception:
+        pax = 1
+
+    try:
+        _ensure_tables()  # évite "relation transfers does not exist"
+        t = Transfer(
+            name=g("name","nom","full_name"),
+            email=g("email","mail"),
+            whatsapp=g("whatsapp","phone","telephone","tel"),
+            language=get_locale(),
+            pickup=g("pickup","from","depart","departure","pickup_address"),
+            dropoff=g("dropoff","to","destination","arrivee","dropoff_address"),
+            flight=g("flight","flight_number","vol"),
+            date_str=g("date","jour","fecha"),
+            time_str=g("time","pickup_time","heure","hora"),
+            passengers=pax,
+            notes=g("notes","message","comment"),
+            raw=str({k:v for k,v in f.items()}),
+        )
+        db.session.add(t)
+        db.session.commit()
+        flash(_("Merci ! Nous confirmons votre transfert très vite par WhatsApp / e-mail."), "success")
+    except Exception as e:
+        app.logger.error("submit_transfer_failed: %s", e)
+        db.session.rollback()
+        _ensure_tables()
+        flash(_("Petit souci technique, réessaie dans quelques secondes."), "error")
+
+    return redirect(request.referrer or url_for("transport", lang=get_locale()))
+
+# ---------------- ADMIN : Transferts ----------------
 @app.get("/admin/transfers")
 @admin_required
 def admin_transfers():
-    items = Transfer.query.order_by(Transfer.created_at.desc()).all()
-    csrf  = _csrf_get()
+    csrf = _csrf_get()
+    try:
+        _ensure_tables()
+        items = Transfer.query.order_by(Transfer.created_at.desc()).all()
+    except Exception as e:
+        app.logger.error("admin_transfers_failed: %s", e)
+        flash(_("La table des transferts vient d’être créée. Réessaie."), "error")
+        return redirect(url_for("admin_home"))
+
     if not items:
         body = f"""
           <h1>Transferts</h1>
@@ -419,6 +591,7 @@ def admin_transfers():
           </td>
         </tr>
         """)
+
     body = f"""
       <h1>Transferts</h1>
       <p><a href="{url_for('admin_home')}">← Retour admin</a></p>
@@ -449,7 +622,6 @@ def admin_transfer_delete(transfer_id: int):
         app.logger.warning("delete_transfer_failed: %s", e)
         flash(_("Suppression impossible."), "error")
     return redirect(url_for("admin_transfers"))
-
 # ------------------------------------------------------------------
 # Routes
 # ------------------------------------------------------------------
