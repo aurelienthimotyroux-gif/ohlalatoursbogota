@@ -37,7 +37,8 @@ def parse_date_str(date_str: str):
         if m_token.isdigit():
             m = int(m_token)
         else:
-            m = _MONTHS.get(m_token, _MONTHS.get(m_token.strip(".,"), None))
+            m = _MONTHS.get(m_token, _MONTHS.get(m_token.strip(".,"),
+                None))
         y = int(re.sub(r"\D+", "", parts[2]))
         if 0 < d <= 31 and 1 <= m <= 12 and 1900 <= y <= 2100:
             return datetime(y, m, d)
@@ -531,7 +532,7 @@ def admin_import_legacy():
 # ------------------------------------------------------------------
 @app.route("/")
 def index():
-    # Récupère un lot large et applique un tri robuste même si created_at est NULL
+    # 1) Charger les avis DB et trier (robuste si created_at manquant)
     comments = Comment.query.limit(1000).all()
     comments.sort(key=lambda c: (_sort_ts_model(c), c.id), reverse=True)
 
@@ -554,6 +555,50 @@ def index():
             views.append(CommentView(c, translated, translated=True, source_lang=detected))
         else:
             views.append(CommentView(c, c.message, translated=False))
+
+    # 2) Fallback (langue d’origine) – fusionner dans la même liste, éviter doublons par (nom|pays)
+    fallback_comments = [
+        {"name":"Francis","country":"Canada","date_str":"12 mai 2025","rating":5,"message":"L’expérience est super. Alejandra prend son temps pour nous expliquer et répondre à nos questions."},
+        {"name":"Katy","country":"Mexique","date_str":"21 mars 2023","rating":5,"message":"Recomendado. La comunicación con Alejandra fue excelente antes y durante; todo lo descrito se cumplió y siempre estuvo atenta a nuestras necesidades. Probablemente es un lugar que debes visitar si vienes a Bogotá: hermosas vistas y una catedral de sal impresionante."},
+        {"name":"Liliana","country":"États-Unis","date_str":"4 mars 2023","rating":4.5,"message":"Incredible experience! Alejandra and her father (Omar) took care of my husband's special needs, and everything was done at 100%. The Salt Cathedral, the traditional food at Brasas del Llano: a 5-star cultural experience. We recommend Alejandra if you want a tour with a friend. Thank you so much, see you next time!"},
+        {"name":"Oscar","country":"Costa Rica","date_str":"8 janvier 2023","rating":4.5,"message":"Muchas gracias por su amabilidad y disponibilidad. Súper recomendado."},
+        {"name":"Marvin","country":"Mexique","date_str":"15 septembre 2022","rating":5,"message":"Alejandra y su papá nos ofrecieron un día muy bonito en Zipaquirá. Nos vamos con excelentes recuerdos. ¡Gracias!"},
+        {"name":"Kristina","country":"Mexique","date_str":"27 août 2022","rating":5,"message":"Recomendamos esta experiencia. Lo pasamos excelente. Alejandra y su papá son amables y atentos."},
+        {"name":"Sam","country":"États-Unis","date_str":"14 août 2022","rating":5,"message":"Alejandra and her father Omar were perfect hosts, very attentive to the way I wanted to enjoy the visit."},
+        {"name":"Jorge","country":"Mexique","date_str":"11 août 2022","rating":5,"message":"Altamente recomendado. Alejandra y su papá fueron muy amables y estuvieron atentos a nosotros en todo momento. ¡Experiencia 100% recomendada!"},
+        {"name":"Fabiola","country":"Mexique","date_str":"11 août 2022","rating":5,"message":"De principio a fin, una experiencia muy agradable. Alejandra y su papá Omar fueron muy atentos y amables. El desayuno y el almuerzo deliciosos. Nos dejaron disfrutar de la catedral a nuestro ritmo: ¡lo apreciamos!"},
+        {"name":"Ann","country":"États-Unis","date_str":"22 février 2020","rating":5,"message":"Alejandra and her father were friendly, responsive to our questions, and took us to fascinating places we would never have found on our own. A very enjoyable experience."},
+        {"name":"Nancy","country":"Mexique","date_str":"30 juillet 2019","rating":5,"message":"Una de las mejores experiencias que no te puedes perder. Hospitalidad excelente, recorrido agradable, visita impresionante a la catedral de sal."},
+        {"name":"Luna","country":"Costa Rica","date_str":"25 juillet 2019","rating":5,"message":"Viaje bien planificado. Puntuales para recogernos en el hotel. Durante el trayecto, Alejandra y Omar fueron muy amables y pacientes."},
+        {"name":"Yuliana","country":"Costa Rica","date_str":"18 juillet 2019","rating":5,"message":"Ale y Omar (su papá) son súper simpáticos y se esfuerzan para que te sientas como en casa."},
+    ]
+
+    seen_pairs = set((v.name or "") + "|" + (v.country or "") for v in views)
+    for fb in fallback_comments:
+        kp = f"{fb['name']}|{fb['country']}"
+        if kp in seen_pairs:
+            continue
+        d = parse_date_str(fb.get("date_str") or "")
+        # Objet simple avec les mêmes attributs qu'attend le template
+        Fallback = type("Fallback", (), {})
+        obj = Fallback()
+        obj.id = 0
+        obj.name = fb["name"]
+        obj.country = fb["country"]
+        obj.date_str = fb["date_str"]
+        obj.rating = float(fb.get("rating", 5))
+        obj.created_at = d
+        obj.message = fb["message"]
+        obj.translated = False
+        obj.source_lang = None
+        views.append(obj)
+        seen_pairs.add(kp)
+
+    # 3) Trier l'ensemble (DB + fallback) par created_at/date
+    def _sort_key(v):
+        return (getattr(v, "created_at", None) or parse_date_str(getattr(v, "date_str", "")) or datetime.min,
+                getattr(v, "id", 0))
+    views.sort(key=_sort_key, reverse=True)
 
     return render_template("index.html", comments=views)
 
@@ -680,5 +725,3 @@ def not_found(e):
 @app.errorhandler(500)
 def server_error(e):
     return render_template("500.html"), 500
-
-
