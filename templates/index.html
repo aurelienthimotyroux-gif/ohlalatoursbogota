@@ -93,18 +93,6 @@
     .hero-topbar .burger span { background: #fff !important; }
     #burger[aria-expanded="true"] span { background: #fff !important; }
 
-    .translate-free { display:inline-block; position:relative; }
-    .translate-free details { display:inline-block; }
-    .translate-free summary { cursor:pointer; color:#fff; text-shadow:1px 1px 3px rgba(0,0,0,.5); }
-    .translate-free .menu {
-      position:absolute; right:0; top:120%; min-width:220px;
-      background:#fff; color:#222; border-radius:8px; box-shadow:0 6px 18px rgba(0,0,0,.18);
-      padding:8px; z-index:5;
-    }
-    .translate-free .menu a { display:block; padding:8px 10px; border-radius:6px; text-decoration:none; color:#111; }
-    .translate-free .menu a:hover { background:#f2f2f2; }
-  </style>
-
   <!-- Sprite d'icônes SVG (étoiles) -->
   <svg xmlns="http://www.w3.org/2000/svg" style="display:none;">
     <symbol id="icon-star-full" viewBox="0 0 24 24" aria-hidden="true">
@@ -210,18 +198,6 @@
         <a href="{{ lang_url('fr') }}" aria-label="Français">🇫🇷</a> |
         <a href="{{ lang_url('en') }}" aria-label="English">🇺🇸</a> |
         <a href="{{ lang_url('es') }}" aria-label="Español">🇨🇴</a>
-      </div>
-
-      <!-- 🌐 Traduction gratuite via Google Translate (proxy) -->
-      <div class="translate-free" style="margin-left:10px;">
-        <details>
-          <summary>🌐 {{ _("Traduire") }}</summary>
-          <div class="menu" role="menu" aria-label="{{ _('Traduire cette page') }}">
-            <a role="menuitem" href="https://translate.google.com/translate?hl=fr&sl=auto&tl=en&u={{ request.url|urlencode }}" target="_blank" rel="noopener">English (Google)</a>
-            <a role="menuitem" href="https://translate.google.com/translate?hl=fr&sl=auto&tl=es&u={{ request.url|urlencode }}" target="_blank" rel="noopener">Español (Google)</a>
-            <a role="menuitem" href="https://translate.google.com/translate?hl=fr&sl=auto&tl=fr&u={{ request.url|urlencode }}" target="_blank" rel="noopener">Français (Google)</a>
-          </div>
-        </details>
       </div>
 
       <button class="burger" id="burger" aria-expanded="false" aria-controls="nav-menu" style="margin-left:auto; margin-right:8px;">
