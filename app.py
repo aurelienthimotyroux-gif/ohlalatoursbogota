@@ -5,7 +5,7 @@ from datetime import datetime
 from werkzeug.middleware.proxy_fix import ProxyFix
 from flask_sqlalchemy import SQLAlchemy
 from functools import wraps
-from sqlalchemy import inspect, nullslast  # nullslast laissé si tu veux un tri 100% SQL plus tard
+from sqlalchemy import inspect  # pour vérifier/creer proprement les tables
 
 # ------------------------------------------------------------------
 # Utils: parser "22 février 2020" / "30 julio 2019" / "17 Aug 2025"
@@ -56,7 +56,7 @@ def format_date_human(d: datetime, locale="fr"):
     months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
     return f"{months[d.month-1]} {d.day}, {d.year}"
 
-# ✅ Tri robuste : created_at > date_str parsée > très ancien
+# Tri robuste : created_at > date_str parsée > très ancien
 def _sort_ts_model(c):
     return c.created_at or parse_date_str(getattr(c, 'date_str', '')) or datetime.min
 
@@ -98,7 +98,7 @@ raw_db = os.getenv("DATABASE_URL")
 if raw_db:
     # Render/Heroku donnent parfois "postgres://"
     raw_db = raw_db.replace("postgres://", "postgresql://", 1)
-    # Forcer le driver psycopg v3 (installé) au lieu du défaut psycopg2
+    # Forcer le driver psycopg v3
     if raw_db.startswith("postgresql://"):
         raw_db = "postgresql+psycopg://" + raw_db.split("://", 1)[1]
     DB_URL = raw_db
@@ -116,7 +116,7 @@ class Comment(db.Model):
     country = db.Column(db.String(120), default="")
     rating = db.Column(db.Float, default=5.0)
     date_str = db.Column(db.String(120), default="")
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, index=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
     message = db.Column(db.Text, nullable=False)
 
 class CommentTranslation(db.Model):
@@ -127,22 +127,20 @@ class CommentTranslation(db.Model):
     text = db.Column(db.Text, nullable=False)
     __table_args__ = (db.UniqueConstraint('comment_id', 'lang', name='uq_comment_lang'),)
 
-# ✅ Modèle manquant : Transferts
+# Modèle pour les demandes de transfert (transport)
 class Transfer(db.Model):
     __tablename__ = "transfers"
     id = db.Column(db.Integer, primary_key=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, index=True)
-
-    name = db.Column(db.String(200), default="")
-    email = db.Column(db.String(200), default="")
-    whatsapp = db.Column(db.String(100), default="")
-    language = db.Column(db.String(5), default="fr")
-
-    pickup = db.Column(db.String(300), default="")
-    dropoff = db.Column(db.String(300), default="")
-    flight = db.Column(db.String(120), default="")
-    date_str = db.Column(db.String(120), default="")
-    time_str = db.Column(db.String(120), default="")
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    name = db.Column(db.String(160), default="")
+    email = db.Column(db.String(160), default="")
+    whatsapp = db.Column(db.String(80), default="")
+    language = db.Column(db.String(8), default="")
+    pickup = db.Column(db.String(240), default="")
+    dropoff = db.Column(db.String(240), default="")
+    flight = db.Column(db.String(80), default="")
+    date_str = db.Column(db.String(80), default="")
+    time_str = db.Column(db.String(80), default="")
     passengers = db.Column(db.Integer, default=1)
     notes = db.Column(db.Text, default="")
     raw = db.Column(db.Text, default="")
@@ -234,7 +232,7 @@ def inject_globals():
     }
 
 # ------------------------------------------------------------------
-# ADMIN (unique, sans doublons d’endpoints)
+# ==== ADMIN MINIMAL ====
 # ------------------------------------------------------------------
 ADMIN_USER = os.getenv("ADMIN_USER", "admin")
 ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD")  # à définir en prod
@@ -264,25 +262,6 @@ td,th{{padding:8px 10px;border-bottom:1px solid #1f2937;text-align:left;vertical
 details summary{{cursor:pointer}}
 </style>
 <div class="card">{body}</div></html>"""
-
-# CSRF helpers
-def _csrf_get():
-    tok = session.get("_csrf")
-    if not tok:
-        tok = secrets.token_hex(16)
-        session["_csrf"] = tok
-    return tok
-
-def _csrf_check(tok: str) -> bool:
-    return bool(tok) and tok == session.get("_csrf")
-
-def _ensure_tables():
-    """Crée les tables manquantes (dont 'transfers') si besoin, sans casser l'app."""
-    try:
-        with app.app_context():
-            db.create_all()
-    except Exception as e:
-        app.logger.warning("ensure_tables_failed: %s", e)
 
 @app.route("/admin/login", methods=["GET","POST"])
 def admin_login():
@@ -315,6 +294,18 @@ def admin_logout():
 def admin_root():
     return redirect(url_for("admin_home"))
 
+def _ensure_tables():
+    """Crée les tables manquantes (dont 'transfers') si besoin, sans casser l'app."""
+    try:
+        with app.app_context():
+            insp = inspect(db.engine)
+            if not (insp.has_table("comments") and insp.has_table("comment_translation")):
+                db.create_all()
+            if not insp.has_table("transfers"):
+                db.create_all()
+    except Exception as e:
+        app.logger.warning("ensure_tables_failed: %s", e)
+
 @app.route("/admin/")
 @admin_required
 def admin_home():
@@ -332,7 +323,8 @@ def admin_home():
         <tr><th>Mode PayPal</th><td>{PAYPAL_MODE}</td></tr>
       </table>
       <p style="margin-top:16px">
-        <a class="btn" href="{url_for('admin_logout')}" style="background:#4b5563">Se déconnecter</a>
+        <a class="btn" href="{url_for('admin_import_legacy')}">Importer les anciens avis</a>
+        &nbsp; <a class="btn" href="{url_for('admin_logout')}" style="background:#4b5563">Se déconnecter</a>
         &nbsp; <a href="{url_for('index', lang=get_locale())}">← Retour au site</a>
       </p>
     """
@@ -342,6 +334,17 @@ def admin_home():
 def _routes():
     lines = sorted(str(r) for r in app.url_map.iter_rules())
     return make_response("<pre>" + "\n".join(lines) + "</pre>", 200)
+
+# CSRF helpers
+def _csrf_get():
+    tok = session.get("_csrf")
+    if not tok:
+        tok = secrets.token_hex(16)
+        session["_csrf"] = tok
+    return tok
+
+def _csrf_check(tok: str) -> bool:
+    return bool(tok) and tok == session.get("_csrf")
 
 # ---------------- ADMIN : Commentaires ----------------
 @app.get("/admin/comments")
@@ -402,50 +405,6 @@ def admin_delete_comment(comment_id: int):
         app.logger.warning("delete_comment_failed: %s", e)
         flash(_("Suppression impossible."), "error")
     return redirect(url_for("admin_comments"))
-
-# ---------------- PUBLIC : soumission d’un transfert ----------------
-@app.post("/transfer")
-def submit_transfer():
-    f = request.form
-
-    def g(*keys, default=""):
-        for k in keys:
-            v = f.get(k)
-            if v:
-                return v
-        return default
-
-    try:
-        pax = int(g("passengers","pax","persons","people","personnes", default="1"))
-    except Exception:
-        pax = 1
-
-    try:
-        _ensure_tables()  # évite "relation transfers does not exist"
-        t = Transfer(
-            name=g("name","nom","full_name"),
-            email=g("email","mail"),
-            whatsapp=g("whatsapp","phone","telephone","tel"),
-            language=get_locale(),
-            pickup=g("pickup","from","depart","departure","pickup_address"),
-            dropoff=g("dropoff","to","destination","arrivee","dropoff_address"),
-            flight=g("flight","flight_number","vol"),
-            date_str=g("date","jour","fecha"),
-            time_str=g("time","pickup_time","heure","hora"),
-            passengers=pax,
-            notes=g("notes","message","comment"),
-            raw=str({k:v for k,v in f.items()}),
-        )
-        db.session.add(t)
-        db.session.commit()
-        flash(_("Merci ! Nous confirmons votre transfert très vite par WhatsApp / e-mail."), "success")
-    except Exception as e:
-        app.logger.error("submit_transfer_failed: %s", e)
-        db.session.rollback()
-        _ensure_tables()
-        flash(_("Petit souci technique, réessaie dans quelques secondes."), "error")
-
-    return redirect(request.referrer or url_for("transport", lang=get_locale()))
 
 # ---------------- ADMIN : Transferts ----------------
 @app.get("/admin/transfers")
@@ -531,12 +490,48 @@ def admin_transfer_delete(transfer_id: int):
         flash(_("Suppression impossible."), "error")
     return redirect(url_for("admin_transfers"))
 
+# ---------------- ADMIN : Import des anciens avis de démo ----------------
+@app.route("/admin/import-legacy")
+@admin_required
+def admin_import_legacy():
+    """Importe en base une sélection d’avis 'démo' pour qu’ils s’affichent avec les vrais avis."""
+    legacy = [
+        {"name":"Nancy","country":"Mexique","date_str":"30 juillet 2019","rating":5,"message":"L’une des meilleures expériences à ne pas manquer. Hospitalité au top, parcours agréable, visite impressionnante de la cathédrale de sel."},
+        {"name":"Ann","country":"États-Unis","date_str":"22 février 2020","rating":5,"message":"Sympathiques, réactifs à nos questions, et des sites fascinants que nous n’aurions jamais trouvés seuls."},
+        {"name":"Yuliana","country":"Costa Rica","date_str":"18 juillet 2019","rating":5,"message":"Ale et Omar (son papa) sont super sympas et très impliqués pour que vous vous sentiez comme chez vous."},
+        {"name":"Luna","country":"Costa Rica","date_str":"25 juillet 2019","rating":5,"message":"Voyage bien planifié. À l’heure pour le pickup à l’hôtel. Pendant le trajet, Alejandra et Omar sont très sympathiques et patients."},
+        {"name":"Fabiola","country":"Mexique","date_str":"11 août 2022","rating":5,"message":"Du début à la fin, une expérience très agréable. Alejandra et son père Omar ont été très attentifs et gentils."},
+        {"name":"Jorge","country":"Mexique","date_str":"11 août 2022","rating":5,"message":"Hautement recommandé. Alejandra et son père ont été très sympathiques et à notre écoute à tout moment."},
+        {"name":"Kristina","country":"Mexique","date_str":"27 août 2022","rating":5,"message":"Nous recommandons cette expérience. Nous avons passé un excellent moment. Alejandra et son père sont polis et sympathiques."},
+        {"name":"Sam","country":"États-Unis","date_str":"14 août 2022","rating":5,"message":"Alejandra et son père Omar ont été des hôtes parfaits, très attentifs à ma manière de vouloir profiter de la visite."},
+        {"name":"Oscar","country":"Costa Rica","date_str":"8 janvier 2023","rating":4.5,"message":"Merci beaucoup pour votre gentillesse et votre disponibilité. Super recommandé."},
+        {"name":"Marvin","country":"Mexique","date_str":"15 septembre 2022","rating":5,"message":"Alejandra et son père sont extraordinaires et nous ont offert une très belle journée à Zipaquirá."},
+    ]
+    inserted = 0
+    for r in legacy:
+        exists = Comment.query.filter_by(name=r["name"], date_str=r["date_str"]).first()
+        if exists:
+            continue
+        created = parse_date_str(r["date_str"]) or datetime.utcnow()
+        db.session.add(Comment(
+            name=r["name"],
+            country=r["country"],
+            rating=float(r["rating"]),
+            date_str=r["date_str"],
+            created_at=created,
+            message=r["message"]
+        ))
+        inserted += 1
+    db.session.commit()
+    flash(_(f"{inserted} avis importés."), "success")
+    return redirect(url_for("admin_comments"))
+
 # ------------------------------------------------------------------
 # Routes publiques
 # ------------------------------------------------------------------
 @app.route("/")
 def index():
-    # ✅ Récupère un lot large et applique un tri robuste même si created_at est NULL
+    # Récupère un lot large et applique un tri robuste même si created_at est NULL
     comments = Comment.query.limit(1000).all()
     comments.sort(key=lambda c: (_sort_ts_model(c), c.id), reverse=True)
 
@@ -609,7 +604,7 @@ def submit_comment():
     db.session.add(c)
     db.session.commit()
 
-    # Invalider éventuels caches de traduction
+    # Invalider éventuels caches de traduction (si réutilisés)
     try:
         CommentTranslation.query.filter_by(comment_id=c.id).delete()
         db.session.commit()
@@ -618,6 +613,50 @@ def submit_comment():
 
     flash(_("Merci pour votre adorable commentaire 💛"), "success")
     return redirect(url_for("index", lang=get_locale()))
+
+# Form POST pour créer un transfert (transport)
+@app.post("/transfer")
+def submit_transfer():
+    f = request.form
+
+    def g(*keys, default=""):
+        for k in keys:
+            v = f.get(k)
+            if v:
+                return v
+        return default
+
+    try:
+        pax = int(g("passengers","pax","persons","people","personnes", default="1"))
+    except Exception:
+        pax = 1
+
+    try:
+        _ensure_tables()
+        t = Transfer(
+            name=g("name","nom","full_name"),
+            email=g("email","mail"),
+            whatsapp=g("whatsapp","phone","telephone","tel"),
+            language=get_locale(),
+            pickup=g("pickup","from","depart","departure","pickup_address"),
+            dropoff=g("dropoff","to","destination","arrivee","dropoff_address"),
+            flight=g("flight","flight_number","vol"),
+            date_str=g("date","jour","fecha"),
+            time_str=g("time","pickup_time","heure","hora"),
+            passengers=pax,
+            notes=g("notes","message","comment"),
+            raw=str({k:v for k,v in f.items()}),
+        )
+        db.session.add(t)
+        db.session.commit()
+        flash(_("Merci ! Nous confirmons votre transfert très vite par WhatsApp / e-mail."), "success")
+    except Exception as e:
+        app.logger.error("submit_transfer_failed: %s", e)
+        db.session.rollback()
+        _ensure_tables()
+        flash(_("Petit souci technique, réessaie dans quelques secondes."), "error")
+
+    return redirect(request.referrer or url_for("transport", lang=get_locale()))
 
 # ------------------------------------------------------------------
 # Statique & SEO
