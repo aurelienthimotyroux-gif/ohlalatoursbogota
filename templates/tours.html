@@ -9,6 +9,19 @@
   <meta name="description" content="{{ _('Tours privés à Bogotá : Candelaria, Monserrate, Zipaquirá, La Chorrera et finca café (Hacienda Coloma). Guide francophone, anglais et espagnol. Transport/van et transferts aéroport disponibles.') }}">
   <meta name="keywords" content="tours privés Bogotá, visite guidée Bogotá, guide francophone Bogotá, excursion Zipaquirá, randonnée Monserrate, Candelaria, Hacienda Coloma, cascade La Chorrera, transport privé Bogotá, van, transfert aéroport Bogotá">
 
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-92M6CENDXH"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  // Id de mesure GA4
+  gtag('config', 'G-92M6CENDXH', {
+    'anonymize_ip': true  // optionnel mais recommandé
+  });
+</script>
+
   <!-- Canonical + hreflang -->
   <link rel="canonical" href="https://www.ohlalatoursbogota.com{{ request.path }}{% if get_locale()!='fr' %}?lang={{ get_locale() }}{% endif %}">
   <link rel="alternate" href="{{ url_for('tours', lang='fr', _external=True) }}" hreflang="fr">

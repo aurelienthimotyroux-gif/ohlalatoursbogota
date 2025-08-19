@@ -9,6 +9,19 @@
   <meta name="description" content="{{ _('Transfert privé hôtel ⇄ aéroport à Bogotá. Chauffeur professionnel, prix fixe 60 000 COP pour 1 à 4 personnes. Réservation par WhatsApp ou e-mail.') }}">
   <meta name="keywords" content="transport aéroport Bogotá, transfert privé Bogotá, taxi aéroport Bogotá, chauffeur privé Bogotá, van Bogotá, service de transport Bogotá">
 
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-92M6CENDXH"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  // Id de mesure GA4
+  gtag('config', 'G-92M6CENDXH', {
+    'anonymize_ip': true  // optionnel mais recommandé
+  });
+</script>
+
   <!-- ✅ Canonical + hreflang -->
   <link rel="canonical" href="https://www.ohlalatoursbogota.com{{ request.path }}{% if get_locale()!='fr' %}?lang={{ get_locale() }}{% endif %}">
   <link rel="alternate" href="{{ url_for('transport', lang='fr', _external=True) }}" hreflang="fr">
