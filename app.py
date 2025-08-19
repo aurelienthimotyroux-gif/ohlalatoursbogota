@@ -215,6 +215,7 @@ def inject_globals():
 
 # ------------------------------------------------------------------
 # ==== ADMIN MINIMAL (sans rien supprimer) ====
+# (Assure-toi d'avoir `import secrets` en haut du fichier.)
 ADMIN_USER = os.getenv("ADMIN_USER", "admin")
 ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD")  # à définir en prod
 
@@ -232,13 +233,15 @@ def _inline_html(title, body):
 <title>{title}</title>
 <style>
 body{{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:#0f172a;color:#e5e7eb;margin:0;padding:32px}}
-.card{{background:#111827;border:1px solid #1f2937;border-radius:12px;padding:20px;max-width:860px;margin:auto}}
+.card{{background:#111827;border:1px solid #1f2937;border-radius:12px;padding:20px;max-width:1060px;margin:auto}}
 h1{{margin:0 0 10px;font-size:22px}}
 a{{color:#93c5fd;text-decoration:none}} a:hover{{text-decoration:underline}}
 .btn{{display:inline-block;background:#2563eb;color:#fff;padding:10px 14px;border-radius:10px}}
 .small{{opacity:.8;font-size:14px}}
-table{{width:100%;margin-top:10px;border-collapse:collapse}}
-td,th{{padding:8px 10px;border-bottom:1px solid #1f2937;text-align:left}}
+table{{width:100%;margin-top:10px;border-collapse:collapse;font-size:15px}}
+td,th{{padding:8px 10px;border-bottom:1px solid #1f2937;text-align:left;vertical-align:top}}
+.badge{{display:inline-block;background:#1f2937;border:1px solid #334155;border-radius:8px;padding:2px 8px}}
+details summary{{cursor:pointer}}
 </style>
 <div class="card">{body}</div></html>"""
 
@@ -276,19 +279,20 @@ def admin_root():
 @app.route("/admin/")
 @admin_required
 def admin_home():
-    comments_count = Comment.query.count()
+    comments_count     = Comment.query.count()
     translations_count = CommentTranslation.query.count()
+    transfers_count    = Transfer.query.count() if 'Transfer' in globals() else 0
     body = f"""
       <h1>Panneau d’administration</h1>
       <p class="small">Base: <code>{DB_URL}</code></p>
       <table>
-        <tr><th>Commentaires</th><td>{comments_count}</td></tr>
-        <tr><th>Traductions en cache</th><td>{translations_count}</td></tr>
+        <tr><th>Commentaires</th><td><span class="badge">{comments_count}</span> – <a class="btn" href="{url_for('admin_comments')}">Gérer les commentaires</a></td></tr>
+        <tr><th>Traductions en cache</th><td><span class="badge">{translations_count}</span></td></tr>
+        <tr><th>Transferts</th><td><span class="badge">{transfers_count}</span> – <a class="btn" href="{url_for('admin_transfers')}">Voir la liste</a></td></tr>
         <tr><th>Mode PayPal</th><td>{PAYPAL_MODE}</td></tr>
       </table>
       <p style="margin-top:16px">
-        <a class="btn" href="{url_for('admin_comments')}">Gérer les commentaires</a>
-        &nbsp; <a class="btn" href="{url_for('admin_logout')}" style="background:#4b5563">Se déconnecter</a>
+        <a class="btn" href="{url_for('admin_logout')}" style="background:#4b5563">Se déconnecter</a>
         &nbsp; <a href="{url_for('index', lang=get_locale())}">← Retour au site</a>
       </p>
     """
@@ -299,7 +303,7 @@ def _routes():
     lines = sorted(str(r) for r in app.url_map.iter_rules())
     return make_response("<pre>" + "\n".join(lines) + "</pre>", 200)
 
-# CSRF simple pour actions admin
+# ---------------- CSRF helpers (inchangés) ----------------
 def _csrf_get():
     tok = session.get("_csrf")
     if not tok:
@@ -310,13 +314,12 @@ def _csrf_get():
 def _csrf_check(tok: str) -> bool:
     return bool(tok) and tok == session.get("_csrf")
 
-# Liste & suppression des commentaires (admin)
+# ---------------- ADMIN : Commentaires (inchangé) ----------------
 @app.get("/admin/comments")
 @admin_required
 def admin_comments():
     items = Comment.query.limit(1000).all()
-    items.sort(key=lambda c: (_sort_ts_model(c), c.id), reverse=True)  # ✅ plus récent → plus ancien
-
+    items.sort(key=lambda c: (_sort_ts_model(c), c.id), reverse=True)
     csrf = _csrf_get()
     rows = []
     for c in items:
@@ -340,7 +343,6 @@ def admin_comments():
           </td>
         </tr>
         """)
-
     body = f"""
       <h1>Commentaires</h1>
       <p><a href="{url_for('admin_home')}">← Retour admin</a></p>
@@ -361,7 +363,6 @@ def admin_delete_comment(comment_id: int):
     if not _csrf_check(request.form.get("csrf")):
         flash(_("Session expirée, réessaie."), "error")
         return redirect(url_for("admin_comments"))
-
     try:
         CommentTranslation.query.filter_by(comment_id=comment_id).delete(synchronize_session=False)
         Comment.query.filter_by(id=comment_id).delete(synchronize_session=False)
@@ -371,8 +372,83 @@ def admin_delete_comment(comment_id: int):
         db.session.rollback()
         app.logger.warning("delete_comment_failed: %s", e)
         flash(_("Suppression impossible."), "error")
-
     return redirect(url_for("admin_comments"))
+
+# ---------------- ADMIN : Transferts (NOUVEAU, ajoute sans rien supprimer) ----------------
+@app.get("/admin/transfers")
+@admin_required
+def admin_transfers():
+    items = Transfer.query.order_by(Transfer.created_at.desc()).all()
+    csrf  = _csrf_get()
+    if not items:
+        body = f"""
+          <h1>Transferts</h1>
+          <p><a href="{url_for('admin_home')}">← Retour admin</a></p>
+          <p>Aucun transfert.</p>
+        """
+        return _inline_html("Transferts — Admin", body)
+
+    rows = []
+    for t in items:
+        rows.append(f"""
+        <tr>
+          <td>{t.id}</td>
+          <td>{t.created_at:%Y-%m-%d %H:%M}</td>
+          <td>{(t.name or '').replace('<','&lt;')}</td>
+          <td>{(t.whatsapp or '').replace('<','&lt;')}</td>
+          <td>{(t.email or '').replace('<','&lt;')}</td>
+          <td>{(t.date_str or '')} {(t.time_str or '')}</td>
+          <td>{(t.pickup or '').replace('<','&lt;')} → {(t.dropoff or '').replace('<','&lt;')}</td>
+          <td>{t.passengers}</td>
+          <td>
+            <details>
+              <summary>Voir</summary>
+              <div style="margin-top:6px">
+                <div><b>Vol</b> : {(t.flight or '').replace('<','&lt;')}</div>
+                <div><b>Notes</b> : {(t.notes or '').replace('<','&lt;')}</div>
+                <pre style="white-space:pre-wrap;background:#0b1220;padding:8px;border-radius:6px">{(t.raw or '').replace('<','&lt;')[:2000]}</pre>
+              </div>
+            </details>
+          </td>
+          <td>
+            <form method="post" action="{url_for('admin_transfer_delete', transfer_id=t.id)}"
+                  onsubmit="return confirm('Supprimer ce transfert ?');">
+              <input type="hidden" name="csrf" value="{csrf}">
+              <button class="btn" type="submit" style="background:#dc2626">Supprimer</button>
+            </form>
+          </td>
+        </tr>
+        """)
+    body = f"""
+      <h1>Transferts</h1>
+      <p><a href="{url_for('admin_home')}">← Retour admin</a></p>
+      <table>
+        <thead>
+          <tr>
+            <th>#</th><th>Créé</th><th>Nom</th><th>WhatsApp</th><th>Email</th>
+            <th>Date/Heure</th><th>Trajet</th><th>PAX</th><th>Détails</th><th>Action</th>
+          </tr>
+        </thead>
+        <tbody>{"".join(rows)}</tbody>
+      </table>
+    """
+    return _inline_html("Transferts — Admin", body)
+
+@app.post("/admin/transfers/<int:transfer_id>/delete")
+@admin_required
+def admin_transfer_delete(transfer_id: int):
+    if not _csrf_check(request.form.get("csrf")):
+        flash(_("Session expirée, réessaie."), "error")
+        return redirect(url_for("admin_transfers"))
+    try:
+        Transfer.query.filter_by(id=transfer_id).delete(synchronize_session=False)
+        db.session.commit()
+        flash(_("Transfert supprimé ✅"), "success")
+    except Exception as e:
+        db.session.rollback()
+        app.logger.warning("delete_transfer_failed: %s", e)
+        flash(_("Suppression impossible."), "error")
+    return redirect(url_for("admin_transfers"))
 
 # ------------------------------------------------------------------
 # Routes
