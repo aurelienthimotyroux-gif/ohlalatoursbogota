@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, url_for, flash, redirect, send_from_directory, session, make_response
 from flask_babel import Babel, _
-import os, requests, logging, re
+import os, requests, logging, re, secrets
 from datetime import datetime
 from werkzeug.middleware.proxy_fix import ProxyFix
 from flask_sqlalchemy import SQLAlchemy
@@ -288,7 +288,8 @@ def admin_home():
         <tr><th>Mode PayPal</th><td>{PAYPAL_MODE}</td></tr>
       </table>
       <p style="margin-top:16px">
-        <a class="btn" href="{url_for('admin_logout')}">Se déconnecter</a>
+        <a class="btn" href="{url_for('admin_comments')}">Gérer les commentaires</a>
+        &nbsp; <a class="btn" href="{url_for('admin_logout')}" style="background:#4b5563">Se déconnecter</a>
         &nbsp; <a href="{url_for('index', lang=get_locale())}">← Retour au site</a>
       </p>
     """
@@ -299,6 +300,80 @@ def admin_home():
 def _routes():
     lines = sorted(str(r) for r in app.url_map.iter_rules())
     return make_response("<pre>" + "\n".join(lines) + "</pre>", 200)
+
+# ====== CSRF très simple pour actions admin (AJOUT) ======
+def _csrf_get():
+    tok = session.get("_csrf")
+    if not tok:
+        tok = secrets.token_hex(16)
+        session["_csrf"] = tok
+    return tok
+
+def _csrf_check(tok: str) -> bool:
+    return bool(tok) and tok == session.get("_csrf")
+
+# ====== Liste & suppression des commentaires (AJOUT) ======
+@app.get("/admin/comments")
+@admin_required
+def admin_comments():
+    items = Comment.query.order_by(Comment.created_at.desc()).limit(100).all()
+    csrf = _csrf_get()
+
+    rows = []
+    for c in items:
+        snippet = (c.message or "")
+        snippet = (snippet[:120] + "…") if len(snippet) > 120 else snippet
+        snippet = snippet.replace("<", "&lt;")
+        rows.append(f"""
+        <tr>
+          <td>{c.id}</td>
+          <td>{(c.name or '').replace('<','&lt;')}</td>
+          <td>{(c.country or '').replace('<','&lt;')}</td>
+          <td>{c.rating:.1f}</td>
+          <td>{(c.created_at.strftime('%Y-%m-%d') if c.created_at else '')}</td>
+          <td style="max-width:420px">{snippet}</td>
+          <td>
+            <form method="post" action="{url_for('admin_delete_comment', comment_id=c.id)}"
+                  onsubmit="return confirm('Supprimer ce commentaire ?');">
+              <input type="hidden" name="csrf" value="{csrf}">
+              <button class="btn" type="submit" style="background:#dc2626">Supprimer</button>
+            </form>
+          </td>
+        </tr>
+        """)
+
+    body = f"""
+      <h1>Commentaires</h1>
+      <p><a href="{url_for('admin_home')}">← Retour admin</a></p>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th><th>Nom</th><th>Pays</th><th>⭐</th><th>Date</th><th>Message</th><th>Action</th>
+          </tr>
+        </thead>
+        <tbody>{"".join(rows) if rows else '<tr><td colspan="7">Aucun commentaire</td></tr>'}</tbody>
+      </table>
+    """
+    return _inline_html("Commentaires — Admin", body)
+
+@app.post("/admin/comments/<int:comment_id>/delete")
+@admin_required
+def admin_delete_comment(comment_id: int):
+    if not _csrf_check(request.form.get("csrf")):
+        flash(_("Session expirée, réessaie."), "error")
+        return redirect(url_for("admin_comments"))
+
+    try:
+        CommentTranslation.query.filter_by(comment_id=comment_id).delete(synchronize_session=False)
+        Comment.query.filter_by(id=comment_id).delete(synchronize_session=False)
+        db.session.commit()
+        flash(_("Commentaire supprimé ✅"), "success")
+    except Exception as e:
+        db.session.rollback()
+        app.logger.warning("delete_comment_failed: %s", e)
+        flash(_("Suppression impossible."), "error")
+
+    return redirect(url_for("admin_comments"))
 
 # ------------------------------------------------------------------
 # Routes
@@ -408,5 +483,6 @@ def not_found(e):
 @app.errorhandler(500)
 def server_error(e):
     return render_template("500.html"), 500
+
 
 
