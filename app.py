@@ -5,6 +5,7 @@ from datetime import datetime
 from werkzeug.middleware.proxy_fix import ProxyFix
 from flask_sqlalchemy import SQLAlchemy
 from functools import wraps
+from sqlalchemy import nullslast  # ✅ pour ORDER BY ... NULLS LAST
 
 # ------------------------------------------------------------------
 # Utils: parser "22 février 2020" / "30 julio 2019" / "17 Aug 2025"
@@ -316,7 +317,10 @@ def _csrf_check(tok: str) -> bool:
 @app.get("/admin/comments")
 @admin_required
 def admin_comments():
-    items = Comment.query.order_by(Comment.created_at.desc()).limit(100).all()
+    items = (Comment.query
+             .order_by(nullslast(Comment.created_at.desc()), Comment.id.desc())  # ✅ plus récent → plus ancien
+             .limit(100)
+             .all())
     csrf = _csrf_get()
 
     rows = []
@@ -380,7 +384,10 @@ def admin_delete_comment(comment_id: int):
 # ------------------------------------------------------------------
 @app.route("/")
 def index():
-    comments = Comment.query.order_by(Comment.created_at.desc()).limit(100).all()
+    comments = (Comment.query
+                .order_by(nullslast(Comment.created_at.desc()), Comment.id.desc())  # ✅ plus récent → plus ancien
+                .limit(100)
+                .all())
     target = get_locale()
 
     views = []
@@ -483,6 +490,5 @@ def not_found(e):
 @app.errorhandler(500)
 def server_error(e):
     return render_template("500.html"), 500
-
 
 
