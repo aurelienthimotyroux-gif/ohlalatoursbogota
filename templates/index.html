@@ -213,14 +213,6 @@
             <a role="menuitem" href="https://translate.google.com/translate?hl=fr&sl=auto&tl=fr&u={{ request.url|urlencode }}" target="_blank" rel="noopener">Français (Google)</a>
           </div>
         </details>
-        <!-- ✅ Fallback si JS désactivé (rien n’est supprimé, simple ajout) -->
-        <noscript>
-          <div class="menu" role="menu" aria-label="{{ _('Traduire cette page') }}">
-            <a role="menuitem" href="https://translate.google.com/translate?hl=fr&sl=auto&tl=en&u={{ request.url|urlencode }}" target="_blank" rel="noopener">English (Google)</a>
-            <a role="menuitem" href="https://translate.google.com/translate?hl=fr&sl=auto&tl=es&u={{ request.url|urlencode }}" target="_blank" rel="noopener">Español (Google)</a>
-            <a role="menuitem" href="https://translate.google.com/translate?hl=fr&sl=auto&tl=fr&u={{ request.url|urlencode }}" target="_blank" rel="noopener">Français (Google)</a>
-          </div>
-        </noscript>
       </div>
 
       <!-- ✅ Bouton burger ajouté (n'affecte rien si non utilisé) -->
@@ -376,7 +368,8 @@
             <div class="testimonial-card">
               <div class="t-head">
                 <div class="t-name">{{ comment.name }} · {{ comment.country }}</div>
-                <div class="t-meta">{{ comment.date_str }}</div>
+                <!-- ✅ correction ici : utiliser "date" (clé existante) -->
+                <div class="t-meta">{{ comment.date }}</div>
               </div>
               <div class="t-stars" aria-label="{{ comment.rating }} / 5">
                 {% for i in range(1, 6) %}
