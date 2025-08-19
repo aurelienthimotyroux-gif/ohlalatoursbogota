@@ -9,22 +9,38 @@
   <meta name="description" content="{{ _('Réservez votre visite guidée à Bogotá : Candelaria, Monserrate, Zipaquirá, La Chorrera et finca café. Guide francophone/anglais/espagnol. Paiement PayPal sécurisé.') }}">
   <meta name="keywords" content="réservation tour Bogotá, réserver visite guidée Bogotá, tours privés Bogotá, Candelaria, Monserrate, Zipaquirá, La Chorrera, Hacienda Coloma, guide francophone Bogotá, paiement PayPal Bogotá">
 
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-92M6CENDXH"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+  <!-- ✅ CMP / consentmanager (doit être avant GA) -->
+  <script type="text/javascript" data-cmp-ab="1"
+          src="https://cdn.consentmanager.net/delivery/autoblocking/62cc8437f29ac.js"
+          data-cmp-host="b.delivery.consentmanager.net"
+          data-cmp-cdn="cdn.consentmanager.net"
+          data-cmp-codesrc="16"></script>
 
+  <!-- ✅ Google Consent Mode (valeurs par défaut = refus, optionnel mais recommandé) -->
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    gtag('consent', 'default', {
+      ad_storage: 'denied',
+      analytics_storage: 'denied',
+      ad_user_data: 'denied',
+      ad_personalization: 'denied',
+      wait_for_update: 500
+    });
+  </script>
 
-<script type="text/javascript" data-cmp-ab="1" src="https://cdn.consentmanager.net/delivery/autoblocking/62cc8437f29ac.js" data-cmp-host="b.delivery.consentmanager.net" data-cmp-cdn="cdn.consentmanager.net" data-cmp-codesrc="16"></script>
-
-
-  // Id de mesure GA4
-  gtag('config', 'G-92M6CENDXH', {
-    'anonymize_ip': true  // optionnel mais recommandé
-  });
-</script>
+  <!-- ✅ Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-92M6CENDXH"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    gtag('js', new Date());
+    // Id de mesure GA4
+    gtag('config', 'G-92M6CENDXH', {
+      anonymize_ip: true  // optionnel mais recommandé
+    });
+  </script>
+</head>
 
   <!-- ✅ Canonical + hreflang -->
   <link rel="canonical" href="https://www.ohlalatoursbogota.com{{ request.path }}{% if get_locale()!='fr' %}?lang={{ get_locale() }}{% endif %}">

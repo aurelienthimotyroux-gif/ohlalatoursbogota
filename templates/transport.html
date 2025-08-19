@@ -1,29 +1,31 @@
-<!DOCTYPE html>
-<html lang="{{ get_locale() }}">
-<head>
-  <meta charset="UTF-8">
-  <title>{{ _("Service de Transport") }} — Oh La La Tours Bogotá</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- CMP / consentmanager -->
+<script type="text/javascript" data-cmp-ab="1"
+        src="https://cdn.consentmanager.net/delivery/autoblocking/62cc8437f29ac.js"
+        data-cmp-host="b.delivery.consentmanager.net"
+        data-cmp-cdn="cdn.consentmanager.net"
+        data-cmp-codesrc="16"></script>
 
-  <!-- ✅ Meta SEO -->
-  <meta name="description" content="{{ _('Transfert privé hôtel ⇄ aéroport à Bogotá. Chauffeur professionnel, prix fixe 60 000 COP pour 1 à 4 personnes. Réservation par WhatsApp ou e-mail.') }}">
-  <meta name="keywords" content="transport aéroport Bogotá, transfert privé Bogotá, taxi aéroport Bogotá, chauffeur privé Bogotá, van Bogotá, service de transport Bogotá">
+<!-- Google Consent Mode (valeurs par défaut = refus) -->
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){ dataLayer.push(arguments); }
+  gtag('consent', 'default', {
+    ad_storage: 'denied',
+    analytics_storage: 'denied',
+    ad_user_data: 'denied',
+    ad_personalization: 'denied',
+    wait_for_update: 500
+  });
+</script>
 
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-92M6CENDXH"></script>
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-
-
-<script type="text/javascript" data-cmp-ab="1" src="https://cdn.consentmanager.net/delivery/autoblocking/62cc8437f29ac.js" data-cmp-host="b.delivery.consentmanager.net" data-cmp-cdn="cdn.consentmanager.net" data-cmp-codesrc="16"></script>
-
   // Id de mesure GA4
-  gtag('config', 'G-92M6CENDXH', {
-    'anonymize_ip': true  // optionnel mais recommandé
-  });
+  gtag('config', 'G-92M6CENDXH', { anonymize_ip: true });
 </script>
+
 
   <!-- ✅ Canonical + hreflang -->
   <link rel="canonical" href="https://www.ohlalatoursbogota.com{{ request.path }}{% if get_locale()!='fr' %}?lang={{ get_locale() }}{% endif %}">

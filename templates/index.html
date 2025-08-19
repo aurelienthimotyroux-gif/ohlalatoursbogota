@@ -11,22 +11,36 @@
   <!-- Keywords (facultatif) -->
   <meta name="keywords" content="visite guidée Bogotá, guide francophone Bogotá, excursion Bogotá, tours privés Bogotá, visiter la Candelaria Bogotá, excursion Zipaquirá depuis Bogotá, randonnée Monserrate Bogotá, café, Bogota, Colombie, Monserrate, Zipaquira, Coloma, Hacienda Coloma, guide, tejo, Chapinero, hôtel, hostel, Alejandra, gastronomie, pesos, taxi, transport, van, aéroport, français, anglais, espagnol, Aguila, Club Colombia, histoire, tours exceptionnels">
 
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-92M6CENDXH"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+  <!-- CMP / consentmanager (doit être tout en haut du <head>) -->
+  <script type="text/javascript" data-cmp-ab="1"
+          src="https://cdn.consentmanager.net/delivery/autoblocking/62cc8437f29ac.js"
+          data-cmp-host="b.delivery.consentmanager.net"
+          data-cmp-cdn="cdn.consentmanager.net"
+          data-cmp-codesrc="16"></script>
 
+  <!-- Google Consent Mode (valeurs par défaut = refus) -->
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    gtag('consent', 'default', {
+      ad_storage: 'denied',
+      analytics_storage: 'denied',
+      ad_user_data: 'denied',
+      ad_personalization: 'denied',
+      wait_for_update: 500
+    });
+  </script>
 
-<script type="text/javascript" data-cmp-ab="1" src="https://cdn.consentmanager.net/delivery/autoblocking/62cc8437f29ac.js" data-cmp-host="b.delivery.consentmanager.net" data-cmp-cdn="cdn.consentmanager.net" data-cmp-codesrc="16"></script>
-
-
-  // Id de mesure GA4
-  gtag('config', 'G-92M6CENDXH', {
-    'anonymize_ip': true  // optionnel mais recommandé
-  });
-</script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-92M6CENDXH"></script>
+  <script>
+    gtag('js', new Date());
+    // Id de mesure GA4
+    gtag('config', 'G-92M6CENDXH', {
+      anonymize_ip: true
+    });
+  </script>
+</head>
 
 
   <!-- Canonical + hreflang -->
