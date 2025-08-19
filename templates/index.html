@@ -284,7 +284,7 @@
     <div class="container">
       <h2>{{ _("Avis des voyageurs") }}</h2>
 
-     <!-- Section Commentaires -->
+<!-- Section Commentaires -->
 <section class="testimonials">
   <div class="container">
     <h2>{{ _("Avis des voyageurs") }}</h2>
@@ -306,83 +306,98 @@
       {"name":"Yuliana","country":"Costa Rica","date":"18 juillet 2019","rating":5,"message":"Ale y Omar (su papá) son súper simpáticos y se esfuerzan para que te sientas como en casa."}
     ] %}
 
-    {# Construire un index { "Nom|Pays|Date": message } pour remplacer à l'affichage #}
-    {% set fb_index = namespace(map={}) %}
+    {# Index fallback: par clé complète et par (nom|pays) #}
+    {% set fb_full = namespace(map={}) %}
+    {% set fb_pair = namespace(map={}) %}
     {% for c in fallback_comments %}
-      {% set k = c.name ~ '|' ~ c.country ~ '|' ~ c.date %}
-      {% set _ = fb_index.map.update({k: c}) %}
+      {% set kf = c.name ~ '|' ~ c.country ~ '|' ~ c.date %}
+      {% set kp = c.name ~ '|' ~ c.country %}
+      {% set _ = fb_full.map.update({kf: c}) %}
+      {% set _ = fb_pair.map.update({kp: c}) %}
     {% endfor %}
 
-    {% if comments and comments|length > 0 %}
-      <!-- Avis depuis la base, avec remplacement du texte si on a une version "langue d'origine" -->
-      <div class="testimonials-grid">
-        {% for comment in comments %}
-          {% set key = (comment.name ~ '|' ~ (comment.country or '') ~ '|' ~ (comment.date_str or '')) %}
-          {% set fb = fb_index.map.get(key) %}
-          {% set display_message = (fb.message if fb else comment.message) %}
-          <div class="testimonial-card">
-            <div class="t-head">
-              <div class="t-name">
-                {{ comment.name }}{% if comment.country %} · {{ comment.country }}{% endif %}
-              </div>
-              <div class="t-meta">{{ comment.date_str }}</div>
-            </div>
+    {# Conserver les clés déjà présentes dans la base pour éviter les doublons #}
+    {% set db_full = namespace(seen={}) %}
+    {% set db_pair = namespace(seen={}) %}
+    {% for c in comments or [] %}
+      {% set kf = c.name ~ '|' ~ (c.country or '') ~ '|' ~ (c.date_str or '') %}
+      {% set kp = c.name ~ '|' ~ (c.country or '') %}
+      {% set _ = db_full.seen.update({kf: 1}) %}
+      {% set _ = db_pair.seen.update({kp: 1}) %}
+    {% endfor %}
 
-            <div class="t-stars" aria-label="{{ comment.rating }} / 5">
-              {% for i in range(1, 6) %}
-                {% if comment.rating >= i %}
-                  <svg><use href="#icon-star-full"></use></svg>
-                {% elif comment.rating >= i - 0.5 %}
-                  <svg><use href="#icon-star-half"></use></svg>
-                {% else %}
-                  <svg><use href="#icon-star-empty"></use></svg>
-                {% endif %}
-              {% endfor %}
-              <span class="sr-only">{{ comment.rating }} / 5</span>
-            </div>
+    <div class="testimonials-grid">
+      {# 1) Rendre les avis DB ; si on a une version langue d'origine, on remplace le message #}
+      {% for comment in comments or [] %}
+        {% set kf = comment.name ~ '|' ~ (comment.country or '') ~ '|' ~ (comment.date_str or '') %}
+        {% set kp = comment.name ~ '|' ~ (comment.country or '') %}
+        {% set fb = fb_full.map.get(kf) or fb_pair.map.get(kp) %}
+        {% set display_message = (fb.message if fb else comment.message) %}
 
-            {% set is_long = (display_message|length > 200) %}
-            <p class="t-text{{ ' clamp' if is_long else '' }}"
-               id="comment-db-{{ loop.index }}"
-               data-full="{{ display_message|e }}">
-              {{ (display_message[:200] ~ '...') if is_long else display_message }}
-            </p>
-            <button class="t-toggle"
-                    onclick="toggleText('db-{{ loop.index }}')"
-                    style="{{ '' if is_long else 'display:none;' }}">
-              {{ _("Lire plus") }}
-            </button>
+        <div class="testimonial-card">
+          <div class="t-head">
+            <div class="t-name">
+              {{ comment.name }}{% if comment.country %} · {{ comment.country }}{% endif %}
+            </div>
+            <div class="t-meta">{{ comment.date_str }}</div>
           </div>
-        {% endfor %}
-      </div>
-    {% else %}
-      <!-- Fallback uniquement si la base est vide -->
-      <div class="testimonials-grid">
-        {% for comment in fallback_comments %}
+
+          <div class="t-stars" aria-label="{{ comment.rating }} / 5">
+            {% for i in range(1, 6) %}
+              {% if comment.rating >= i %}
+                <svg><use href="#icon-star-full"></use></svg>
+              {% elif comment.rating >= i - 0.5 %}
+                <svg><use href="#icon-star-half"></use></svg>
+              {% else %}
+                <svg><use href="#icon-star-empty"></use></svg>
+              {% endif %}
+            {% endfor %}
+            <span class="sr-only">{{ comment.rating }} / 5</span>
+          </div>
+
+          {% set is_long = (display_message|length > 200) %}
+          <p class="t-text{{ ' clamp' if is_long else '' }}"
+             id="comment-db-{{ loop.index }}"
+             data-full="{{ display_message|e }}">
+            {{ (display_message[:200] ~ '...') if is_long else display_message }}
+          </p>
+          <button class="t-toggle"
+                  onclick="toggleText('db-{{ loop.index }}')"
+                  style="{{ '' if is_long else 'display:none;' }}">
+            {{ _("Lire plus") }}
+          </button>
+        </div>
+      {% endfor %}
+
+      {# 2) Ajouter les fallback manquants (ex. Francis) s'ils ne sont pas en base #}
+      {% for fb in fallback_comments %}
+        {% set kf = fb.name ~ '|' ~ fb.country ~ '|' ~ fb.date %}
+        {% set kp = fb.name ~ '|' ~ fb.country %}
+        {% if not (kf in db_full.seen or kp in db_pair.seen) %}
           <div class="testimonial-card">
             <div class="t-head">
-              <div class="t-name">{{ comment.name }} · {{ comment.country }}</div>
-              <div class="t-meta">{{ comment.date }}</div>
+              <div class="t-name">{{ fb.name }} · {{ fb.country }}</div>
+              <div class="t-meta">{{ fb.date }}</div>
             </div>
 
-            <div class="t-stars" aria-label="{{ comment.rating }} / 5">
+            <div class="t-stars" aria-label="{{ fb.rating }} / 5">
               {% for i in range(1, 6) %}
-                {% if comment.rating >= i %}
+                {% if fb.rating >= i %}
                   <svg><use href="#icon-star-full"></use></svg>
-                {% elif comment.rating >= i - 0.5 %}
+                {% elif fb.rating >= i - 0.5 %}
                   <svg><use href="#icon-star-half"></use></svg>
                 {% else %}
                   <svg><use href="#icon-star-empty"></use></svg>
                 {% endif %}
               {% endfor %}
-              <span class="sr-only">{{ comment.rating }} / 5</span>
+              <span class="sr-only">{{ fb.rating }} / 5</span>
             </div>
 
-            {% set is_long = (comment.message|length > 200) %}
+            {% set is_long = (fb.message|length > 200) %}
             <p class="t-text{{ ' clamp' if is_long else '' }}"
                id="comment-fb-{{ loop.index }}"
-               data-full="{{ comment.message|e }}">
-              {{ (comment.message[:200] ~ '...') if is_long else comment.message }}
+               data-full="{{ fb.message|e }}">
+              {{ (fb.message[:200] ~ '...') if is_long else fb.message }}
             </p>
             <button class="t-toggle"
                     onclick="toggleText('fb-{{ loop.index }}')"
@@ -390,9 +405,9 @@
               {{ _("Lire plus") }}
             </button>
           </div>
-        {% endfor %}
-      </div>
-    {% endif %}
+        {% endif %}
+      {% endfor %}
+    </div>
   </div>
 </section>
 
