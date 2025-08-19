@@ -284,58 +284,6 @@
     <div class="container">
       <h2>{{ _("Avis des voyageurs") }}</h2>
 
-      {% if comments and comments|length > 0 %}
-        <!-- Avis venant de la base (déjà triés côté serveur) -->
-        <div class="testimonials-grid">
-          {% for comment in comments %}
-            <div class="testimonial-card">
-              <div class="t-head">
-                <div class="t-name">
-                  {{ comment.name }}{% if comment.country %} · {{ comment.country }}{% endif %}
-                </div>
-                <div class="t-meta">{{ comment.date_str }}</div>
-              </div>
-
-              <div class="t-stars" aria-label="{{ comment.rating }} / 5">
-                {% for i in range(1, 6) %}
-                  {% if comment.rating >= i %}
-                    <svg><use href="#icon-star-full"></use></svg>
-                  {% elif comment.rating >= i - 0.5 %}
-                    <svg><use href="#icon-star-half"></use></svg>
-                  {% else %}
-                    <svg><use href="#icon-star-empty"></use></svg>
-                  {% endif %}
-                {% endfor %}
-                <span class="sr-only">{{ comment.rating }} / 5</span>
-              </div>
-
-              {% set is_long = (comment.message|length > 200) %}
-              <p
-                class="t-text{% if is_long %} clamp{% endif %}"
-                id="comment-{{ loop.index }}"
-                data-full="{{ comment.message|e }}"
-              >
-                {% if is_long %}
-                  {{ comment.message[:200] }}...
-                {% else %}
-                  {{ comment.message }}
-                {% endif %}
-              </p>
-              {% if is_long %}
-                <button class="t-toggle" onclick="toggleText('{{ loop.index }}')">
-                  {{ _("Lire plus") }}
-                </button>
-              {% endif %}
-            </div>
-          {% endfor %}
-        </div>
-
-      {% else %}
-          <!-- Section Commentaires -->
-  <section class="testimonials">
-    <div class="container">
-      <h2>{{ _("Avis des voyageurs") }}</h2>
-
       {# Fallback en langues d'origine — NE PAS envelopper dans _() #}
       {% set fallback_comments = [
         {"name":"Francis","country":"Canada","date":"12 mai 2025","rating":5,"message":"L’expérience est super. Alejandra prend son temps pour nous expliquer et répondre à nos questions."},
@@ -354,44 +302,44 @@
       ] %}
 
       <div class="testimonials-grid">
-        {# 1) Avis venant de la base #}
-        {% if comments and comments|length > 0 %}
-          {% for comment in comments %}
-            <div class="testimonial-card">
-              <div class="t-head">
-                <div class="t-name">
-                  {{ comment.name }}{% if comment.country %} · {{ comment.country }}{% endif %}
-                </div>
-                <div class="t-meta">{{ comment.date_str }}</div>
+        {# 1) Avis venant de la base, s'il y en a #}
+        {% for comment in (comments or []) %}
+          <div class="testimonial-card">
+            <div class="t-head">
+              <div class="t-name">
+                {{ comment.name }}{% if comment.country %} · {{ comment.country }}{% endif %}
               </div>
-
-              <div class="t-stars" aria-label="{{ comment.rating }} / 5">
-                {% for i in range(1, 6) %}
-                  {% if comment.rating >= i %}
-                    <svg><use href="#icon-star-full"></use></svg>
-                  {% elif comment.rating >= i - 0.5 %}
-                    <svg><use href="#icon-star-half"></use></svg>
-                  {% else %}
-                    <svg><use href="#icon-star-empty"></use></svg>
-                  {% endif %}
-                {% endfor %}
-                <span class="sr-only">{{ comment.rating }} / 5</span>
-              </div>
-
-              {% set is_long = (comment.message|length > 200) %}
-              <p class="t-text{% if is_long %} clamp{% endif %}"
-                 id="comment-{{ loop.index }}"
-                 data-full="{{ comment.message|e }}">
-                {% if is_long %}{{ comment.message[:200] }}...{% else %}{{ comment.message }}{% endif %}
-              </p>
-              {% if is_long %}
-                <button class="t-toggle" onclick="toggleText('{{ loop.index }}')">{{ _("Lire plus") }}</button>
-              {% endif %}
+              <div class="t-meta">{{ comment.date_str }}</div>
             </div>
-          {% endfor %}
-        {% endif %}
 
-        {# 2) Toujours ajouter les fallback (langue d'origine) #}
+            <div class="t-stars" aria-label="{{ comment.rating }} / 5">
+              {% for i in range(1, 6) %}
+                {% if comment.rating >= i %}
+                  <svg><use href="#icon-star-full"></use></svg>
+                {% elif comment.rating >= i - 0.5 %}
+                  <svg><use href="#icon-star-half"></use></svg>
+                {% else %}
+                  <svg><use href="#icon-star-empty"></use></svg>
+                {% endif %}
+              {% endfor %}
+              <span class="sr-only">{{ comment.rating }} / 5</span>
+            </div>
+
+            {% set is_long = (comment.message|length > 200) %}
+            <p class="t-text{{ ' clamp' if is_long else '' }}"
+               id="comment-db-{{ loop.index }}"
+               data-full="{{ comment.message|e }}">
+              {{ (comment.message[:200] ~ '...') if is_long else comment.message }}
+            </p>
+            <button class="t-toggle"
+                    onclick="toggleText('db-{{ loop.index }}')"
+                    style="{{ '' if is_long else 'display:none;' }}">
+              {{ _("Lire plus") }}
+            </button>
+          </div>
+        {% endfor %}
+
+        {# 2) Fallback en langues d'origine #}
         {% for comment in fallback_comments %}
           <div class="testimonial-card">
             <div class="t-head">
@@ -413,20 +361,21 @@
             </div>
 
             {% set is_long = (comment.message|length > 200) %}
-            <p class="t-text{% if is_long %} clamp{% endif %}"
-               id="comment-fallback-{{ loop.index }}"
+            <p class="t-text{{ ' clamp' if is_long else '' }}"
+               id="comment-fb-{{ loop.index }}"
                data-full="{{ comment.message|e }}">
-              {% if is_long %}{{ comment.message[:200] }}...{% else %}{{ comment.message }}{% endif %}
+              {{ (comment.message[:200] ~ '...') if is_long else comment.message }}
             </p>
-            {% if is_long %}
-              <button class="t-toggle" onclick="toggleText('fallback-{{ loop.index }}')">{{ _("Lire plus") }}</button>
-            {% endif %}
+            <button class="t-toggle"
+                    onclick="toggleText('fb-{{ loop.index }}')"
+                    style="{{ '' if is_long else 'display:none;' }}">
+              {{ _("Lire plus") }}
+            </button>
           </div>
         {% endfor %}
       </div>
     </div>
   </section>
-
 
   <!-- ✅ Sticky bar mobile uniquement -->
   <div class="sticky-cta">
