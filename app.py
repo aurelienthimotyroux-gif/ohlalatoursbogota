@@ -5,7 +5,7 @@ from datetime import datetime
 from werkzeug.middleware.proxy_fix import ProxyFix
 from flask_sqlalchemy import SQLAlchemy
 from functools import wraps
-from sqlalchemy import nullslast  # ✅ pour ORDER BY ... NULLS LAST
+from sqlalchemy import nullslast  # laissé en place si tu veux revenir à un tri 100% SQL plus tard
 
 # ------------------------------------------------------------------
 # Utils: parser "22 février 2020" / "30 julio 2019" / "17 Aug 2025"
@@ -55,6 +55,10 @@ def format_date_human(d: datetime, locale="fr"):
         return f"{d.day} {months[d.month-1]} {d.year}"
     months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
     return f"{months[d.month-1]} {d.day}, {d.year}"
+
+# ✅ Helper de tri : created_at > date_str parsée > très ancien
+def _sort_ts_model(c):
+    return c.created_at or parse_date_str(getattr(c, 'date_str', '')) or datetime.min
 
 # ------------------------------------------------------------------
 # App
@@ -210,12 +214,7 @@ def inject_globals():
     }
 
 # ------------------------------------------------------------------
-# ==== ADMIN MINIMAL (ajouté, sans supprimer ton code) ====
-# - /admin/login  : formulaire simple (inline si template absent)
-# - /admin/       : mini dashboard (protégé)
-# - /admin/logout : sortir
-# - /admin        : redirection vers /admin/
-# ------------------------------------------------------------------
+# ==== ADMIN MINIMAL (sans rien supprimer) ====
 ADMIN_USER = os.getenv("ADMIN_USER", "admin")
 ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD")  # à définir en prod
 
@@ -252,7 +251,6 @@ def admin_login():
             session["is_admin"] = True
             return redirect(request.args.get("next") or url_for("admin_home"))
         flash(_("Identifiants invalides"), "error")
-    # template si présent, sinon HTML inline
     if os.path.exists(os.path.join(app.root_path, "templates", "admin_login.html")):
         return render_template("admin_login.html")
     body = """
@@ -296,13 +294,12 @@ def admin_home():
     """
     return _inline_html("Admin", body)
 
-# (outil de debug routes – pratique si 404) :
 @app.route("/_routes")
 def _routes():
     lines = sorted(str(r) for r in app.url_map.iter_rules())
     return make_response("<pre>" + "\n".join(lines) + "</pre>", 200)
 
-# ====== CSRF très simple pour actions admin (AJOUT) ======
+# CSRF simple pour actions admin
 def _csrf_get():
     tok = session.get("_csrf")
     if not tok:
@@ -313,16 +310,14 @@ def _csrf_get():
 def _csrf_check(tok: str) -> bool:
     return bool(tok) and tok == session.get("_csrf")
 
-# ====== Liste & suppression des commentaires (AJOUT) ======
+# Liste & suppression des commentaires (admin)
 @app.get("/admin/comments")
 @admin_required
 def admin_comments():
-    items = (Comment.query
-             .order_by(nullslast(Comment.created_at.desc()), Comment.id.desc())  # ✅ plus récent → plus ancien
-             .limit(100)
-             .all())
-    csrf = _csrf_get()
+    items = Comment.query.limit(1000).all()
+    items.sort(key=lambda c: (_sort_ts_model(c), c.id), reverse=True)  # ✅ plus récent → plus ancien
 
+    csrf = _csrf_get()
     rows = []
     for c in items:
         snippet = (c.message or "")
@@ -384,12 +379,11 @@ def admin_delete_comment(comment_id: int):
 # ------------------------------------------------------------------
 @app.route("/")
 def index():
-    comments = (Comment.query
-                .order_by(nullslast(Comment.created_at.desc()), Comment.id.desc())  # ✅ plus récent → plus ancien
-                .limit(100)
-                .all())
-    target = get_locale()
+    # ✅ Récupère un lot large et applique un tri robuste même si created_at est NULL
+    comments = Comment.query.limit(1000).all()
+    comments.sort(key=lambda c: (_sort_ts_model(c), c.id), reverse=True)
 
+    target = get_locale()
     views = []
     for c in comments:
         cached = CommentTranslation.query.filter_by(comment_id=c.id, lang=target).first()
@@ -490,5 +484,4 @@ def not_found(e):
 @app.errorhandler(500)
 def server_error(e):
     return render_template("500.html"), 500
-
 
