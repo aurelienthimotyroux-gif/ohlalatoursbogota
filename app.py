@@ -5,7 +5,7 @@ from datetime import datetime
 from werkzeug.middleware.proxy_fix import ProxyFix
 from flask_sqlalchemy import SQLAlchemy
 from functools import wraps
-from sqlalchemy import nullslast  # laissé en place si tu veux revenir à un tri 100% SQL plus tard
+from sqlalchemy import inspect, nullslast  # nullslast laissé si tu veux un tri 100% SQL plus tard
 
 # ------------------------------------------------------------------
 # Utils: parser "22 février 2020" / "30 julio 2019" / "17 Aug 2025"
@@ -56,7 +56,7 @@ def format_date_human(d: datetime, locale="fr"):
     months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
     return f"{months[d.month-1]} {d.day}, {d.year}"
 
-# ✅ Helper de tri : created_at > date_str parsée > très ancien
+# ✅ Tri robuste : created_at > date_str parsée > très ancien
 def _sort_ts_model(c):
     return c.created_at or parse_date_str(getattr(c, 'date_str', '')) or datetime.min
 
@@ -116,7 +116,7 @@ class Comment(db.Model):
     country = db.Column(db.String(120), default="")
     rating = db.Column(db.Float, default=5.0)
     date_str = db.Column(db.String(120), default="")
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, index=True)
     message = db.Column(db.Text, nullable=False)
 
 class CommentTranslation(db.Model):
@@ -126,6 +126,26 @@ class CommentTranslation(db.Model):
     lang = db.Column(db.String(5), nullable=False)  # 'fr', 'en', 'es'
     text = db.Column(db.Text, nullable=False)
     __table_args__ = (db.UniqueConstraint('comment_id', 'lang', name='uq_comment_lang'),)
+
+# ✅ Modèle manquant : Transferts
+class Transfer(db.Model):
+    __tablename__ = "transfers"
+    id = db.Column(db.Integer, primary_key=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, index=True)
+
+    name = db.Column(db.String(200), default="")
+    email = db.Column(db.String(200), default="")
+    whatsapp = db.Column(db.String(100), default="")
+    language = db.Column(db.String(5), default="fr")
+
+    pickup = db.Column(db.String(300), default="")
+    dropoff = db.Column(db.String(300), default="")
+    flight = db.Column(db.String(120), default="")
+    date_str = db.Column(db.String(120), default="")
+    time_str = db.Column(db.String(120), default="")
+    passengers = db.Column(db.Integer, default=1)
+    notes = db.Column(db.Text, default="")
+    raw = db.Column(db.Text, default="")
 
 with app.app_context():
     db.create_all()
@@ -214,8 +234,8 @@ def inject_globals():
     }
 
 # ------------------------------------------------------------------
-# ==== ADMIN MINIMAL (sans rien supprimer) ====
-# (Assure-toi d'avoir `import secrets` en haut du fichier.)
+# ADMIN (unique, sans doublons d’endpoints)
+# ------------------------------------------------------------------
 ADMIN_USER = os.getenv("ADMIN_USER", "admin")
 ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD")  # à définir en prod
 
@@ -245,65 +265,7 @@ details summary{{cursor:pointer}}
 </style>
 <div class="card">{body}</div></html>"""
 
-@app.route("/admin/login", methods=["GET","POST"])
-def admin_login():
-    if request.method == "POST":
-        user = (request.form.get("user") or "").strip()
-        pw = request.form.get("password") or ""
-        if ADMIN_PASSWORD and user == ADMIN_USER and pw == ADMIN_PASSWORD:
-            session["is_admin"] = True
-            return redirect(request.args.get("next") or url_for("admin_home"))
-        flash(_("Identifiants invalides"), "error")
-    if os.path.exists(os.path.join(app.root_path, "templates", "admin_login.html")):
-        return render_template("admin_login.html")
-    body = """
-      <h1>Connexion admin</h1>
-      <form method="post">
-        <p><label>Utilisateur:<br><input name="user" required></label></p>
-        <p><label>Mot de passe:<br><input name="password" type="password" required></label></p>
-        <p><button class="btn" type="submit">Se connecter</button></p>
-        <p class="small">Définis les variables d'environnement <code>ADMIN_USER</code> (optionnel) et <code>ADMIN_PASSWORD</code> (obligatoire)</p>
-      </form>
-    """
-    return _inline_html("Login admin", body)
-
-@app.route("/admin/logout")
-def admin_logout():
-    session.pop("is_admin", None)
-    return redirect(url_for("index", lang=get_locale()))
-
-@app.route("/admin")
-def admin_root():
-    return redirect(url_for("admin_home"))
-
-@app.route("/admin/")
-@admin_required
-def admin_home():
-    comments_count     = Comment.query.count()
-    translations_count = CommentTranslation.query.count()
-    transfers_count    = Transfer.query.count() if 'Transfer' in globals() else 0
-    body = f"""
-      <h1>Panneau d’administration</h1>
-      <p class="small">Base: <code>{DB_URL}</code></p>
-      <table>
-        <tr><th>Commentaires</th><td><span class="badge">{comments_count}</span> – <a class="btn" href="{url_for('admin_comments')}">Gérer les commentaires</a></td></tr>
-        <tr><th>Traductions en cache</th><td><span class="badge">{translations_count}</span></td></tr>
-        <tr><th>Transferts</th><td><span class="badge">{transfers_count}</span> – <a class="btn" href="{url_for('admin_transfers')}">Voir la liste</a></td></tr>
-        <tr><th>Mode PayPal</th><td>{PAYPAL_MODE}</td></tr>
-      </table>
-      <p style="margin-top:16px">
-        <a class="btn" href="{url_for('admin_logout')}" style="background:#4b5563">Se déconnecter</a>
-        &nbsp; <a href="{url_for('index', lang=get_locale())}">← Retour au site</a>
-      </p>
-    """
-    return _inline_html("Admin", body)
-
-@app.route("/_routes")
-def _routes():
-    lines = sorted(str(r) for r in app.url_map.iter_rules())
-    return make_response("<pre>" + "\n".join(lines) + "</pre>", 200)
-
-# ---------------- CSRF helpers (inchangés) ----------------
+# CSRF helpers
 def _csrf_get():
     tok = session.get("_csrf")
     if not tok:
@@ -314,95 +276,52 @@ def _csrf_get():
 def _csrf_check(tok: str) -> bool:
     return bool(tok) and tok == session.get("_csrf")
 
-# ---------------- ADMIN : Commentaires (inchangé) ----------------
-# ==== ADMIN MINIMAL (sans rien supprimer) ====
-# (Assure-toi d'avoir `import secrets` en haut du fichier.)
-from sqlalchemy import inspect  # import local OK même si déjà importé ailleurs
-
-ADMIN_USER = os.getenv("ADMIN_USER", "admin")
-ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD")  # à définir en prod
-
-def admin_required(fn):
-    @wraps(fn)
-    def _wrap(*args, **kwargs):
-        if session.get("is_admin"):
-            return fn(*args, **kwargs)
-        return redirect(url_for("admin_login", next=request.url))
-    return _wrap
-
-def _inline_html(title, body):
-    return f"""<!doctype html>
-<html lang="fr"><meta charset="utf-8">
-<title>{title}</title>
-<style>
-body{{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:#0f172a;color:#e5e7eb;margin:0;padding:32px}}
-.card{{background:#111827;border:1px solid #1f2937;border-radius:12px;padding:20px;max-width:1060px;margin:auto}}
-h1{{margin:0 0 10px;font-size:22px}}
-a{{color:#93c5fd;text-decoration:none}} a:hover{{text-decoration:underline}}
-.btn{{display:inline-block;background:#2563eb;color:#fff;padding:10px 14px;border-radius:10px}}
-.small{{opacity:.8;font-size:14px}}
-table{{width:100%;margin-top:10px;border-collapse:collapse;font-size:15px}}
-td,th{{padding:8px 10px;border-bottom:1px solid #1f2937;text-align:left;vertical-align:top}}
-.badge{{display:inline-block;background:#1f2937;border:1px solid #334155;border-radius:8px;padding:2px 8px}}
-details summary{{cursor:pointer}}
-</style>
-<div class="card">{body}</div></html>"""
-
-@app.route("/admin/login", methods=["GET","POST"])
-def admin_login():
-    if request.method == "POST":
-        user = (request.form.get("user") or "").strip()
-        pw = request.form.get("password") or ""
-        if ADMIN_PASSWORD and user == ADMIN_USER and pw == ADMIN_PASSWORD:
-            session["is_admin"] = True
-            return redirect(request.args.get("next") or url_for("admin_home"))
-        flash(_("Identifiants invalides"), "error")
-    if os.path.exists(os.path.join(app.root_path, "templates", "admin_login.html")):
-        return render_template("admin_login.html")
-    body = """
-      <h1>Connexion admin</h1>
-      <form method="post">
-        <p><label>Utilisateur:<br><input name="user" required></label></p>
-        <p><label>Mot de passe:<br><input name="password" type="password" required></label></p>
-        <p><button class="btn" type="submit">Se connecter</button></p>
-        <p class="small">Définis les variables d'environnement <code>ADMIN_USER</code> (optionnel) et <code>ADMIN_PASSWORD</code> (obligatoire)</p>
-      </form>
-    """
-    return _inline_html("Login admin", body)
-
-@app.route("/admin/logout")
-def admin_logout():
-    session.pop("is_admin", None)
-    return redirect(url_for("index", lang=get_locale()))
-
-@app.route("/admin")
-def admin_root():
-    return redirect(url_for("admin_home"))
-
-# ---------------- Auto ensure tables (incl. transfers) ----------------
 def _ensure_tables():
     """Crée les tables manquantes (dont 'transfers') si besoin, sans casser l'app."""
     try:
         with app.app_context():
-            insp = inspect(db.engine)
-            # si un modèle n'existe pas encore, db.create_all() l'ajoute simplement
-            if not (insp.has_table("comments") and insp.has_table("comment_translation")):
-                db.create_all()
-            # on essaie aussi de créer au cas où 'transfers' vient d'être ajouté
-            if not insp.has_table("transfers"):
-                db.create_all()
+            db.create_all()
     except Exception as e:
         app.logger.warning("ensure_tables_failed: %s", e)
+
+@app.route("/admin/login", methods=["GET","POST"])
+def admin_login():
+    if request.method == "POST":
+        user = (request.form.get("user") or "").strip()
+        pw = request.form.get("password") or ""
+        if ADMIN_PASSWORD and user == ADMIN_USER and pw == ADMIN_PASSWORD:
+            session["is_admin"] = True
+            return redirect(request.args.get("next") or url_for("admin_home"))
+        flash(_("Identifiants invalides"), "error")
+    if os.path.exists(os.path.join(app.root_path, "templates", "admin_login.html")):
+        return render_template("admin_login.html")
+    body = """
+      <h1>Connexion admin</h1>
+      <form method="post">
+        <p><label>Utilisateur:<br><input name="user" required></label></p>
+        <p><label>Mot de passe:<br><input name="password" type="password" required></label></p>
+        <p><button class="btn" type="submit">Se connecter</button></p>
+        <p class="small">Définis les variables d'environnement <code>ADMIN_USER</code> (optionnel) et <code>ADMIN_PASSWORD</code> (obligatoire)</p>
+      </form>
+    """
+    return _inline_html("Login admin", body)
+
+@app.route("/admin/logout")
+def admin_logout():
+    session.pop("is_admin", None)
+    return redirect(url_for("index", lang=get_locale()))
+
+@app.route("/admin")
+def admin_root():
+    return redirect(url_for("admin_home"))
 
 @app.route("/admin/")
 @admin_required
 def admin_home():
-    # s'assure que les tables existent — évite les 500 sur le compteur
     _ensure_tables()
     comments_count     = Comment.query.count()
     translations_count = CommentTranslation.query.count()
-    # si le modèle Transfer n'est pas (encore) défini, on évite le NameError
-    transfers_count    = Transfer.query.count() if 'Transfer' in globals() else 0
+    transfers_count    = Transfer.query.count()
     body = f"""
       <h1>Panneau d’administration</h1>
       <p class="small">Base: <code>{DB_URL}</code></p>
@@ -423,17 +342,6 @@ def admin_home():
 def _routes():
     lines = sorted(str(r) for r in app.url_map.iter_rules())
     return make_response("<pre>" + "\n".join(lines) + "</pre>", 200)
-
-# ---------------- CSRF helpers ----------------
-def _csrf_get():
-    tok = session.get("_csrf")
-    if not tok:
-        tok = secrets.token_hex(16)
-        session["_csrf"] = tok
-    return tok
-
-def _csrf_check(tok: str) -> bool:
-    return bool(tok) and tok == session.get("_csrf")
 
 # ---------------- ADMIN : Commentaires ----------------
 @app.get("/admin/comments")
@@ -495,7 +403,7 @@ def admin_delete_comment(comment_id: int):
         flash(_("Suppression impossible."), "error")
     return redirect(url_for("admin_comments"))
 
-# ---------------- PUBLIC : soumission d’un transfert (robuste) ----------------
+# ---------------- PUBLIC : soumission d’un transfert ----------------
 @app.post("/transfer")
 def submit_transfer():
     f = request.form
@@ -622,8 +530,9 @@ def admin_transfer_delete(transfer_id: int):
         app.logger.warning("delete_transfer_failed: %s", e)
         flash(_("Suppression impossible."), "error")
     return redirect(url_for("admin_transfers"))
+
 # ------------------------------------------------------------------
-# Routes
+# Routes publiques
 # ------------------------------------------------------------------
 @app.route("/")
 def index():
@@ -732,4 +641,5 @@ def not_found(e):
 @app.errorhandler(500)
 def server_error(e):
     return render_template("500.html"), 500
+
 
