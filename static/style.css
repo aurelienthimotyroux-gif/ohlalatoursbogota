@@ -273,5 +273,26 @@ form button:hover { background-color: #0056b3; }
 @media (max-width: 900px){
   .nav-hero{ font-size: 18px; }
 }
+/* Les éléments d'une carte (image, texte, inclus, méta) se replient proprement */
+.tour-card{ flex-wrap: wrap; }
+
+/* "Inclus" : pleine largeur et placé avant les méta */
+.tour-includes{ flex-basis:100%; order:3; margin-top:8px; }
+
+/* Bloc sous les inclus : Durée / Langues / Tarif + bouton Réserver */
+.tour-meta{
+  flex-basis:100%;
+  order:4;
+  display:flex;
+  align-items:center;
+  gap:18px;
+  flex-wrap:wrap;
+  margin-top:8px;
+}
+
+/* un peu d’air en mobile */
+@media (max-width: 900px){
+  .tour-meta{ flex-direction:column; align-items:flex-start; }
+}
 
 

@@ -35,7 +35,6 @@
     gtag('js', new Date());
     gtag('config', 'G-92M6CENDXH', { anonymize_ip: true });
   </script>
-</head>
 
   <!-- Canonical + hreflang -->
   <link rel="canonical" href="https://www.ohlalatoursbogota.com{{ request.path }}{% if get_locale()!='fr' %}?lang={{ get_locale() }}{% endif %}">
@@ -83,6 +82,8 @@
     .hero-title { position: relative; z-index: 1; color: #fff; font-size: 2.6rem; line-height: 1.2; text-shadow: 2px 2px 6px rgba(0,0,0,0.7); padding: 0 16px; }
     .hero-topbar{ position: absolute; top: 12px; left: 0; right: 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 20px; z-index: 2; }
     #lang-switcher a, .nav-hero a { color: #fff; font-weight: bold; text-shadow: 1px 1px 3px rgba(0,0,0,.6); }
+    /* agrandir légèrement les onglets */
+    .nav-hero a { font-size: clamp(16px, 1.6vw, 20px); letter-spacing: .2px; }
 
     /* ========= BLOCS ========= */
     body, main, section, .container, .testimonials, .testimonial-card, .tour-card .content { background-color: #f8f0e8 !important; }
@@ -127,7 +128,7 @@
     @media (min-width: 900px) { .includes-list { grid-template-columns: 1fr 1fr; } }
 
     /* Chips Durée / Langues / Tarif (texte simple) */
-    .tour-chips { list-style: none; padding: 0; margin: 12px 0 16px; display: flex; flex-wrap: wrap; gap: 16px; }
+    .tour-chips { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 16px; }
     .tour-chips .chip { background: none !important; border: none !important; padding: 0 !important; border-radius: 0 !important; box-shadow: none !important; font-size: 16px; line-height: 1.6; }
     .tour-chips .chip strong { font-weight: 700; }
 
@@ -143,12 +144,21 @@
       .hero-title{ font-size: 2.1rem; }
     }
 
-    /* === AJOUTS pour mettre "Inclus" sous l'image + texte et agrandir le titre === */
+    /* === AJOUTS pour placer "Inclus" puis "Durée/Langues/Tarif + Réserver" dessous === */
     .tour-card{ flex-wrap: wrap; } /* permet le retour à la ligne des éléments */
-    .tour-swiper, .tour-card .content{ flex: 1 1 480px; width: auto; }
-    .tour-includes{ flex-basis: 100%; order: 3; } /* plein largeur, placé après */
-    /* titre plus grand (override en douceur) */
-    .tour-card h3.tour-title{ font-size: clamp(28px, 3.6vw, 42px); }
+    .tour-includes{ flex-basis: 100%; order: 3; } /* plein largeur, après titre/description */
+    .tour-meta{
+      flex-basis: 100%;
+      order: 4;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+    @media (max-width: 900px){
+      .tour-meta{ flex-direction: column; align-items: flex-start; gap: 10px; }
+    }
   </style>
 </head>
 <body>
@@ -367,7 +377,21 @@
         <div class="content">
           <h3 class="tour-title">{{ tour.title }}</h3>
           <p class="tour-lead">{{ tour.desc }}</p>
+        </div>
 
+        {% if tour.includes is defined and tour.includes %}
+        <div class="tour-includes">
+          <h4 class="includes-title">{{ _("Ce qui est inclus :") }}</h4>
+          <ul class="includes-list">
+            {% for item in tour.includes %}
+            <li>{{ item }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endif %}
+
+        <!-- MÉTA sous les inclus : Durée / Langues / Tarif + Réserver -->
+        <div class="tour-meta">
           <ul class="tour-chips" aria-label="{{ _('Informations pratiques') }}">
             {% for info in tour.infos %}
               {% set parts = info.split(':') %}
@@ -381,17 +405,6 @@
             <button class="btn-primary">{{ _("Réserver") }}</button>
           </a>
         </div>
-
-        {% if tour.includes is defined and tour.includes %}
-        <div class="tour-includes">
-          <h4 class="includes-title">{{ _("Ce qui est inclus :") }}</h4>
-          <ul class="includes-list">
-            {% for item in tour.includes %}
-            <li>{{ item }}</li>
-            {% endfor %}
-          </ul>
-        </div>
-        {% endif %}
       </div>
       {% endfor %}
 
