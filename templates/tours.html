@@ -7,7 +7,7 @@
 
   <!-- SEO -->
   <meta name="description" content="{{ _('Tours privés à Bogotá : Candelaria, Monserrate, Zipaquirá, La Chorrera et finca café (Hacienda Coloma). Guide francophone, anglais et espagnol. Transport/van et transferts aéroport disponibles.') }}">
-  <meta name="keywords" content="tours privés Bogotá, visite guidée Bogotá, guide francophone Bogotá, excursion Zipaquirá, randonnée Monserrate, Candelaria, Hacienda Coloma, cascade La Chorrera, transport privé Bogotá, van, transfert aéroport Bogotá">
+  <meta name="keywords" content="tours privés Bogota visite guidée Bogota guide francophone Bogota excursion Zipaquira randonnée Monserrate Candelaria Hacienda Coloma cascade La Chorrera transport privé Bogota van transfert aéroport Bogota colombie capital amérique du sud Fusagasugá Fusagasuga rhum coloma café">
 
   <!-- CMP / consentmanager -->
   <script type="text/javascript" data-cmp-ab="1"
@@ -37,7 +37,8 @@
   </script>
 </head>
 
-</script>
+</head>
+
   // Id de mesure GA4
   gtag('config', 'G-92M6CENDXH', {
     'anonymize_ip': true  // optionnel mais recommandé
@@ -55,8 +56,8 @@
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://www.ohlalatoursbogota.com{{ request.path }}{% if get_locale()!='fr' %}?lang={{ get_locale() }}{% endif %}">
   <meta property="og:site_name" content="Oh La La Tours Bogotá">
-  <meta property="og:title" content="{{ _('Tours privés à Bogotá – Candelaria, Monserrate, Zipaquirá, café') }}">
-  <meta property="og:description" content="{{ _('Découvrez nos visites guidées : Candelaria, Monserrate, Cathédrale de sel de Zipaquirá, cascade La Chorrera et finca café. Guides francophones. Transport/van et transferts aéroport.') }}">
+  <meta property="og:title" content="{{ _('Tours privés à Bogotá – Candelaria Monserrate Zipaquirá café') }}">
+  <meta property="og:description" content="{{ _('Découvrez nos visites guidées Candelaria Monserrate Cathédrale de sel de Zipaquirá cascade La Chorrera et finca café Guides francophones Transport van et transferts aéroport') }}">
   <meta property="og:image" content="{{ url_for('static', filename='images/header_tours.jpg', _external=True) }}">
   {% if get_locale() == 'fr' %}
   <meta property="og:locale" content="fr_FR">
@@ -149,6 +150,13 @@
       .tour-swiper, .tour-card .content{ width: 100%; }
       .hero-title{ font-size: 2.1rem; }
     }
+
+    /* === AJOUTS pour mettre "Inclus" sous l'image + texte et agrandir le titre === */
+    .tour-card{ flex-wrap: wrap; } /* permet le retour à la ligne des éléments */
+    .tour-swiper, .tour-card .content{ flex: 1 1 480px; width: auto; }
+    .tour-includes{ flex-basis: 100%; order: 3; } /* plein largeur, placé après */
+    /* titre plus grand (override en douceur) */
+    .tour-card h3.tour-title{ font-size: clamp(28px, 3.6vw, 42px); }
   </style>
 </head>
 <body>
@@ -160,7 +168,7 @@
           <div id="lang-switcher" aria-label="{{ _('Choix de la langue') }}">
               <a href="{{ lang_url('fr') }}">🇫🇷</a> |
               <a href="{{ lang_url('en') }}">🇺🇸</a> |
-              <a href="{{ lang_url('es') }}">🇨🇴</a>
+              <a href="{{ lang_url('es') }}">🇪🇸</a>
           </div>
           <nav class="nav-hero" aria-label="{{ _('Navigation principale') }}">
               <a href="{{ url_for('index', lang=get_locale()) }}">{{ _("Accueil") }}</a> |
@@ -368,17 +376,6 @@
           <h3 class="tour-title">{{ tour.title }}</h3>
           <p class="tour-lead">{{ tour.desc }}</p>
 
-          {% if tour.includes is defined and tour.includes %}
-          <div class="tour-includes">
-            <h4 class="includes-title">{{ _("Ce qui est inclus :") }}</h4>
-            <ul class="includes-list">
-              {% for item in tour.includes %}
-              <li>{{ item }}</li>
-              {% endfor %}
-            </ul>
-          </div>
-          {% endif %}
-
           <ul class="tour-chips" aria-label="{{ _('Informations pratiques') }}">
             {% for info in tour.infos %}
               {% set parts = info.split(':') %}
@@ -392,6 +389,17 @@
             <button class="btn-primary">{{ _("Réserver") }}</button>
           </a>
         </div>
+
+        {% if tour.includes is defined and tour.includes %}
+        <div class="tour-includes">
+          <h4 class="includes-title">{{ _("Ce qui est inclus :") }}</h4>
+          <ul class="includes-list">
+            {% for item in tour.includes %}
+            <li>{{ item }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endif %}
       </div>
       {% endfor %}
 
