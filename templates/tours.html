@@ -437,18 +437,23 @@
   </script>
 
   <!-- JS Swiper -->
-  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-  <script>
-    document.querySelectorAll('.tour-swiper').forEach((slider) => {
-      new Swiper(slider, {
-        loop: true,
-        autoplay: { delay: 3000, disableOnInteraction: false },
-        navigation: {
-          nextEl: slider.querySelector('.swiper-button-next'),
-          prevEl: slider.querySelector('.swiper-button-prev'),
-        },
-      });
+  <!-- JS Swiper -->
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script>
+  document.querySelectorAll('.tour-swiper').forEach((slider) => {
+    new Swiper(slider, {
+      loop: true,
+      autoplay: { delay: 3000, disableOnInteraction: false },
+      navigation: {
+        nextEl: slider.querySelector('.swiper-button-next'),
+        prevEl: slider.querySelector('.swiper-button-prev'),
+      },
+      /* ✅ AJOUTE juste ces 2 lignes ici */
+      observer: true,
+      observeParents: true
     });
-  </script>
+  });
+</script>
+
 </body>
 </html>
