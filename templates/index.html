@@ -191,7 +191,10 @@
 </head>
 <body>
 
-  <header class="hero" style="background-image: url('{{ url_for('static', filename='images/accueil.jpg') }}');">
+  <header class="hero"
+          role="img"
+          aria-label="Bogota Monserrate Candelaria street art visites guidées privées guide francophone café colombien cathédrale de sel Zipaquira Hacienda Coloma transport privé transfert aéroport safe friendly professional travel Colombia"
+          style="background-image: url('{{ url_for('static', filename='images/accueil.jpg') }}');">
     <div class="hero-topbar">
       <div id="lang-switcher" aria-label="{{ _('Choix de la langue') }}">
         <a href="{{ lang_url('fr') }}" aria-label="Français">🇫🇷</a> |
@@ -211,6 +214,14 @@
         <a href="{{ url_for('reservation', lang=get_locale()) }}">{{ _("Réservation") }}</a>
       </nav>
     </div>
+
+    <!-- Texte associé invisible pour SEO/Accessibilité (FR + EN + ES, sans virgules) -->
+    <span class="sr-only">
+      {{ _('Photo de couverture Bogotá Monserrate Candelaria street art Cathédrale de sel Zipaquirá Hacienda Coloma visites guidées privées guide francophone transport privé transfert aéroport') }}
+      Cover photo Bogota Monserrate Candelaria street art Salt Cathedral Zipaquira coffee farm Hacienda Coloma private tours French speaking guide private transport airport transfer
+      Foto de portada Bogotá Monserrate Candelaria arte urbano Catedral de Sal Zipaquirá finca cafetera Hacienda Coloma tours privados guía francófona transporte privado traslado aeropuerto
+    </span>
+
     <h1 class="hero-title">{{ _("Bienvenue à Bogotá !") }}</h1>
   </header>
 
@@ -247,7 +258,9 @@
       <div style="flex: 1; min-width: 250px; min-height: 300px;">
         <img 
           src="{{ url_for('static', filename='images/alejandra.jpg') }}"
-          alt="{{ _('Alejandra, votre guide à Bogotá') }}"
+          alt="{{ _('Alejandra, votre guide à Bogotá') }} guide francophone Bogotá guide locale visites privées La Candelaria Monserrate Zipaquirá Hacienda Coloma café colombien transport privé transfert aéroport tejo gastronomie culture amicale professionnelle
+               French speaking tour guide in Bogota local guide private tours historic center La Candelaria Monserrate Salt Cathedral Zipaquira coffee farm Hacienda Coloma private transport airport transfer friendly professional safe
+               guía francófona en Bogotá guía local tours privados centro histórico La Candelaria Monserrate Catedral de Sal Zipaquirá finca cafetera Hacienda Coloma transporte privado traslado aeropuerto amable profesional segura"
           loading="lazy" decoding="async" width="800" height="600"
           style="display: block; width: 100%; height: 100%; object-fit: cover; border-radius: 10px; background: #ddd;">
       </div>
