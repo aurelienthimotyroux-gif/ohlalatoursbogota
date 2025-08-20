@@ -40,6 +40,11 @@
       anonymize_ip: true  // optionnel mais recommandé
     });
   </script>
+
+  <!-- ✅ Texte masqué accessible -->
+  <style>
+    .sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,1px,1px);white-space:nowrap;border:0}
+  </style>
 </head>
 
   <!-- ✅ Canonical + hreflang -->
@@ -56,6 +61,8 @@
   <meta property="og:title" content="{{ _('Réserver votre visite – Oh La La Tours Bogotá') }}">
   <meta property="og:description" content="{{ _('Réservez une visite guidée : Candelaria, Monserrate, Zipaquirá, La Chorrera ou finca café. Paiement PayPal, guide francophone/anglais/espagnol.') }}">
   <meta property="og:image" content="{{ url_for('static', filename='images/bg_reservation.jpg', _external=True) }}">
+  <!-- ✅ ALT OG ajouté -->
+  <meta property="og:image:alt" content="{{ _('Panorama de Bogotá, téléphérique de Monserrate et rues coloniales de la Candelaria ; page de réservation pour visites privées et transferts. EN: Bogotá skyline and Monserrate cable car; private tours booking & airport transfer. ES: Bogotá al atardecer y teleférico de Monserrate; reserva de tours privados y traslado al aeropuerto') }}">
   {% if get_locale() == 'fr' %}
   <meta property="og:locale" content="fr_FR">
   {% elif get_locale() == 'en' %}
@@ -68,6 +75,8 @@
   <meta name="twitter:title" content="{{ _('Réserver votre visite – Oh La La Tours Bogotá') }}">
   <meta name="twitter:description" content="{{ _('Réservez une visite guidée : Candelaria, Monserrate, Zipaquirá, La Chorrera ou finca café. Paiement PayPal, guide francophone/anglais/espagnol.') }}">
   <meta name="twitter:image" content="{{ url_for('static', filename='images/bg_reservation.jpg', _external=True) }}">
+  <!-- ✅ ALT Twitter ajouté -->
+  <meta name="twitter:image:alt" content="{{ _('Panorama de Bogotá, téléphérique de Monserrate et rues coloniales de la Candelaria ; page de réservation pour visites privées et transferts. EN: Bogotá skyline and Monserrate cable car; private tours booking & airport transfer. ES: Bogotá al atardecer y teleférico de Monserrate; reserva de tours privados y traslado al aeropuerto') }}">
 
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
@@ -75,7 +84,11 @@
 
   <!-- Bandeau -->
   <header class="hero background-half"
-          style="background-image: url('{{ url_for('static', filename='images/bg_reservation.jpg') }}');">
+          style="background-image: url('{{ url_for('static', filename='images/bg_reservation.jpg') }}');"
+          role="img"
+          aria-label="{{ _('Panorama de Bogotá, téléphérique de Monserrate et rues coloniales de la Candelaria ; réservez vos visites privées (Candelaria, Monserrate, Zipaquirá, La Chorrera, finca café) et transferts aéroport. EN: Bogotá skyline and Monserrate cable car; book private tours & airport transfer. ES: Bogotá al atardecer con teleférico de Monserrate; reserva tours privados y traslado al aeropuerto') }}"
+          title="{{ _('Réservation de visites et transferts — Oh La La Tours Bogotá') }}"
+          aria-describedby="hero-desc">
     <div class="hero-topbar">
       <div id="lang-switcher" aria-label="{{ _('Choix de la langue') }}">
         <a href="{{ lang_url('fr') }}">🇫🇷</a> |
@@ -92,6 +105,10 @@
     <h1 class="hero-title">
       {{ _("Réserver votre visite") }}{% if tour %} : {{ _(tour.capitalize()) }}{% endif %}
     </h1>
+    <!-- ✅ Texte associé masqué -->
+    <span id="hero-desc" class="sr-only">
+      {{ _('Image : Bogotá, Monserrate et La Candelaria. Réservez ici vos visites privées (Candelaria, Monserrate, Zipaquirá, La Chorrera, finca café) et vos transferts aéroport avec guide francophone/anglais/espagnol.') }}
+    </span>
   </header>
 
   <!-- Fil d’Ariane (accessibilité + SEO) -->
