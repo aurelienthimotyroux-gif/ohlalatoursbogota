@@ -279,113 +279,74 @@
     </form>
   </section>
 
-<!-- Section Commentaires -->
-<section class="testimonials">
-  <div class="container">
-    <h2>{{ _("Avis des voyageurs") }}</h2>
+  <!-- Section Commentaires -->
+  <section class="testimonials">
+    <div class="container">
+      <h2>{{ _("Avis des voyageurs") }}</h2>
 
-    {# Fallback en langues d'origine — NE PAS envelopper dans _() #}
-    {% set fallback_comments = [
-      {"name":"Francis","country":"Canada","date":"12 mai 2025","rating":5,"message":"L’expérience est super. Alejandra prend son temps pour nous expliquer et répondre à nos questions."},
-      {"name":"Katy","country":"Mexique","date":"21 mars 2023","rating":5,"message":"Recomendado. La comunicación con Alejandra fue excelente antes y durante; todo lo descrito se cumplió y siempre estuvo atenta a nuestras necesidades. Probablemente es un lugar que debes visitar si vienes a Bogotá: hermosas vistas y una catedral de sal impresionante."},
-      {"name":"Liliana","country":"États-Unis","date":"4 mars 2023","rating":4.5,"message":"Incredible experience! Alejandra and her father (Omar) took care of my husband's special needs, and everything was done at 100%. The Salt Cathedral, the traditional food at Brasas del Llano: a 5-star cultural experience. We recommend Alejandra if you want a tour with a friend. Thank you so much, see you next time!"},
-      {"name":"Oscar","country":"Costa Rica","date":"8 janvier 2023","rating":4.5,"message":"Muchas gracias por su amabilidad y disponibilidad. Súper recomendado."},
-      {"name":"Marvin","country":"Mexique","date":"15 septembre 2022","rating":5,"message":"Alejandra y su papá nos ofrecieron un día muy bonito en Zipaquirá. Nos vamos con excelentes recuerdos. ¡Gracias!"},
-      {"name":"Kristina","country":"Mexique","date":"27 août 2022","rating":5,"message":"Recomendamos esta experiencia. Lo pasamos excelente. Alejandra y su papá son amables y atentos."},
-      {"name":"Sam","country":"États-Unis","date":"14 août 2022","rating":5,"message":"Alejandra and her father Omar were perfect hosts, very attentive to the way I wanted to enjoy the visit."},
-      {"name":"Jorge","country":"Mexique","date":"11 août 2022","rating":5,"message":"Altamente recomendado. Alejandra y su papá fueron muy amables y estuvieron atentos a nosotros en todo momento. ¡Experiencia 100% recomendada!"},
-      {"name":"Fabiola","country":"Mexique","date":"11 août 2022","rating":5,"message":"De principio a fin, una experiencia muy agradable. Alejandra y su papá Omar fueron muy atentos y amables. El desayuno y el almuerzo deliciosos. Nos dejaron disfrutar de la catedral a nuestro ritmo: ¡lo apreciamos!"},
-      {"name":"Ann","country":"États-Unis","date":"22 février 2020","rating":5,"message":"Alejandra and her father were friendly, responsive to our questions, and took us to fascinating places we would never have found on our own. A very enjoyable experience."},
-      {"name":"Nancy","country":"Mexique","date":"30 juillet 2019","rating":5,"message":"Una de las mejores experiencias que no te puedes perder. Hospitalidad excelente, recorrido agradable, visita impresionante a la catedral de sal."},
-      {"name":"Luna","country":"Costa Rica","date":"25 juillet 2019","rating":5,"message":"Viaje bien planificado. Puntuales para recogernos en el hotel. Durante el trayecto, Alejandra y Omar fueron muy amables y pacientes."},
-      {"name":"Yuliana","country":"Costa Rica","date":"18 juillet 2019","rating":5,"message":"Ale y Omar (su papá) son súper simpáticos y se esfuerzan para que te sientas como en casa."}
-    ] %}
-
-    {# Index "set" (dict) des avis DB pour éviter doublons (clé = nom|pays) #}
-    {% set db_pairs = namespace(seen={}) %}
-    {% for c in comments or [] %}
-      {% set kp = (c.name ~ '|' ~ (c.country or '')) %}
-      {% set _ = db_pairs.seen.update({kp: 1}) %}
-    {% endfor %}
-
-    <div class="testimonials-grid">
-      {# 1) Rendre les avis de la base (message laissé tel quel) #}
-      {% for comment in comments or [] %}
-        <div class="testimonial-card">
-          <div class="t-head">
-            <div class="t-name">
-              {{ comment.name }}{% if comment.country %} · {{ comment.country }}{% endif %}
-            </div>
-            <div class="t-meta">{{ comment.date_str }}</div>
-          </div>
-
-          <div class="t-stars" aria-label="{{ comment.rating }} / 5">
-            {% for i in range(1, 6) %}
-              {% if comment.rating >= i %}
-                <svg><use href="#icon-star-full"></use></svg>
-              {% elif comment.rating >= i - 0.5 %}
-                <svg><use href="#icon-star-half"></use></svg>
-              {% else %}
-                <svg><use href="#icon-star-empty"></use></svg>
-              {% endif %}
-            {% endfor %}
-            <span class="sr-only">{{ comment.rating }} / 5</span>
-          </div>
-
-          {% set is_long = (comment.message|length > 200) %}
-          <p class="t-text{{ ' clamp' if is_long else '' }}"
-             id="comment-db-{{ loop.index }}"
-             data-full="{{ comment.message|e }}">
-            {{ (comment.message[:200] ~ '...') if is_long else comment.message }}
-          </p>
-          <button class="t-toggle"
-                  onclick="toggleText('db-{{ loop.index }}')"
-                  style="{{ '' if is_long else 'display:none;' }}">
-            {{ _("Lire plus") }}
-          </button>
-        </div>
-      {% endfor %}
-
-      {# 2) Afficher les fallback seulement s'il n'y a AUCUN commentaire transmis #}
-      {% if not (comments and comments|length > 0) %}
-        {% for fb in fallback_comments %}
+      <div class="testimonials-grid">
+        {# Liste unique (DB + fallback fusionnés et triés côté Python) #}
+        {% for comment in comments or [] %}
           <div class="testimonial-card">
             <div class="t-head">
-              <div class="t-name">{{ fb.name }} · {{ fb.country }}</div>
-              <div class="t-meta">{{ fb.date }}</div>
+              <div class="t-name">
+                {{ comment.name }}{% if comment.country %} · {{ comment.country }}{% endif %}
+              </div>
+              <div class="t-meta">{{ comment.date_str }}</div>
             </div>
 
-            <div class="t-stars" aria-label="{{ fb.rating }} / 5">
+            <div class="t-stars" aria-label="{{ comment.rating }} / 5">
               {% for i in range(1, 6) %}
-                {% if fb.rating >= i %}
+                {% if comment.rating >= i %}
                   <svg><use href="#icon-star-full"></use></svg>
-                {% elif fb.rating >= i - 0.5 %}
+                {% elif comment.rating >= i - 0.5 %}
                   <svg><use href="#icon-star-half"></use></svg>
                 {% else %}
                   <svg><use href="#icon-star-empty"></use></svg>
                 {% endif %}
               {% endfor %}
-              <span class="sr-only">{{ fb.rating }} / 5</span>
+              <span class="sr-only">{{ comment.rating }} / 5</span>
             </div>
 
-            {% set is_long = (fb.message|length > 200) %}
+            {% set is_long = (comment.message|length > 200) %}
             <p class="t-text{{ ' clamp' if is_long else '' }}"
-               id="comment-fb-{{ loop.index }}"
-               data-full="{{ fb.message|e }}">
-              {{ (fb.message[:200] ~ '...') if is_long else fb.message }}
+               id="comment-{{ loop.index }}"
+               data-full="{{ comment.message|e }}">
+              {{ (comment.message[:200] ~ '...') if is_long else comment.message }}
             </p>
             <button class="t-toggle"
-                    onclick="toggleText('fb-{{ loop.index }}')"
+                    onclick="toggleText('{{ loop.index }}')"
                     style="{{ '' if is_long else 'display:none;' }}">
               {{ _("Lire plus") }}
             </button>
           </div>
         {% endfor %}
-      {% endif %}
-    </div>
-  </div>
-</section>
+      </div>
 
+      {# ---- Ancien bloc "fallback" côté template : conservé mais désactivé ----
+      {% set fallback_comments = [] %}
+      {% set db_pairs = namespace(seen={}) %}
+      {% for c in comments or [] %}
+        {% set kp = (c.name ~ '|' ~ (c.country or '')) %}
+        {% set _ = db_pairs.seen.update({kp: 1}) %}
+      {% endfor %}
+
+      <div class="testimonials-grid">
+        {% for comment in comments or [] %}
+          <!-- doublon évité : cette boucle est déjà rendue au-dessus -->
+        {% endfor %}
+
+        {% for fb in fallback_comments %}
+          {% set kp = fb.name ~ '|' ~ fb.country %}
+          {% if not (kp in db_pairs.seen) %}
+            <!-- fallback rendu ici AVANT : maintenant géré côté Python -->
+          {% endif %}
+        {% endfor %}
+      </div>
+      #}
+
+    </div>
+  </section>
 
   <!-- ✅ Sticky bar mobile uniquement -->
   <div class="sticky-cta">
@@ -421,3 +382,4 @@
 
 </body>
 </html>
+

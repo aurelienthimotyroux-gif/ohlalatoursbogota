@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, url_for, flash, redirect, send_from_directory, session, make_response
 from flask_babel import Babel, _
-import os, requests, logging, re, secrets, hashlib
+import os, requests, logging, re, secrets
 from datetime import datetime
 from werkzeug.middleware.proxy_fix import ProxyFix
 from flask_sqlalchemy import SQLAlchemy
@@ -150,68 +150,15 @@ with app.app_context():
     db.create_all()
 
 # ------------------------------------------------------------------
-# Traduction côté serveur (désactivée par défaut)
+# Traduction côté serveur (désactivée)
 # ------------------------------------------------------------------
-TRANSLATE_SERVER_ENABLED = os.getenv("TRANSLATE_SERVER_ENABLED", "0") == "1"
+TRANSLATE_SERVER_ENABLED = False  # 🔒 Pas d'API de traduction
 DEEPL_API_KEY = os.getenv("DEEPL_API_KEY")
 GOOGLE_TRANSLATE_API_KEY = os.getenv("GOOGLE_TRANSLATE_API_KEY")
 
-if not TRANSLATE_SERVER_ENABLED:
-    app.logger.info("Server-side translation DISABLED (use client-side Google Translate button).")
-
 def translate_text_auto(text, target_lang, source_lang=None, timeout=12):
-    """Retourne (translated_text, detected_source_lang) ou (None, None) si OFF/sans clé."""
-    if not text or not target_lang:
-        return None, None
-    if not TRANSLATE_SERVER_ENABLED:
-        return None, None
-
-    # DeepL si clé
-    if DEEPL_API_KEY:
-        try:
-            resp = requests.post(
-                'https://api-free.deepl.com/v2/translate',
-                data={
-                    'auth_key': DEEPL_API_KEY,
-                    'text': text,
-                    'target_lang': target_lang.upper(),
-                    **({'source_lang': source_lang.upper()} if source_lang else {})
-                },
-                timeout=timeout
-            )
-            resp.raise_for_status()
-            j = resp.json()
-            tr = j['translations'][0]
-            return tr['text'], tr.get('detected_source_language', None)
-        except Exception as e:
-            logging.warning("deepl_error: %s", e)
-
-    # Google Cloud si clé
-    if GOOGLE_TRANSLATE_API_KEY:
-        try:
-            resp = requests.post(
-                'https://translation.googleapis.com/language/translate/v2',
-                params={'key': GOOGLE_TRANSLATE_API_KEY},
-                json={
-                    'q': text,
-                    'target': target_lang.lower(),
-                    **({'source': source_lang.lower()} if source_lang else {})
-                },
-                timeout=timeout
-            )
-            resp.raise_for_status()
-            j = resp.json()
-            tr = j['data']['translations'][0]
-            return tr['translatedText'], tr.get('detectedSourceLanguage')
-        except Exception as e:
-            logging.warning("google_translate_error: %s", e)
-
+    """Désactivé : on retourne toujours (None, None)."""
     return None, None
-
-def translate_if_enabled(text: str, target: str) -> str:
-    """Renvoie le texte traduit si possible, sinon le texte original."""
-    tr, _det = translate_text_auto(text, target_lang=target)
-    return tr or text
 
 class CommentView:
     def __init__(self, c, display_message, translated=False, source_lang=None):
@@ -330,8 +277,6 @@ def admin_home():
       </table>
       <p style="margin-top:16px">
         <a class="btn" href="{url_for('admin_import_legacy')}">Importer les anciens avis</a>
-        &nbsp; <a class="btn" href="{url_for('admin_import_fallback')}">Importer les fallbacks</a>
-        &nbsp; <a class="btn" href="{url_for('admin_backfill_translations')}">Backfill traductions</a>
         &nbsp; <a class="btn" href="{url_for('admin_logout')}" style="background:#4b5563">Se déconnecter</a>
         &nbsp; <a href="{url_for('index', lang=get_locale())}">← Retour au site</a>
       </p>
@@ -498,11 +443,11 @@ def admin_transfer_delete(transfer_id: int):
         flash(_("Suppression impossible."), "error")
     return redirect(url_for("admin_transfers"))
 
-# ---------------- ADMIN : Import des anciens avis (FR) ----------------
+# ---------------- ADMIN : Import des anciens avis de démo ----------------
 @app.route("/admin/import-legacy")
 @admin_required
 def admin_import_legacy():
-    """Importe en base une sélection d’avis 'démo' (en FR) pour qu’ils s’affichent avec les vrais avis."""
+    """Importe en base une sélection d’avis 'démo' pour qu’ils s’affichent avec les vrais avis."""
     legacy = [
         {"name":"Nancy","country":"Mexique","date_str":"30 juillet 2019","rating":5,"message":"L’une des meilleures expériences à ne pas manquer. Hospitalité au top, parcours agréable, visite impressionnante de la cathédrale de sel."},
         {"name":"Ann","country":"États-Unis","date_str":"22 février 2020","rating":5,"message":"Sympathiques, réactifs à nos questions, et des sites fascinants que nous n’aurions jamais trouvés seuls."},
@@ -534,116 +479,37 @@ def admin_import_legacy():
     flash(_(f"{inserted} avis importés."), "success")
     return redirect(url_for("admin_comments"))
 
-# ---------------- ADMIN : Import des fallbacks ORIGINELS ----------------
-FALLBACK_COMMENTS = [
-    {"name":"Francis","country":"Canada","date_str":"12 mai 2025","rating":5,"message":"L’expérience est super. Alejandra prend son temps pour nous expliquer et répondre à nos questions."},
-    {"name":"Katy","country":"Mexique","date_str":"21 mars 2023","rating":5,"message":"Recomendado. La comunicación con Alejandra fue excelente antes y durante; todo lo descrito se cumplió y siempre estuvo atenta a nuestras necesidades. Probablemente es un lugar que debes visitar si vienes a Bogotá: hermosas vistas y una catedral de sal impresionante."},
-    {"name":"Liliana","country":"États-Unis","date_str":"4 mars 2023","rating":4.5,"message":"Incredible experience! Alejandra and her father (Omar) took care of my husband's special needs, and everything was done at 100%. The Salt Cathedral, the traditional food at Brasas del Llano: a 5-star cultural experience. We recommend Alejandra if you want a tour with a friend. Thank you so much, see you next time!"},
-    {"name":"Oscar","country":"Costa Rica","date_str":"8 janvier 2023","rating":4.5,"message":"Muchas gracias por su amabilidad y disponibilidad. Súper recomendado."},
-    {"name":"Marvin","country":"Mexique","date_str":"15 septembre 2022","rating":5,"message":"Alejandra y su papá nos ofrecieron un día muy bonito en Zipaquirá. Nos vamos con excelentes recuerdos. ¡Gracias!"},
-    {"name":"Kristina","country":"Mexique","date_str":"27 août 2022","rating":5,"message":"Recomendamos esta experiencia. Lo pasamos excelente. Alejandra y su papá son amables y atentos."},
-    {"name":"Sam","country":"États-Unis","date_str":"14 août 2022","rating":5,"message":"Alejandra and her father Omar were perfect hosts, very attentive to the way I wanted to enjoy the visit."},
-    {"name":"Jorge","country":"Mexique","date_str":"11 août 2022","rating":5,"message":"Altamente recomendado. Alejandra y su papá fueron muy amables y estuvieron atentos a nosotros en todo momento. ¡Experiencia 100% recomendada!"},
-    {"name":"Fabiola","country":"Mexique","date_str":"11 août 2022","rating":5,"message":"De principio a fin, una experiencia muy agradable. Alejandra y su papá Omar fueron muy atentos y amables. El desayuno y el almuerzo deliciosos. Nos dejaron disfrutar de la catedral a nuestro ritmo: ¡lo apreciamos!"},
-    {"name":"Ann","country":"États-Unis","date_str":"22 février 2020","rating":5,"message":"Alejandra and her father were friendly, responsive to our questions, and took us to fascinating places we would never have found on our own. A very enjoyable experience."},
-    {"name":"Nancy","country":"Mexique","date_str":"30 juillet 2019","rating":5,"message":"Una de las mejores experiencias que no te puedes perder. Hospitalidad excelente, recorrido agradable, visita impresionante a la catedral de sal."},
-    {"name":"Luna","country":"Costa Rica","date_str":"25 juillet 2019","rating":5,"message":"Viaje bien planificado. Puntuales para recogernos en el hotel. Durante el trayecto, Alejandra y Omar fueron muy amables y pacientes."},
-    {"name":"Yuliana","country":"Costa Rica","date_str":"18 juillet 2019","rating":5,"message":"Ale y Omar (su papá) son súper simpáticos y se esfuerzan para que te sientas como en casa."},
-]
-
-@app.route("/admin/import-fallback")
-@admin_required
-def admin_import_fallback():
-    inserted, updated = 0, 0
-    for fb in FALLBACK_COMMENTS:
-        c = Comment.query.filter_by(name=fb["name"], date_str=fb["date_str"]).first()
-        created = parse_date_str(fb["date_str"]) or datetime.utcnow()
-        if not c:
-            c = Comment(
-                name=fb["name"], country=fb["country"], rating=float(fb.get("rating",5)),
-                date_str=fb["date_str"], created_at=created, message=fb["message"]
-            )
-            db.session.add(c)
-            inserted += 1
-        else:
-            # Met à jour le message si différent (on garde la version "langue d'origine")
-            if (c.message or "").strip() != fb["message"].strip():
-                c.message = fb["message"]
-                if not c.created_at:
-                    c.created_at = created
-                updated += 1
-    db.session.commit()
-    flash(_(f"{inserted} avis insérés, {updated} mis à jour."), "success")
-    return redirect(url_for("admin_comments"))
-
-# ---------------- ADMIN : Backfill des traductions (FR/EN/ES) ----------------
-@app.route("/admin/backfill-translations")
-@admin_required
-def admin_backfill_translations():
-    if not TRANSLATE_SERVER_ENABLED:
-        flash(_("Active TRANSLATE_SERVER_ENABLED=1 et fournis une clé DeepL ou Google."), "error")
-        return redirect(url_for("admin_home"))
-
-    langs = ["fr","en","es"]
-    added = 0
-    comments = Comment.query.all()
-    for c in comments:
-        for lang in langs:
-            exists = CommentTranslation.query.filter_by(comment_id=c.id, lang=lang).first()
-            if exists:
-                continue
-            tr, _det = translate_text_auto(c.message, target_lang=lang)
-            if tr:
-                db.session.add(CommentTranslation(comment_id=c.id, lang=lang, text=tr))
-                added += 1
-    db.session.commit()
-    flash(_(f"Traductions ajoutées: {added}."), "success")
-    return redirect(url_for("admin_home"))
-
 # ------------------------------------------------------------------
 # Routes publiques
 # ------------------------------------------------------------------
 @app.route("/")
 def index():
-    # 0) Option: importer automatiquement les fallbacks en base (décommenter si souhaité)
-    # for fb in FALLBACK_COMMENTS:
-    #     if not Comment.query.filter_by(name=fb["name"], date_str=fb["date_str"]).first():
-    #         db.session.add(Comment(
-    #             name=fb["name"], country=fb["country"], rating=float(fb.get("rating",5)),
-    #             date_str=fb["date_str"], created_at=parse_date_str(fb["date_str"]) or datetime.utcnow(),
-    #             message=fb["message"]
-    #         ))
-    # db.session.commit()
-
     # 1) Charger les avis DB et trier (robuste si created_at manquant)
     comments = Comment.query.limit(1000).all()
     comments.sort(key=lambda c: (_sort_ts_model(c), c.id), reverse=True)
 
-    target = get_locale()
-    views = []
-    for c in comments:
-        # cache DB -> si présent, utilise
-        cached = CommentTranslation.query.filter_by(comment_id=c.id, lang=target).first()
-        if cached:
-            views.append(CommentView(c, cached.text, translated=True))
-            continue
+    # 2) Construire la vue SANS TRADUCTION (langue d'origine)
+    views = [CommentView(c, c.message, translated=False) for c in comments]
 
-        # sinon tente de traduire à la volée et de mettre en cache
-        translated, detected = translate_text_auto(c.message, target_lang=target)
-        if translated:
-            try:
-                db.session.add(CommentTranslation(comment_id=c.id, lang=target, text=translated))
-                db.session.commit()
-            except Exception as e:
-                logging.warning("cache_insert_failed: %s", e)
-                db.session.rollback()
-            views.append(CommentView(c, translated, translated=True, source_lang=detected))
-        else:
-            views.append(CommentView(c, c.message, translated=False))
+    # 3) Fallback (langue d’origine) – fusionner dans la même liste, éviter doublons par (nom|pays)
+    fallback_comments = [
+        {"name":"Francis","country":"Canada","date_str":"12 mai 2025","rating":5,"message":"L’expérience est super. Alejandra prend son temps pour nous expliquer et répondre à nos questions."},
+        {"name":"Katy","country":"Mexique","date_str":"21 mars 2023","rating":5,"message":"Recomendado. La comunicación con Alejandra fue excelente antes y durante; todo lo descrito se cumplió y siempre estuvo atenta a nuestras necesidades. Probablemente es un lugar que debes visitar si vienes a Bogotá: hermosas vistas y una catedral de sal impresionante."},
+        {"name":"Liliana","country":"États-Unis","date_str":"4 mars 2023","rating":4.5,"message":"Incredible experience! Alejandra and her father (Omar) took care of my husband's special needs, and everything was done at 100%. The Salt Cathedral, the traditional food at Brasas del Llano: a 5-star cultural experience. We recommend Alejandra if you want a tour with a friend. Thank you so much, see you next time!"},
+        {"name":"Oscar","country":"Costa Rica","date_str":"8 janvier 2023","rating":4.5,"message":"Muchas gracias por su amabilidad y disponibilidad. Súper recomendado."},
+        {"name":"Marvin","country":"Mexique","date_str":"15 septembre 2022","rating":5,"message":"Alejandra y su papá nos ofrecieron un día muy bonito en Zipaquirá. Nos vamos con excelentes recuerdos. ¡Gracias!"},
+        {"name":"Kristina","country":"Mexique","date_str":"27 août 2022","rating":5,"message":"Recomendamos esta experiencia. Lo pasamos excelente. Alejandra y su papá son amables y atentos."},
+        {"name":"Sam","country":"États-Unis","date_str":"14 août 2022","rating":5,"message":"Alejandra and her father Omar were perfect hosts, very attentive to the way I wanted to enjoy the visit."},
+        {"name":"Jorge","country":"Mexique","date_str":"11 août 2022","rating":5,"message":"Altamente recomendado. Alejandra y su papá fueron muy amables y estuvieron atentos a nosotros en todo momento. ¡Experiencia 100% recomendada!"},
+        {"name":"Fabiola","country":"Mexique","date_str":"11 août 2022","rating":5,"message":"De principio a fin, una experiencia muy agradable. Alejandra y su papá Omar fueron muy atentos y amables. El desayuno y el almuerzo deliciosos. Nos dejaron disfrutar de la catedral a nuestro ritmo: ¡lo apreciamos!"},
+        {"name":"Ann","country":"États-Unis","date_str":"22 février 2020","rating":5,"message":"Alejandra and her father were friendly, responsive to our questions, and took us to fascinating places we would never have found on our own. A very enjoyable experience."},
+        {"name":"Nancy","country":"Mexique","date_str":"30 juillet 2019","rating":5,"message":"Una de las mejores experiencias que no te puedes perder. Hospitalidad excelente, recorrido agradable, visita impresionante a la catedral de sal."},
+        {"name":"Luna","country":"Costa Rica","date_str":"25 juillet 2019","rating":5,"message":"Viaje bien planificado. Puntuales para recogernos en el hotel. Durante el trayecto, Alejandra y Omar fueron muy amables y pacientes."},
+        {"name":"Yuliana","country":"Costa Rica","date_str":"18 juillet 2019","rating":5,"message":"Ale y Omar (su papá) son súper simpáticos y se esfuerzan para que te sientas como en casa."},
+    ]
 
-    # 2) Fallback (toujours présents à l'écran) — éviter doublons par (nom|pays)
     seen_pairs = set((v.name or "") + "|" + (v.country or "") for v in views)
-    for fb in FALLBACK_COMMENTS:
+    for fb in fallback_comments:
         kp = f"{fb['name']}|{fb['country']}"
         if kp in seen_pairs:
             continue
@@ -657,14 +523,13 @@ def index():
         obj.date_str = fb["date_str"]
         obj.rating = float(fb.get("rating", 5))
         obj.created_at = d
-        # ➜ traduit à la volée si activé, sinon langue d'origine
-        obj.message = translate_if_enabled(fb["message"], target)
-        obj.translated = TRANSLATE_SERVER_ENABLED
+        obj.message = fb["message"]
+        obj.translated = False
         obj.source_lang = None
         views.append(obj)
         seen_pairs.add(kp)
 
-    # 3) Trier l'ensemble (DB + fallback) par created_at/date (desc)
+    # 4) Trier l'ensemble (DB + fallback) par created_at/date (desc)
     def _sort_key(v):
         return (getattr(v, "created_at", None) or parse_date_str(getattr(v, "date_str", "")) or datetime.min,
                 getattr(v, "id", 0))
@@ -719,7 +584,7 @@ def submit_comment():
     db.session.add(c)
     db.session.commit()
 
-    # Invalider éventuels caches de traduction (si réutilisés)
+    # Invalider éventuels caches de traduction (si réutilisés un jour)
     try:
         CommentTranslation.query.filter_by(comment_id=c.id).delete()
         db.session.commit()
@@ -795,3 +660,4 @@ def not_found(e):
 @app.errorhandler(500)
 def server_error(e):
     return render_template("500.html"), 500
+
