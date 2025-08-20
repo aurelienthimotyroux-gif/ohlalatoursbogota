@@ -37,14 +37,6 @@
   </script>
 </head>
 
-</head>
-
-  // Id de mesure GA4
-  gtag('config', 'G-92M6CENDXH', {
-    'anonymize_ip': true  // optionnel mais recommandé
-  });
-</script>
-
   <!-- Canonical + hreflang -->
   <link rel="canonical" href="https://www.ohlalatoursbogota.com{{ request.path }}{% if get_locale()!='fr' %}?lang={{ get_locale() }}{% endif %}">
   <link rel="alternate" href="{{ url_for('tours', lang='fr', _external=True) }}" hreflang="fr">
