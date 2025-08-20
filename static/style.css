@@ -257,5 +257,21 @@ form button:hover { background-color: #0056b3; }
 @media (prefers-reduced-motion: reduce){
   .swiper, .tour-swiper { animation: none !important; }
 }
+/* ====== Taille des onglets de navigation (toutes pages) ====== */
+.nav-hero{
+  /* augmente la taille du texte du menu (les | suivent aussi car ils sont hors <a>) */
+  font-size: clamp(17px, 2.0vw, 22px);
+  gap: 18px;                    /* un peu plus d’espace entre les liens */
+}
+
+.nav-hero a{
+  font-weight: 700;             /* déjà en gras la plupart du temps, on force partout */
+  line-height: 1.2;
+}
+
+/* Option : taille un peu plus grande aussi sur mobile si tu veux */
+@media (max-width: 900px){
+  .nav-hero{ font-size: 18px; }
+}
 
 
