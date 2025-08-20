@@ -273,26 +273,57 @@ form button:hover { background-color: #0056b3; }
 @media (max-width: 900px){
   .nav-hero{ font-size: 18px; }
 }
-/* Les éléments d'une carte (image, texte, inclus, méta) se replient proprement */
-.tour-card{ flex-wrap: wrap; }
+/* — forcer photo + texte côte à côte en desktop — */
+.tour-card{
+  display:flex;
+  flex-wrap:wrap;          /* pour que les blocs dessous passent à la ligne */
+  align-items:flex-start;
+}
 
-/* "Inclus" : pleine largeur et placé avant les méta */
-.tour-includes{ flex-basis:100%; order:3; margin-top:8px; }
+.tour-swiper{
+  flex:0 0 48%;
+  max-width:48%;
+  height:350px;            /* ta hauteur existante */
+  border-radius:10px;
+  overflow:hidden;
+}
 
-/* Bloc sous les inclus : Durée / Langues / Tarif + bouton Réserver */
+.tour-card .content{
+  flex:0 0 48%;
+  max-width:48%;
+  padding:15px;
+  border-radius:10px;
+  max-width:680px;         /* garde ton style */
+}
+
+/* “Inclus” et “Meta” (Durée/Langues/Tarif + Réserver) sous l’ensemble */
+.tour-includes{
+  flex:0 0 100%;
+  max-width:100%;
+  order:3;
+  margin-top:10px;
+}
 .tour-meta{
-  flex-basis:100%;
+  flex:0 0 100%;
+  max-width:100%;
   order:4;
   display:flex;
   align-items:center;
   gap:18px;
   flex-wrap:wrap;
-  margin-top:8px;
+  margin-top:6px;
 }
 
-/* un peu d’air en mobile */
-@media (max-width: 900px){
-  .tour-meta{ flex-direction:column; align-items:flex-start; }
+/* Alternance gauche/droite conservée via .right (déjà présent) */
+.tour-card.right{ flex-direction:row-reverse; }
+
+/* Mobile : on repasse en colonne */
+@media (max-width:900px){
+  .tour-swiper,
+  .tour-card .content{
+    flex:0 0 100%;
+    max-width:100%;
+  }
 }
 
 
