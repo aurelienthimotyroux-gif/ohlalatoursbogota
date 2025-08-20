@@ -594,7 +594,7 @@ def index():
         views.append(obj)
         seen_pairs.add(kp)
 
-    # 3) Trier l'ensemble (DB + fallback) par created_at/date
+    # 3) Trier l'ensemble (DB + fallback) par created_at/date (desc)
     def _sort_key(v):
         return (getattr(v, "created_at", None) or parse_date_str(getattr(v, "date_str", "")) or datetime.min,
                 getattr(v, "id", 0))
@@ -725,3 +725,4 @@ def not_found(e):
 @app.errorhandler(500)
 def server_error(e):
     return render_template("500.html"), 500
+

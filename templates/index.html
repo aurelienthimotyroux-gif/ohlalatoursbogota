@@ -346,10 +346,9 @@
         </div>
       {% endfor %}
 
-      {# 2) Ajouter les fallback manquants (pas de doublon si même nom|pays) #}
-      {% for fb in fallback_comments %}
-        {% set kp = fb.name ~ '|' ~ fb.country %}
-        {% if not (kp in db_pairs.seen) %}
+      {# 2) Afficher les fallback seulement s'il n'y a AUCUN commentaire transmis #}
+      {% if not (comments and comments|length > 0) %}
+        {% for fb in fallback_comments %}
           <div class="testimonial-card">
             <div class="t-head">
               <div class="t-name">{{ fb.name }} · {{ fb.country }}</div>
@@ -381,8 +380,8 @@
               {{ _("Lire plus") }}
             </button>
           </div>
-        {% endif %}
-      {% endfor %}
+        {% endfor %}
+      {% endif %}
     </div>
   </div>
 </section>
@@ -422,4 +421,3 @@
 
 </body>
 </html>
-
