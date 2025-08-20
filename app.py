@@ -319,7 +319,7 @@ def admin_home():
       <p class="small">Base: <code>{DB_URL}</code></p>
       <table>
         <tr><th>Commentaires</th><td><span class="badge">{comments_count}</span> – <a class="btn" href="{url_for('admin_comments')}">Gérer les commentaires</a></td></tr>
-        <tr><th>Traductions en cache</th><td><span class="badge">{translations_count}</span></td></tr>
+        <tr><th>Traductions en cache</th><td><span class="badge">{translations_count}</span> – <a class="btn" href="{url_for('admin_backfill_translations')}?langs=fr,en,es">Backfiller fr/en/es</a></td></tr>
         <tr><th>Transferts</th><td><span class="badge">{transfers_count}</span> – <a class="btn" href="{url_for('admin_transfers')}">Voir la liste</a></td></tr>
         <tr><th>Mode PayPal</th><td>{PAYPAL_MODE}</td></tr>
       </table>
@@ -328,6 +328,9 @@ def admin_home():
         &nbsp; <a class="btn" href="{url_for('admin_logout')}" style="background:#4b5563">Se déconnecter</a>
         &nbsp; <a href="{url_for('index', lang=get_locale())}">← Retour au site</a>
       </p>
+      <form method="post" action="{url_for('admin_translations_clear')}" onsubmit="return confirm('Supprimer toutes les traductions en cache ?');">
+        <button class="btn" type="submit" style="background:#dc2626">Purger les traductions</button>
+      </form>
     """
     return _inline_html("Admin", body)
 
@@ -526,6 +529,72 @@ def admin_import_legacy():
     db.session.commit()
     flash(_(f"{inserted} avis importés."), "success")
     return redirect(url_for("admin_comments"))
+
+# ---------------- ADMIN : Backfill des traductions ----------------
+@app.route("/admin/backfill-translations")
+@admin_required
+def admin_backfill_translations():
+    """
+    Crée les traductions en base (table comment_translation) pour les langues passées
+    en querystring, ex: /admin/backfill-translations?langs=fr,en,es
+    Nécessite TRANSLATE_SERVER_ENABLED=1 et une clé DeepL ou Google.
+    """
+    if not TRANSLATE_SERVER_ENABLED:
+        flash(_("Traduction côté serveur désactivée. Définis TRANSLATE_SERVER_ENABLED=1 et une clé d’API."), "error")
+        return redirect(url_for("admin_home"))
+
+    langs = (request.args.get("langs") or "fr,en,es").split(",")
+    langs = [l.strip().lower() for l in langs if l.strip()]
+    if not langs:
+        flash(_("Aucune langue cible."), "error")
+        return redirect(url_for("admin_home"))
+
+    created = skipped = failed = 0
+    comments = Comment.query.all()
+    for c in comments:
+        base_text = c.message or ""
+        if not base_text.strip():
+            continue
+        for tgt in langs:
+            # déjà présent ?
+            if CommentTranslation.query.filter_by(comment_id=c.id, lang=tgt).first():
+                skipped += 1
+                continue
+            tr, src = translate_text_auto(base_text, target_lang=tgt)
+            if not tr:
+                failed += 1
+                continue
+            try:
+                db.session.add(CommentTranslation(comment_id=c.id, lang=tgt, text=tr))
+                created += 1
+            except Exception as e:
+                app.logger.warning("backfill_add_failed: %s", e)
+                db.session.rollback()
+                failed += 1
+    try:
+        db.session.commit()
+    except Exception as e:
+        app.logger.error("backfill_commit_failed: %s", e)
+        db.session.rollback()
+        flash(_("Erreur lors de l'enregistrement."), "error")
+        return redirect(url_for("admin_home"))
+
+    flash(_(f"Traductions créées: {created}, déjà présentes: {skipped}, échecs: {failed}"), "success")
+    return redirect(url_for("admin_home"))
+
+@app.post("/admin/translations/clear")
+@admin_required
+def admin_translations_clear():
+    """Purge toutes les traductions en cache (si besoin de repartir de zéro)."""
+    try:
+        CommentTranslation.query.delete()
+        db.session.commit()
+        flash(_("Caches de traduction supprimés ✅"), "success")
+    except Exception as e:
+        db.session.rollback()
+        app.logger.warning("translations_clear_failed: %s", e)
+        flash(_("Impossible de supprimer les caches."), "error")
+    return redirect(url_for("admin_home"))
 
 # ------------------------------------------------------------------
 # Routes publiques
