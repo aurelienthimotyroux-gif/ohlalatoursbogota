@@ -90,70 +90,73 @@
     .hero::after { content: ""; position: absolute; inset: 0; background: rgba(0,0,0,0.35); }
     .hero-title { position: relative; z-index: 1; color: #fff; font-size: 2.6rem; line-height: 1.2; text-shadow: 2px 2px 6px rgba(0,0,0,0.7); padding: 0 16px; }
     .hero-topbar{ position: absolute; top: 12px; left: 0; right: 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 20px; z-index: 2; }
-    #lang-switcher a, .nav-hero a { color: #fff; font-weight: 600; text-shadow: 1px 1px 3px rgba(0,0,0,.6); }
-    /* ↑ agrandir les liens du menu */
-    .nav-hero a { font-size: clamp(16px, 1.6vw, 20px); }
+    #lang-switcher a, .nav-hero a { color: #fff; font-weight: bold; text-shadow: 1px 1px 3px rgba(0,0,0,.6); }
 
-    /* ========= SECTION TOURS =========
-       → Passage en GRID pour pouvoir faire passer
-         "Ce qui est inclus" sur toute la largeur, sous l’image+texte
-    */
+    /* ========= BLOCS ========= */
+    body, main, section, .container, .testimonials, .testimonial-card, .tour-card .content { background-color: #f8f0e8 !important; }
+
+    /* ========= TOURS ========= */
     #excursions { max-width: 1200px; margin: 50px auto; padding: 0 20px; }
-
-    .tour-card {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-      margin-bottom: 60px;
-      align-items: start;
-    }
-    /* ordre alterné (gauche / droite) */
-    .tour-card.left  .tour-swiper { order: 1; }
-    .tour-card.left  .tour-info   { order: 2; }
-    .tour-card.right .tour-swiper { order: 2; }
-    .tour-card.right .tour-info   { order: 1; }
+    .tour-card { display: flex; align-items: center; gap: 20px; margin-bottom: 60px; }
+    .tour-card.left  { flex-direction: row; }
+    .tour-card.right { flex-direction: row-reverse; }
 
     /* Swiper */
-    .tour-swiper { height: 350px; border-radius: 10px; overflow: hidden; }
+    .tour-swiper { width: 50%; height: 350px; border-radius: 10px; overflow: hidden; }
     .tour-swiper img { width: 100%; height: 100%; object-fit: cover; }
+
+    /* Forcer de vraies flèches même si l’icône Swiper ne charge pas */
     .swiper-button-next::after, .swiper-button-prev::after { content: ''; }
     .swiper-button-next, .swiper-button-prev {
-      color: #fff !important; text-shadow: 0 0 6px rgba(0,0,0,.65);
-      width: 44px; height: 44px; border-radius: 50%; background: rgba(0,0,0,.25);
+      color: #fff !important;
+      text-shadow: 0 0 6px rgba(0,0,0,.65);
+      width: 44px; height: 44px; border-radius: 50%;
+      background: rgba(0,0,0,.25);
       display: flex; align-items: center; justify-content: center;
     }
-    .swiper-button-next:before{ content: '›'; font-size: 26px; font-weight: 700; }
-    .swiper-button-prev:before{ content: '‹'; font-size: 26px; font-weight: 700; }
+    .swiper-button-next:before, .swiper-button-prev:before{
+      font-size: 26px; font-weight: 700; line-height: 1;
+    }
+    .swiper-button-next:before{ content: '›'; }
+    .swiper-button-prev:before{ content: '‹'; }
 
-    /* Colonne texte (titre + intro) */
-    .tour-info { padding: 10px 0; }
-    .tour-title { font-size: clamp(28px, 3.2vw, 40px); line-height: 1.15; margin: 0 0 10px; letter-spacing: .2px; }
-    .tour-lead  { font-size: clamp(16px, 1.8vw, 18px); line-height: 1.7; color: rgba(0,0,0,.78); margin: 10px 0 4px; max-width: 62ch; }
+    /* Contenu cartes tours */
+    .tour-card .content { width: 50%; padding: 15px; border-radius: 10px; max-width: 680px; }
+    .tour-card h3.tour-title { font-size: clamp(26px, 3.2vw, 36px); line-height: 1.15; margin: 0 0 10px; letter-spacing: .2px; }
+    .tour-lead { font-size: clamp(16px, 1.8vw, 18px); line-height: 1.7; color: rgba(0,0,0,.78); margin: 10px 0 16px; max-width: 62ch; }
 
-    /* Bloc "Ce qui est inclus" – plein largeur sous les deux colonnes */
-    .tour-includes { grid-column: 1 / -1; position: relative; margin: 8px 0 10px; padding-left: 14px; }
+    /* Bloc "Inclus" */
+    .tour-includes { position: relative; margin: 14px 0 12px; padding-left: 14px; }
     .tour-includes::before { content: ""; position: absolute; left: 0; top: 4px; bottom: 4px; width: 4px; border-radius: 4px; background: linear-gradient(180deg, #f59e0b, #f97316); }
     .includes-title { margin: 0 0 8px; font-size: 14px; letter-spacing: .4px; text-transform: uppercase; opacity: .8; }
     .includes-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px 14px; grid-template-columns: 1fr; }
     .includes-list li { position: relative; padding-left: 26px; line-height: 1.6; }
     .includes-list li::before { content: "✓"; position: absolute; left: 0; top: 0; font-weight: 700; transform: translateY(1px); opacity: .9; }
-    @media (min-width: 900px){ .includes-list { grid-template-columns: 1fr 1fr; } }
+    @media (min-width: 900px) { .includes-list { grid-template-columns: 1fr 1fr; } }
 
-    /* Footer de carte (Durée/Langues/Tarif + bouton) – sous "inclus" */
-    .tour-footer { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: 16px 22px; justify-content: space-between; margin-top: 2px; }
-    .tour-chips { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 16px; }
-    .tour-chips .chip { background: none; border: none; padding: 0; font-size: 16px; line-height: 1.6; }
+    /* Chips Durée / Langues / Tarif (texte simple) */
+    .tour-chips { list-style: none; padding: 0; margin: 12px 0 16px; display: flex; flex-wrap: wrap; gap: 16px; }
+    .tour-chips .chip { background: none !important; border: none !important; padding: 0 !important; border-radius: 0 !important; box-shadow: none !important; font-size: 16px; line-height: 1.6; }
     .tour-chips .chip strong { font-weight: 700; }
+
+    /* Bouton */
     .btn-primary { appearance: none; border: 1px solid rgba(0,0,0,.2); background: #2563eb; color: #fff; padding: 12px 18px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: transform .06s ease, filter .2s ease; }
     .btn-primary:hover { filter: brightness(1.05); }
     .btn-primary:active { transform: translateY(1px); }
 
     /* Responsive */
     @media (max-width: 900px){
+      .tour-card{ flex-direction: column !important; }
+      .tour-swiper, .tour-card .content{ width: 100%; }
       .hero-title{ font-size: 2.1rem; }
-      .tour-card{ grid-template-columns: 1fr; }
-      .tour-footer{ justify-content: flex-start; }
     }
+
+    /* === AJOUTS pour mettre "Inclus" sous l'image + texte et agrandir le titre === */
+    .tour-card{ flex-wrap: wrap; } /* permet le retour à la ligne des éléments */
+    .tour-swiper, .tour-card .content{ flex: 1 1 480px; width: auto; }
+    .tour-includes{ flex-basis: 100%; order: 3; } /* plein largeur, placé après */
+    /* titre plus grand (override en douceur) */
+    .tour-card h3.tour-title{ font-size: clamp(28px, 3.6vw, 42px); }
   </style>
 </head>
 <body>
@@ -163,9 +166,9 @@
           style="background-image: url('{{ url_for('static', filename='images/header_tours.jpg') }}');">
       <div class="hero-topbar">
           <div id="lang-switcher" aria-label="{{ _('Choix de la langue') }}">
-              <a href="{{ lang_url('fr') }}" aria-label="{{ _('Français') }}">🇫🇷</a> |
-              <a href="{{ lang_url('en') }}" aria-label="{{ _('Anglais') }}">🇺🇸</a> |
-              <a href="{{ lang_url('es') }}" aria-label="{{ _('Espagnol') }}">🇪🇸</a>
+              <a href="{{ lang_url('fr') }}">🇫🇷</a> |
+              <a href="{{ lang_url('en') }}">🇺🇸</a> |
+              <a href="{{ lang_url('es') }}">🇪🇸</a>
           </div>
           <nav class="nav-hero" aria-label="{{ _('Navigation principale') }}">
               <a href="{{ url_for('index', lang=get_locale()) }}">{{ _("Accueil") }}</a> |
@@ -279,7 +282,7 @@
   }
 ] %}
 
-{# >>> ALT FR #}
+{# >>> AJOUT : descriptions alt spécifiques par fichier (pas de virgule) #}
 {% set alt_map = {
   'candelaria1.jpg': _('Maisons coloniales colorées dans la Candelaria centre historique de Bogota quartier colonial bogota graffitis bogota street art ruelles pavées andines maisons colorées façades chorro de quevedo guide francophone centre historique'),
   'candelaria2.jpg': _('Street art de Bogota pendant la visite guidée de la Candelaria '),
@@ -303,7 +306,7 @@
   'finca-cafe3.jpg': _('Visite d’une finca café près de Bogotá grains fraîchement récoltés hacienda coloma rhum coloma rhum ')
 } %}
 
-{# >>> ALT EN #}
+{# >>> AJOUT EN: map anglaise #}
 {% set alt_map_en = {
   'candelaria1.jpg': _('Colorful colonial houses in La Candelaria historic center of Bogota colonial quarter bogota bogota street art murals cobblestone alleys andean colorful facades chorro de quevedo french speaking guide historic center'),
   'candelaria2.jpg': _('Bogota street art during La Candelaria walking tour murals'),
@@ -327,7 +330,7 @@
   'finca-cafe3.jpg': _('Visit to a coffee farm near Bogota freshly picked beans hacienda coloma')
 } %}
 
-{# >>> ALT ES #}
+{# >>> AJOUT ES: map espagnole #}
 {% set alt_map_es = {
   'candelaria1.jpg': _('Casas coloniales coloridas en La Candelaria centro histórico de Bogotá barrio colonial bogotá murales street art bogotá callejones empedrados fachadas coloridas plaza chorro de quevedo guía francófona centro histórico'),
   'candelaria2.jpg': _('Street art de Bogotá durante el tour por La Candelaria murales'),
@@ -351,13 +354,12 @@
   'finca-cafe3.jpg': _('Visita a una finca cafetera cerca de Bogotá granos recién recolectados hacienda coloma')
 } %}
 
-{# Sélection de la map par langue, avec repli FR #}
+{# Sélection de la map par langue, avec repli sur la map FR existante #}
 {% set _alt_maps = {'fr': alt_map, 'en': alt_map_en, 'es': alt_map_es} %}
 {% set ALT = _alt_maps.get(get_locale(), alt_map) %}
 
       {% for tour in tours_data %}
       <div class="tour-card {% if loop.index is odd %}left{% else %}right{% endif %}">
-        <!-- Colonne 1 : images -->
         <div class="swiper tour-swiper" aria-label="{{ _('Galerie d’images du tour') }} {{ tour.title }}">
           <div class="swiper-wrapper">
             {% for img in tour.images %}
@@ -370,26 +372,10 @@
           <div class="swiper-button-prev" aria-label="{{ _('Image précédente') }}"></div>
         </div>
 
-        <!-- Colonne 2 : titre + intro -->
-        <div class="tour-info">
+        <div class="content">
           <h3 class="tour-title">{{ tour.title }}</h3>
           <p class="tour-lead">{{ tour.desc }}</p>
-        </div>
 
-        <!-- Plein largeur : Ce qui est inclus -->
-        {% if tour.includes is defined and tour.includes %}
-        <div class="tour-includes">
-          <h4 class="includes-title">{{ _("Ce qui est inclus :") }}</h4>
-          <ul class="includes-list">
-            {% for item in tour.includes %}
-            <li>{{ item }}</li>
-            {% endfor %}
-          </ul>
-        </div>
-        {% endif %}
-
-        <!-- Plein largeur : Durée / Langues / Tarif + bouton Réserver -->
-        <div class="tour-footer">
           <ul class="tour-chips" aria-label="{{ _('Informations pratiques') }}">
             {% for info in tour.infos %}
               {% set parts = info.split(':') %}
@@ -403,6 +389,17 @@
             <button class="btn-primary">{{ _("Réserver") }}</button>
           </a>
         </div>
+
+        {% if tour.includes is defined and tour.includes %}
+        <div class="tour-includes">
+          <h4 class="includes-title">{{ _("Ce qui est inclus :") }}</h4>
+          <ul class="includes-list">
+            {% for item in tour.includes %}
+            <li>{{ item }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endif %}
       </div>
       {% endfor %}
 
