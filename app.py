@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, url_for, flash, redirect, send_from_directory, session, make_response
 from flask_babel import Babel, _
-import os, requests, logging, re, secrets
+import os, requests, logging, re, secrets, unicodedata
 from datetime import datetime
 from werkzeug.middleware.proxy_fix import ProxyFix
 from flask_sqlalchemy import SQLAlchemy
@@ -60,6 +60,36 @@ def format_date_human(d: datetime, locale="fr"):
 # Tri robuste : created_at > date_str parsée > très ancien
 def _sort_ts_model(c):
     return c.created_at or parse_date_str(getattr(c, 'date_str', '')) or datetime.min
+
+# ------------------------------------------------------------------
+# Normalisation pour faire correspondre les avis (nom|pays) de manière tolérante
+# ------------------------------------------------------------------
+def _norm(s: str) -> str:
+    if not s: return ""
+    s = unicodedata.normalize("NFKD", s)
+    s = "".join(ch for ch in s if not unicodedata.combining(ch))
+    s = re.sub(r"[^a-z0-9]+", " ", s.lower()).strip()
+    return re.sub(r"\s+", " ", s)
+
+_COUNTRY_ALIASES = {
+    "etats unis": "usa",
+    "etatsunis": "usa",
+    "united states": "usa",
+    "u s a": "usa",
+    "u.s.a": "usa",
+    "usa": "usa",
+    "mexico": "mexique",
+    "mx": "mexique",
+    "costa rica": "costa rica",
+    "canada": "canada",
+    "france": "france",
+    "colombie": "colombie",
+    "colombia": "colombie",
+}
+
+def _canon_country(c: str) -> str:
+    n = _norm(c)
+    return _COUNTRY_ALIASES.get(n, n)
 
 # ------------------------------------------------------------------
 # App
@@ -150,14 +180,62 @@ with app.app_context():
     db.create_all()
 
 # ------------------------------------------------------------------
-# Traduction côté serveur (désactivée)
+# Traduction côté serveur (désactivée par défaut)
 # ------------------------------------------------------------------
-TRANSLATE_SERVER_ENABLED = False  # 🔒 Pas d'API de traduction
+TRANSLATE_SERVER_ENABLED = os.getenv("TRANSLATE_SERVER_ENABLED", "0") == "1"
 DEEPL_API_KEY = os.getenv("DEEPL_API_KEY")
 GOOGLE_TRANSLATE_API_KEY = os.getenv("GOOGLE_TRANSLATE_API_KEY")
 
+if not TRANSLATE_SERVER_ENABLED:
+    app.logger.info("Server-side translation DISABLED (use client-side Google Translate button).")
+
 def translate_text_auto(text, target_lang, source_lang=None, timeout=12):
-    """Désactivé : on retourne toujours (None, None)."""
+    """Retourne (translated_text, detected_source_lang) ou (None, None) si OFF/sans clé."""
+    if not text or not target_lang:
+        return None, None
+    if not TRANSLATE_SERVER_ENABLED:
+        return None, None
+
+    # DeepL si clé
+    if DEEPL_API_KEY:
+        try:
+            resp = requests.post(
+                'https://api-free.deepl.com/v2/translate',
+                data={
+                    'auth_key': DEEPL_API_KEY,
+                    'text': text,
+                    'target_lang': target_lang.upper(),
+                    **({'source_lang': source_lang.upper()} if source_lang else {})
+                },
+                timeout=timeout
+            )
+            resp.raise_for_status()
+            j = resp.json()
+            tr = j['translations'][0]
+            return tr['text'], tr.get('detected_source_language', None)
+        except Exception as e:
+            logging.warning("deepl_error: %s", e)
+
+    # Google Cloud si clé
+    if GOOGLE_TRANSLATE_API_KEY:
+        try:
+            resp = requests.post(
+                'https://translation.googleapis.com/language/translate/v2',
+                params={'key': GOOGLE_TRANSLATE_API_KEY},
+                json={
+                    'q': text,
+                    'target': target_lang.lower(),
+                    **({'source': source_lang.lower()} if source_lang else {})
+                },
+                timeout=timeout
+            )
+            resp.raise_for_status()
+            j = resp.json()
+            tr = j['data']['translations'][0]
+            return tr['translatedText'], tr.get('detectedSourceLanguage')
+        except Exception as e:
+            logging.warning("google_translate_error: %s", e)
+
     return None, None
 
 class CommentView:
@@ -485,13 +563,10 @@ def admin_import_legacy():
 @app.route("/")
 def index():
     # 1) Charger les avis DB et trier (robuste si created_at manquant)
-    comments = Comment.query.limit(1000).all()
-    comments.sort(key=lambda c: (_sort_ts_model(c), c.id), reverse=True)
+    comments_db = Comment.query.limit(1000).all()
+    comments_db.sort(key=lambda c: (_sort_ts_model(c), c.id), reverse=True)
 
-    # 2) Construire la vue SANS TRADUCTION (langue d'origine)
-    views = [CommentView(c, c.message, translated=False) for c in comments]
-
-    # 3) Fallback (langue d’origine) – fusionner dans la même liste, éviter doublons par (nom|pays)
+    # 2) Fallback (langue d’origine) — affichage brut, pas d’API de traduction
     fallback_comments = [
         {"name":"Francis","country":"Canada","date_str":"12 mai 2025","rating":5,"message":"L’expérience est super. Alejandra prend son temps pour nous expliquer et répondre à nos questions."},
         {"name":"Katy","country":"Mexique","date_str":"21 mars 2023","rating":5,"message":"Recomendado. La comunicación con Alejandra fue excelente antes y durante; todo lo descrito se cumplió y siempre estuvo atenta a nuestras necesidades. Probablemente es un lugar que debes visitar si vienes a Bogotá: hermosas vistas y una catedral de sal impresionante."},
@@ -508,31 +583,52 @@ def index():
         {"name":"Yuliana","country":"Costa Rica","date_str":"18 juillet 2019","rating":5,"message":"Ale y Omar (su papá) son súper simpáticos y se esfuerzan para que te sientas como en casa."},
     ]
 
-    seen_pairs = set((v.name or "") + "|" + (v.country or "") for v in views)
+    # 2b) Index des fallback avec clé normalisée "nom|pays"
+    fb_map = {}
     for fb in fallback_comments:
-        kp = f"{fb['name']}|{fb['country']}"
-        if kp in seen_pairs:
-            continue
-        d = parse_date_str(fb.get("date_str") or "")
-        # Objet simple avec les mêmes attributs qu'attend le template
-        Fallback = type("Fallback", (), {})
-        obj = Fallback()
-        obj.id = 0
-        obj.name = fb["name"]
-        obj.country = fb["country"]
-        obj.date_str = fb["date_str"]
-        obj.rating = float(fb.get("rating", 5))
-        obj.created_at = d
-        obj.message = fb["message"]
-        obj.translated = False
-        obj.source_lang = None
-        views.append(obj)
-        seen_pairs.add(kp)
+        k = _norm(fb["name"]) + "|" + _canon_country(fb["country"])
+        fb_map[k] = fb
 
-    # 4) Trier l'ensemble (DB + fallback) par created_at/date (desc)
+    # 3) Construire la liste finale à partir de la DB, en remplaçant le message si un fallback existe
+    views = []
+    seen = set()
+    for c in comments_db:
+        k = _norm(c.name or "") + "|" + _canon_country(c.country or "")
+        fb = fb_map.get(k)
+        if fb:
+            # Forcer le message d’origine (pas d’API de trad)
+            msg = fb["message"]
+            # Compléter date si manquante
+            if not c.date_str:
+                c.date_str = fb.get("date_str") or ""
+            if not c.created_at:
+                c.created_at = parse_date_str(c.date_str) or parse_date_str(fb.get("date_str") or "")
+        else:
+            msg = c.message
+        views.append(CommentView(c, msg, translated=False))
+        seen.add(k)
+
+    # 4) Ajouter les fallback “absents” de la DB (ex: Francis) pour qu’ils apparaissent
+    for fb in fallback_comments:
+        k = _norm(fb["name"]) + "|" + _canon_country(fb["country"])
+        if k in seen:
+            continue
+        class Dummy: pass
+        d = Dummy()
+        d.id = 0
+        d.name = fb["name"]
+        d.country = fb["country"]
+        d.date_str = fb.get("date_str") or ""
+        d.rating = float(fb.get("rating", 5))
+        d.created_at = parse_date_str(d.date_str)
+        d.message = fb["message"]
+        views.append(CommentView(d, d.message, translated=False))
+        seen.add(k)
+
+    # 5) Tri final (plus récents en premier)
     def _sort_key(v):
-        return (getattr(v, "created_at", None) or parse_date_str(getattr(v, "date_str", "")) or datetime.min,
-                getattr(v, "id", 0))
+        dt = getattr(v, "created_at", None) or parse_date_str(getattr(v, "date_str", "")) or datetime.min
+        return (dt, getattr(v, "id", 0))
     views.sort(key=_sort_key, reverse=True)
 
     return render_template("index.html", comments=views)
@@ -584,7 +680,7 @@ def submit_comment():
     db.session.add(c)
     db.session.commit()
 
-    # Invalider éventuels caches de traduction (si réutilisés un jour)
+    # Invalider éventuels caches de traduction (si réutilisés)
     try:
         CommentTranslation.query.filter_by(comment_id=c.id).delete()
         db.session.commit()
@@ -660,4 +756,5 @@ def not_found(e):
 @app.errorhandler(500)
 def server_error(e):
     return render_template("500.html"), 500
+
 
