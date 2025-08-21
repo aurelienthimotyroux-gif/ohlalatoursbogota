@@ -67,17 +67,93 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
 
-  <!-- FIX SWIPER: forcer la transition du wrapper (au cas où un CSS externe la neutralise) -->
+  <!-- ✅ AJOUT MINIMAL: réactive l’effet glissant & flèches toujours cliquables -->
   <style>
+    .tour-swiper{ position: relative; }
+    .tour-swiper .swiper-button-next,
+    .tour-swiper .swiper-button-prev{ z-index: 5; pointer-events: auto; }
     .tour-swiper .swiper-wrapper{
       transition-property: transform !important;
-      transition-duration: 700ms !important;
-      transition-timing-function: ease !important;
-      will-change: transform;
+      transition-duration: 650ms !important;
+      transition-timing-function: cubic-bezier(.22,.61,.36,1) !important;
     }
-    .tour-swiper .swiper-slide{
-      backface-visibility: hidden;
-      transform: translateZ(0);
+  </style>
+
+  <style>
+    /* --- POLICE GLOBALE --- */
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+    body { font-family: 'Poppins', sans-serif; background-color: #f8f0e8; color: #333; line-height: 1.6; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { height: 100%; }
+    a { color: inherit; text-decoration: none; } a:hover { text-decoration: underline; }
+    img { max-width: 100%; height: auto; display: block; }
+
+    /* ========= HERO ========= */
+    .hero { position: relative; width: 100%; height: 50vh; background-position: center; background-size: cover; background-repeat: no-repeat; display: flex; align-items: center; justify-content: center; text-align: center; }
+    .hero::after { content: ""; position: absolute; inset: 0; background: rgba(0,0,0,0.35); }
+    .hero-title { position: relative; z-index: 1; color: #fff; font-size: 2.6rem; line-height: 1.2; text-shadow: 2px 2px 6px rgba(0,0,0,0.7); padding: 0 16px; }
+    .hero-topbar{ position: absolute; top: 12px; left: 0; right: 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 20px; z-index: 2; }
+    #lang-switcher a, .nav-hero a { color: #fff; font-weight: bold; text-shadow: 1px 1px 3px rgba(0,0,0,.6); }
+    /* agrandir légèrement les onglets */
+    .nav-hero a { font-size: clamp(16px, 1.6vw, 20px); letter-spacing: .2px; }
+
+    /* ========= BLOCS ========= */
+    body, main, section, .container, .testimonials, .testimonial-card, .tour-card .content { background-color: #f8f0e8 !important; }
+
+    /* ========= TOURS ========= */
+    #excursions { max-width: 1200px; margin: 50px auto; padding: 0 20px; }
+    .tour-card { display: flex; align-items: center; gap: 20px; margin-bottom: 60px; flex-wrap: wrap; }
+    .tour-card.left  { flex-direction: row; }
+    .tour-card.right { flex-direction: row-reverse; }
+
+    /* Swiper */
+    .tour-swiper { width: 50%; height: 350px; border-radius: 10px; overflow: hidden; }
+    .tour-swiper img { width: 100%; height: 100%; object-fit: cover; }
+    .tour-swiper .swiper-wrapper{ height: 100%; }
+    .tour-swiper .swiper-slide{ display: flex; }
+
+    /* Flèches (on laisse la forme par défaut de Swiper) */
+    .swiper-button-next, .swiper-button-prev {
+      color: #fff !important;
+      text-shadow: 0 0 6px rgba(0,0,0,.65);
+    }
+    .swiper-button-next::after, .swiper-button-prev::after { font-size: 24px; }
+
+    /* Contenu cartes tours */
+    .tour-card .content { width: 50%; padding: 15px; border-radius: 10px; max-width: 680px; }
+    .tour-card h3.tour-title { font-size: clamp(26px, 3.2vw, 36px); line-height: 1.15; margin: 0 0 10px; letter-spacing: .2px; }
+    .tour-lead { font-size: clamp(16px, 1.8vw, 18px); line-height: 1.7; color: rgba(0,0,0,.78); margin: 10px 0 16px; max-width: 62ch; }
+
+    /* Bloc "Inclus" */
+    .tour-includes { position: relative; margin: 14px 0 12px; padding-left: 14px; flex-basis:100%; order:3; }
+    .tour-includes::before { content: ""; position: absolute; left: 0; top: 4px; bottom: 4px; width: 4px; border-radius: 4px; background: linear-gradient(180deg, #f59e0b, #f97316); }
+    .includes-title { margin: 0 0 8px; font-size: 14px; letter-spacing: .4px; text-transform: uppercase; opacity: .8; }
+    .includes-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px 14px; grid-template-columns: 1fr; }
+    .includes-list li { position: relative; padding-left: 26px; line-height: 1.6; }
+    .includes-list li::before { content: "✓"; position: absolute; left: 0; top: 0; font-weight: 700; transform: translateY(1px); opacity: .9; }
+    @media (min-width: 900px) { .includes-list { grid-template-columns: 1fr 1fr; } }
+
+    /* Chips Durée / Langues / Tarif (texte simple) */
+    .tour-chips { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 16px; }
+    .tour-chips .chip { background: none !important; border: none !important; padding: 0 !important; border-radius: 0 !important; box-shadow: none !important; font-size: 16px; line-height: 1.6; }
+    .tour-chips .chip strong { font-weight: 700; }
+
+    /* CTA sous "Inclus" */
+    .tour-meta{
+      flex-basis:100%; order:4; display:flex; align-items:center; gap:18px; flex-wrap:wrap; margin-top:8px;
+    }
+
+    /* Bouton */
+    .btn-primary { appearance: none; border: 1px solid rgba(0,0,0,.2); background: #2563eb; color: #fff; padding: 12px 18px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: transform .06s ease, filter .2s ease; }
+    .btn-primary:hover { filter: brightness(1.05); }
+    .btn-primary:active { transform: translateY(1px); }
+
+    /* Responsive */
+    @media (max-width: 900px){
+      .tour-card{ flex-direction: column !important; }
+      .tour-swiper, .tour-card .content{ width: 100%; }
+      .hero-title{ font-size: 2.1rem; }
+      .tour-meta{ flex-direction: column; align-items: flex-start; gap: 10px; }
     }
   </style>
 </head>
@@ -204,7 +280,7 @@
   }
 ] %}
 
-{# Descriptions alt #}
+{# >>> ALT maps FR/EN/ES inchangées pour ne rien supprimer #}
 {% set alt_map = {
   'candelaria1.jpg': _('Maisons coloniales colorées dans la Candelaria centre historique de Bogota quartier colonial bogota graffitis bogota street art ruelles pavées andines maisons colorées façades chorro de quevedo guide francophone centre historique'),
   'candelaria2.jpg': _('Street art de Bogota pendant la visite guidée de la Candelaria '),
@@ -223,7 +299,6 @@
   'finca-cafe2.jpg': _('Processus de torréfaction et mouture du café expresso machiato graine de café'),
   'finca-cafe3.jpg': _('Visite d’une finca café près de Bogotá grains fraîchement récoltés hacienda coloma rhum coloma rhum ')
 } %}
-
 {% set alt_map_en = {
   'candelaria1.jpg': _('Colorful colonial houses in La Candelaria historic center of Bogota colonial quarter bogota bogota street art murals cobblestone alleys andean colorful facades chorro de quevedo french speaking guide historic center'),
   'candelaria2.jpg': _('Bogota street art during La Candelaria walking tour murals'),
@@ -242,7 +317,6 @@
   'finca-cafe2.jpg': _('Roasting and grinding process espresso coffee beans'),
   'finca-cafe3.jpg': _('Visit to a coffee farm near Bogota freshly picked beans hacienda coloma')
 } %}
-
 {% set alt_map_es = {
   'candelaria1.jpg': _('Casas coloniales coloridas en La Candelaria centro histórico de Bogotá barrio colonial bogotá murales street art bogotá callejones empedrados fachadas coloridas plaza chorro de quevedo guía francófona centro histórico'),
   'candelaria2.jpg': _('Street art de Bogotá durante el tour por La Candelaria murales'),
@@ -261,7 +335,6 @@
   'finca-cafe2.jpg': _('Proceso de tostión y molienda espresso granos de café'),
   'finca-cafe3.jpg': _('Visita a una finca cafetera cerca de Bogotá granos recién recolectados hacienda coloma')
 } %}
-
 {% set _alt_maps = {'fr': alt_map, 'en': alt_map_en, 'es': alt_map_es} %}
 {% set ALT = _alt_maps.get(get_locale(), alt_map) %}
 
@@ -295,7 +368,6 @@
         </div>
         {% endif %}
 
-        <!-- MÉTA sous les inclus : Durée / Langues / Tarif + Réserver -->
         <div class="tour-meta">
           <ul class="tour-chips" aria-label="{{ _('Informations pratiques') }}">
             {% for info in tour.infos %}
@@ -345,33 +417,23 @@
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function(){
-      if (!window.Swiper) return; // sécurité
-
       document.querySelectorAll('.tour-swiper').forEach(function(slider){
-        const sw = new Swiper(slider, {
+        new Swiper(slider, {
           loop: true,
-          speed: 700,                 // effet glissant visible
-          effect: 'slide',            // glissement
-          cssMode: false,             // transitions JS/CSS (pas de scroll-snap)
-          autoplay: { delay: 3000, disableOnInteraction: false },
+          speed: 700,
+          effect: 'slide',
+          cssMode: false,
+          autoplay: { delay: 3500, disableOnInteraction: false, pauseOnMouseEnter: true },
+          observer: true,
+          observeParents: true,
           navigation: {
             nextEl: slider.querySelector('.swiper-button-next'),
             prevEl: slider.querySelector('.swiper-button-prev'),
           },
           simulateTouch: true,
-          allowTouchMove: true,
-          observer: true,
-          observeParents: true
+          grabCursor: true,
+          keyboard: { enabled: true, onlyInViewport: true }
         });
-
-        /* FIX SWIPER: force la transition au niveau inline (priorité max) */
-        const wrap = slider.querySelector('.swiper-wrapper');
-        if (wrap){
-          wrap.style.transitionProperty = 'transform';
-          wrap.style.transitionDuration = '700ms';
-          wrap.style.transitionTimingFunction = 'ease';
-          wrap.style.willChange = 'transform';
-        }
       });
     });
   </script>
