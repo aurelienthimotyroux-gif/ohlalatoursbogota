@@ -1,44 +1,32 @@
-
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
-  <!-- Accueil -->
   <url>
     <loc>https://www.ohlalatoursbogota.com/</loc>
-    <lastmod>2025-08-18</lastmod>
-    <xhtml:link rel="alternate" hreflang="fr"       href="https://www.ohlalatoursbogota.com/"/>
-    <xhtml:link rel="alternate" hreflang="en"       href="https://www.ohlalatoursbogota.com/?lang=en"/>
-    <xhtml:link rel="alternate" hreflang="es"       href="https://www.ohlalatoursbogota.com/?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.ohlalatoursbogota.com/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.ohlalatoursbogota.com/?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.ohlalatoursbogota.com/?lang=es"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://www.ohlalatoursbogota.com/"/>
   </url>
-
-  <!-- Tours -->
   <url>
     <loc>https://www.ohlalatoursbogota.com/tours</loc>
-    <lastmod>2025-08-18</lastmod>
-    <xhtml:link rel="alternate" hreflang="fr"       href="https://www.ohlalatoursbogota.com/tours"/>
-    <xhtml:link rel="alternate" hreflang="en"       href="https://www.ohlalatoursbogota.com/tours?lang=en"/>
-    <xhtml:link rel="alternate" hreflang="es"       href="https://www.ohlalatoursbogota.com/tours?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.ohlalatoursbogota.com/tours"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.ohlalatoursbogota.com/tours?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.ohlalatoursbogota.com/tours?lang=es"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://www.ohlalatoursbogota.com/tours"/>
   </url>
-
-  <!-- Transport -->
   <url>
     <loc>https://www.ohlalatoursbogota.com/transport</loc>
-    <lastmod>2025-08-18</lastmod>
-    <xhtml:link rel="alternate" hreflang="fr"       href="https://www.ohlalatoursbogota.com/transport"/>
-    <xhtml:link rel="alternate" hreflang="en"       href="https://www.ohlalatoursbogota.com/transport?lang=en"/>
-    <xhtml:link rel="alternate" hreflang="es"       href="https://www.ohlalatoursbogota.com/transport?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.ohlalatoursbogota.com/transport"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.ohlalatoursbogota.com/transport?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.ohlalatoursbogota.com/transport?lang=es"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://www.ohlalatoursbogota.com/transport"/>
   </url>
-
-  <!-- Réservation -->
   <url>
     <loc>https://www.ohlalatoursbogota.com/reservation</loc>
-    <lastmod>2025-08-18</lastmod>
-    <xhtml:link rel="alternate" hreflang="fr"       href="https://www.ohlalatoursbogota.com/reservation"/>
-    <xhtml:link rel="alternate" hreflang="en"       href="https://www.ohlalatoursbogota.com/reservation?lang=en"/>
-    <xhtml:link rel="alternate" hreflang="es"       href="https://www.ohlalatoursbogota.com/reservation?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.ohlalatoursbogota.com/reservation"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.ohlalatoursbogota.com/reservation?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.ohlalatoursbogota.com/reservation?lang=es"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://www.ohlalatoursbogota.com/reservation"/>
   </url>
 </urlset>
