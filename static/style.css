@@ -361,4 +361,13 @@ form button:hover { background-color: #0056b3; }
   transition-duration: 700ms !important;              /* vitesse du slide */
   transition-timing-function: ease !important;        /* courbe de glissement */
 }
+/* --- Swiper 11: réactiver le glissement (durée + easing via variables) --- */
+.tour-swiper{
+  --swiper-wrapper-transition-duration: 700ms !important;
+  --swiper-wrapper-transition-timing-function: ease !important;
+}
+.tour-swiper .swiper-wrapper{
+  transition-property: transform !important;
+  will-change: transform;
+}
 
