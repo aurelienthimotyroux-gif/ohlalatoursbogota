@@ -350,3 +350,23 @@ form button:hover { background-color: #0056b3; }
 
 /* Sécurité globale : ne pas laisser d’overlays capter les clics */
 [class*="gradient"], [class*="overlay"], [class*="mask"] { pointer-events: none; }
+
+/* --- Forcer les flèches Swiper cliquables sur la page des tours --- */
+.tour-swiper { position: relative; isolation: isolate; }
+.tour-swiper .swiper-slide { width: 100% !important; display: flex; }
+.tour-swiper .swiper-button-next,
+.tour-swiper .swiper-button-prev {
+  z-index: 9999 !important;
+  pointer-events: auto !important;
+  color: #fff !important;
+  text-shadow: 0 0 6px rgba(0,0,0,.65);
+}
+.tour-swiper .swiper-button-next::after,
+.tour-swiper .swiper-button-prev::after {
+  font-size: 26px !important;
+}
+
+/* Si un overlay (bandeau/masque) bloque des clics au-dessus :
+   on neutralise explicitement les overlays visuels */
+.hero::after { pointer-events: none !important; }
+
