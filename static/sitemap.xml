@@ -1,26 +1,23 @@
 
-
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <!-- FR -->
-  <url><loc>https://www.ohlalatoursbogota.com/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
-  <url><loc>https://www.ohlalatoursbogota.com/tours</loc></url>
-  <url><loc>https://www.ohlalatoursbogota.com/transport</loc></url>
-  <url><loc>https://www.ohlalatoursbogota.com/reservation</loc></url>
-
-  <!-- EN -->
+  <!-- Accueil -->
+  <url><loc>https://www.ohlalatoursbogota.com/</loc></url>
   <url><loc>https://www.ohlalatoursbogota.com/?lang=en</loc></url>
-  <url><loc>https://www.ohlalatoursbogota.com/tours?lang=en</loc></url>
-  <url><loc>https://www.ohlalatoursbogota.com/transport?lang=en</loc></url>
-  <url><loc>https://www.ohlalatoursbogota.com/reservation?lang=en</loc></url>
-
-  <!-- ES -->
   <url><loc>https://www.ohlalatoursbogota.com/?lang=es</loc></url>
-  <url><loc>https://www.ohlalatoursbogota.com/tours?lang=es</loc></url>
-  <url><loc>https://www.ohlalatoursbogota.com/transport?lang=es</loc></url>
+
+  <!-- Réservation -->
+  <url><loc>https://www.ohlalatoursbogota.com/reservation</loc></url>
+  <url><loc>https://www.ohlalatoursbogota.com/reservation?lang=en</loc></url>
   <url><loc>https://www.ohlalatoursbogota.com/reservation?lang=es</loc></url>
 
+  <!-- Tours -->
+  <url><loc>https://www.ohlalatoursbogota.com/tours</loc></url>
+  <url><loc>https://www.ohlalatoursbogota.com/tours?lang=en</loc></url>
+  <url><loc>https://www.ohlalatoursbogota.com/tours?lang=es</loc></url>
+
+  <!-- Transport -->
+  <url><loc>https://www.ohlalatoursbogota.com/transport</loc></url>
+  <url><loc>https://www.ohlalatoursbogota.com/transport?lang=en</loc></url>
+  <url><loc>https://www.ohlalatoursbogota.com/transport?lang=es</loc></url>
 </urlset>
-
-
-

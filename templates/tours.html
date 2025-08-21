@@ -98,7 +98,7 @@
     .tour-swiper { width: 50%; height: 350px; border-radius: 10px; overflow: hidden; }
     .tour-swiper img { width: 100%; height: 100%; object-fit: cover; }
 
-    /* Flèches visibles même si les icônes ne chargent pas */
+    /* Forcer de vraies flèches même si l’icône Swiper ne charge pas */
     .swiper-button-next::after, .swiper-button-prev::after { content: ''; }
     .swiper-button-next, .swiper-button-prev {
       color: #fff !important;
@@ -107,7 +107,9 @@
       background: rgba(0,0,0,.25);
       display: flex; align-items: center; justify-content: center;
     }
-    .swiper-button-next:before, .swiper-button-prev:before{ font-size: 26px; font-weight: 700; line-height: 1; }
+    .swiper-button-next:before, .swiper-button-prev:before{
+      font-size: 26px; font-weight: 700; line-height: 1;
+    }
     .swiper-button-next:before{ content: '›'; }
     .swiper-button-prev:before{ content: '‹'; }
 
@@ -125,7 +127,7 @@
     .includes-list li::before { content: "✓"; position: absolute; left: 0; top: 0; font-weight: 700; transform: translateY(1px); opacity: .9; }
     @media (min-width: 900px) { .includes-list { grid-template-columns: 1fr 1fr; } }
 
-    /* Chips Durée / Langues / Tarif */
+    /* Chips Durée / Langues / Tarif (texte simple) */
     .tour-chips { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 16px; }
     .tour-chips .chip { background: none !important; border: none !important; padding: 0 !important; border-radius: 0 !important; box-shadow: none !important; font-size: 16px; line-height: 1.6; }
     .tour-chips .chip strong { font-weight: 700; }
@@ -142,9 +144,9 @@
       .hero-title{ font-size: 2.1rem; }
     }
 
-    /* === Placer "Inclus" puis "Durée/Langues/Tarif + Réserver" dessous === */
-    .tour-card{ flex-wrap: wrap; }
-    .tour-includes{ flex-basis: 100%; order: 3; }
+    /* === AJOUTS pour placer "Inclus" puis "Durée/Langues/Tarif + Réserver" dessous === */
+    .tour-card{ flex-wrap: wrap; } /* permet le retour à la ligne des éléments */
+    .tour-includes{ flex-basis: 100%; order: 3; } /* plein largeur, après titre/description */
     .tour-meta{
       flex-basis: 100%;
       order: 4;
@@ -282,61 +284,79 @@
   }
 ] %}
 
-{# >>> ALT par langue #}
+{# >>> AJOUT : descriptions alt spécifiques par fichier (pas de virgule) #}
 {% set alt_map = {
   'candelaria1.jpg': _('Maisons coloniales colorées dans la Candelaria centre historique de Bogota quartier colonial bogota graffitis bogota street art ruelles pavées andines maisons colorées façades chorro de quevedo guide francophone centre historique'),
   'candelaria2.jpg': _('Street art de Bogota pendant la visite guidée de la Candelaria '),
   'candelaria3.jpg': _('Ruelles pavées et façades coloniales à La Candelaria'),
+
   'monserratevue.jpg': _('Vue panoramique depuis Monserrate au dessus de Bogota téléphérique bogota sanctuaire senor caido vue panoramique bogota coucher de soleil andes funiculaire monserrate courte randonnée sommet'),
   'monserrate2.jpg': _('Sanctuaire du Senor Caido à Monserrate'),
   'monserrate3.jpg': _('Montée en téléphérique à Monserrate'),
   'monserrate4.jpg': _('Paysages andins autour de Bogotá vus de Monserrate'),
+
   'zipaquira1.jpg': _('Cathédrale de sel de Zipaquira galerie souterraine illuminée cathédrale de sel mine de sel souterraine croix sculptées sel éclairage bleu violet via crucis galerie minière'),
   'zipaquira2.jpg': _('Croix sculptées dans le sel à Zipaquira'),
   'zipaquira3.jpg': _('Couloirs miniers et jeux de lumière à Zipaquira'),
+
   'chorrera1.jpg': _('Sentier andin vers la cascade de La Chorrera randonnée andine jungle de brouillard cascade 590m réserve naturelle choachí ponts et sentiers brume tropicale'),
   'chorrera2.jpeg': _('La Chorrera plus haute cascade de Colombie randonnée cascade'),
   'chorrera3.jpeg': _('Paysage de montagne et brume près de La Chorrera cascade'),
+
   'finca-cafe1.jpg': _('Plantation de café grains et caféiers plantation café arabica cerises de café à la main séchage sur patios récolte manuelle dégustation café finca'),
   'finca-cafe2.jpg': _('Processus de torréfaction et mouture du café expresso machiato graine de café'),
   'finca-cafe3.jpg': _('Visite d’une finca café près de Bogotá grains fraîchement récoltés hacienda coloma rhum coloma rhum ')
 } %}
+
+{# >>> AJOUT EN: map anglaise #}
 {% set alt_map_en = {
   'candelaria1.jpg': _('Colorful colonial houses in La Candelaria historic center of Bogota colonial quarter bogota bogota street art murals cobblestone alleys andean colorful facades chorro de quevedo french speaking guide historic center'),
   'candelaria2.jpg': _('Bogota street art during La Candelaria walking tour murals'),
   'candelaria3.jpg': _('Cobblestone alleys and colonial facades in La Candelaria'),
+
   'monserratevue.jpg': _('Panoramic view from Monserrate above Bogota cable car bogota sanctuary senor cado panoramic view bogota andes sunset monserrate funicular short hike summit'),
   'monserrate2.jpg': _('Sanctuary of Señor Caído at Monserrate'),
   'monserrate3.jpg': _('Ascent by cable car to Monserrate'),
   'monserrate4.jpg': _('Andean landscapes around Bogota seen from Monserrate'),
+
   'zipaquira1.jpg': _('Salt Cathedral of Zipaquira illuminated underground gallery salt cathedral underground salt mine carved salt crosses blue purple lighting via crucis mining gallery'),
   'zipaquira2.jpg': _('Carved salt crosses in Zipaquira'),
   'zipaquira3.jpg': _('Mining corridors and light effects in Zipaquira'),
+
   'chorrera1.jpg': _('Andean trail to La Chorrera waterfall andean hike cloud forest 590m waterfall choachi nature reserve bridges and trails tropical mist'),
   'chorrera2.jpeg': _('La Chorrera highest waterfall in Colombia hiking waterfall'),
   'chorrera3.jpeg': _('Mountain landscape and mist near La Chorrera waterfall'),
+
   'finca-cafe1.jpg': _('Arabica coffee plantation coffee cherries in hand patio drying hand picking coffee tasting at the farm'),
   'finca-cafe2.jpg': _('Roasting and grinding process espresso coffee beans'),
   'finca-cafe3.jpg': _('Visit to a coffee farm near Bogota freshly picked beans hacienda coloma')
 } %}
+
+{# >>> AJOUT ES: map espagnole #}
 {% set alt_map_es = {
   'candelaria1.jpg': _('Casas coloniales coloridas en La Candelaria centro histórico de Bogotá barrio colonial bogotá murales street art bogotá callejones empedrados fachadas coloridas plaza chorro de quevedo guía francófona centro histórico'),
   'candelaria2.jpg': _('Street art de Bogotá durante el tour por La Candelaria murales'),
   'candelaria3.jpg': _('Callejones empedrados y fachadas coloniales en La Candelaria'),
+
   'monserratevue.jpg': _('Vista panorámica desde Monserrate sobre Bogotá teleférico bogotá santuario señor caído vista panorámica bogotá atardecer andes funicular monserrate caminata corta cumbre'),
   'monserrate2.jpg': _('Santuario del Señor Caído en Monserrate'),
   'monserrate3.jpg': _('Subida en teleférico a Monserrate'),
   'monserrate4.jpg': _('Paisajes andinos alrededor de Bogotá vistos desde Monserrate'),
+
   'zipaquira1.jpg': _('Catedral de Sal de Zipaquirá galería subterránea iluminada catedral de sal mina de sal subterránea cruces talladas en sal iluminación azul violeta vía crucis galería minera'),
   'zipaquira2.jpg': _('Cruces talladas en sal en Zipaquirá'),
   'zipaquira3.jpg': _('Pasillos mineros y juegos de luces en Zipaquirá'),
+
   'chorrera1.jpg': _('Sendero andino hacia la cascada de La Chorrera caminata andina bosque de niebla cascada 590m reserva natural choachí puentes y senderos neblina tropical'),
   'chorrera2.jpeg': _('La Chorrera la cascada más alta de Colombia caminata cascada'),
   'chorrera3.jpeg': _('Paisaje de montaña y neblina cerca de la cascada La Chorrera'),
+
   'finca-cafe1.jpg': _('Plantación de café arábica cerezas de café en la mano secado en patios recolección manual cata de café en la finca'),
   'finca-cafe2.jpg': _('Proceso de tostión y molienda espresso granos de café'),
   'finca-cafe3.jpg': _('Visita a una finca cafetera cerca de Bogotá granos recién recolectados hacienda coloma')
 } %}
+
+{# Sélection de la map par langue, avec repli sur la map FR existante #}
 {% set _alt_maps = {'fr': alt_map, 'en': alt_map_en, 'es': alt_map_es} %}
 {% set ALT = _alt_maps.get(get_locale(), alt_map) %}
 
@@ -416,33 +436,61 @@
   }
   </script>
 
-  <!-- JS Swiper -->
+  <!-- JS Swiper + Fallback flèches -->
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-
   <script>
   (function(){
-    // Fallback dur si Swiper n'est pas présent ou plante.
+    // Fallback avec flèches si Swiper indisponible/bloqué
     function fallbackRotate(slider){
       var wrap = slider.querySelector('.swiper-wrapper');
       var slides = Array.from(slider.querySelectorAll('.swiper-slide'));
+      var nextBtn = slider.querySelector('.swiper-button-next');
+      var prevBtn = slider.querySelector('.swiper-button-prev');
       if (!wrap || slides.length < 2) return;
 
-      // Affiche un slide à la fois
-      slides.forEach((s, i) => { s.style.display = i === 0 ? 'block' : 'none'; });
-      var i = 0;
-      setInterval(function(){
-        slides[i].style.display = 'none';
-        i = (i + 1) % slides.length;
-        slides[i].style.display = 'block';
-      }, 3000);
+      var i = 0, timer = null;
+      function show(idx){
+        slides.forEach((s,k)=>{ s.style.display = (k===idx ? 'block' : 'none'); });
+      }
+      function start(){ stop(); timer = setInterval(()=>{ i=(i+1)%slides.length; show(i); }, 3000); }
+      function stop(){ if(timer){ clearInterval(timer); timer=null; } }
+      function next(){ i=(i+1)%slides.length; show(i); }
+      function prev(){ i=(i-1+slides.length)%slides.length; show(i); }
+
+      show(i); start();
+
+      function ensureBtnPosition(btn, side){
+        if (!btn) return;
+        btn.style.cursor = 'pointer';
+        btn.style.zIndex = '2';
+        if (!window.Swiper) {
+          btn.style.position = 'absolute';
+          btn.style.top = '50%';
+          btn.style.transform = 'translateY(-50%)';
+          btn.style[side] = '8px';
+          btn.style.background = 'rgba(0,0,0,.25)';
+          btn.style.width = '44px';
+          btn.style.height = '44px';
+          btn.style.borderRadius = '50%';
+          btn.style.display = 'flex';
+          btn.style.alignItems = 'center';
+          btn.style.justifyContent = 'center';
+        }
+      }
+      ensureBtnPosition(nextBtn, 'right');
+      ensureBtnPosition(prevBtn, 'left');
+
+      if (nextBtn) nextBtn.addEventListener('click', function(e){ e.preventDefault(); stop(); next(); start(); });
+      if (prevBtn) prevBtn.addEventListener('click', function(e){ e.preventDefault(); stop(); prev(); start(); });
+
+      slider.addEventListener('mouseenter', stop);
+      slider.addEventListener('mouseleave', start);
     }
 
     function initOne(slider){
-      // Nettoyage si déjà instancié
       if (slider.swiper) {
-        try { slider.swiper.destroy(true, true); } catch (e) {}
+        try { slider.swiper.destroy(true, true); } catch(e){}
       }
-
       var nextEl = slider.querySelector('.swiper-button-next');
       var prevEl = slider.querySelector('.swiper-button-prev');
 
@@ -462,31 +510,11 @@
             observeParents: true,
             watchSlidesProgress: true
           });
-
-          // Si pour une raison X l'autoplay ne démarre pas, tick de secours
-          var safetyTick = setInterval(function(){
-            if (!document.hidden && slider.swiper && !slider.swiper.destroyed) {
-              slider.swiper.slideNext();
-            }
-          }, 3000);
-
-          // Stop de sécurité si l’utilisateur interagit
-          slider.addEventListener('mouseenter', function(){ clearInterval(safetyTick); });
-          slider.addEventListener('mouseleave', function(){
-            if (!slider.swiper || slider.swiper.destroyed) return;
-            safetyTick = setInterval(function(){
-              if (!document.hidden && slider.swiper && !slider.swiper.destroyed) {
-                slider.swiper.slideNext();
-              }
-            }, 3000);
-          });
-
-          return; // Swiper OK -> on sort
+          return;
         } catch(e){
           console.warn('Swiper init error:', e);
         }
       }
-
       // Fallback si pas de Swiper
       fallbackRotate(slider);
     }
