@@ -207,6 +207,21 @@ form button:hover { background-color: #0056b3; }
 .transport-text p > a.btn-primary { display: inline-flex; margin-right: 12px; white-space: nowrap; }
 .transport-text p + p { margin-top: 10px; }
 
+/* Corrige les flèches bloquées */
+.tour-swiper .swiper-button-next,
+.tour-swiper .swiper-button-prev {
+  z-index: 10 !important;
+  pointer-events: auto !important;
+  color: #fff !important;
+  text-shadow: 0 0 6px rgba(0,0,0,0.65);
+}
+
+.tour-swiper .swiper-button-next::after,
+.tour-swiper .swiper-button-prev::after {
+  font-size: 26px !important;
+  font-weight: bold;
+}
+
 /* =========================================================
    AVIS DES VOYAGEURS
    ========================================================= */
