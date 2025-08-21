@@ -766,9 +766,48 @@ def submit_transfer():
 # ------------------------------------------------------------------
 # Statique & SEO
 # ------------------------------------------------------------------
+# --- Sitemaps / Robots --------------------------------------------------------
 @app.route('/sitemap.xml')
 def sitemap_xml():
-    return send_from_directory(app.static_folder, 'sitemap.xml', mimetype='application/xml')
+    # 1) Si un fichier statique existe, on le sert (chemin: static/sitemap.xml)
+    static_path = os.path.join(app.static_folder, 'sitemap.xml')
+    if os.path.exists(static_path):
+        resp = send_from_directory(app.static_folder, 'sitemap.xml', mimetype='application/xml')
+        # 24h de cache côté client
+        resp.cache_control.max_age = 86400
+        return resp
+
+    # 2) Fallback dynamique si le fichier n’est pas présent au déploiement
+    base = request.url_root.rstrip('/')
+    pages = [
+        ('/',           ['fr', 'en', 'es']),
+        ('/tours',      ['fr', 'en', 'es']),
+        ('/transport',  ['fr', 'en', 'es']),
+        ('/reservation',['fr', 'en', 'es']),
+    ]
+
+    out = [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" '
+        '        xmlns:xhtml="http://www.w3.org/1999/xhtml">'
+    ]
+    for path, langs in pages:
+        loc = f"{base}{path}"
+        out.append('<url>')
+        out.append(f'<loc>{loc}</loc>')
+        # fr = canonique (sans ?lang) ; en/es avec ?lang
+        for lang in langs:
+            href = loc if lang == 'fr' else f"{loc}?lang={lang}"
+            out.append(f'<xhtml:link rel="alternate" hreflang="{lang}" href="{href}"/>')
+        out.append(f'<xhtml:link rel="alternate" hreflang="x-default" href="{loc}"/>')
+        out.append('</url>')
+    out.append('</urlset>')
+    xml = '\n'.join(out)
+    return app.response_class(xml, mimetype='application/xml')
+
+@app.route('/sitemap')  # pratique si on tape sans extension
+def sitemap_noext():
+    return redirect(url_for('sitemap_xml'), code=301)
 
 @app.route('/robots.txt')
 def robots_txt():
@@ -785,5 +824,6 @@ def not_found(e):
 @app.errorhandler(500)
 def server_error(e):
     return render_template("500.html"), 500
+
 
 
