@@ -825,5 +825,13 @@ def not_found(e):
 def server_error(e):
     return render_template("500.html"), 500
 
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(
+        os.path.join(app.root_path, 'static', 'img', 'favicon'),
+        'favicon.ico',
+        mimetype='image/vnd.microsoft.icon'
+    )
+
 
 
