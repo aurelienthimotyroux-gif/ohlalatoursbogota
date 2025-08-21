@@ -355,3 +355,10 @@ form button:hover { background-color: #0056b3; }
   z-index: 10;                           /* au-dessus des images si besoin */
 }
 
+/* --- Fix Swiper: réactive la transition du carrousel --- */
+.tour-swiper .swiper-wrapper{
+  transition-property: transform !important;
+  transition-duration: 700ms !important;              /* vitesse du slide */
+  transition-timing-function: ease !important;        /* courbe de glissement */
+}
+
