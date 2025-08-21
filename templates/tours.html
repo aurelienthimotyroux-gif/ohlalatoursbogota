@@ -113,6 +113,19 @@
     .swiper-button-next:before{ content: '›'; }
     .swiper-button-prev:before{ content: '‹'; }
 
+    /* ✅ AJOUT : garantir cliquabilité/position des flèches même sans CSS Swiper */
+    .tour-swiper { position: relative; }
+    .tour-swiper .swiper-button-next,
+    .tour-swiper .swiper-button-prev{
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 5;
+      pointer-events: auto;
+    }
+    .tour-swiper .swiper-button-next{ right: 10px; }
+    .tour-swiper .swiper-button-prev{ left: 10px; }
+
     /* Contenu cartes tours */
     .tour-card .content { width: 50%; padding: 15px; border-radius: 10px; max-width: 680px; }
     .tour-card h3.tour-title { font-size: clamp(26px, 3.2vw, 36px); line-height: 1.15; margin: 0 0 10px; letter-spacing: .2px; }
@@ -459,23 +472,22 @@
 
       show(i); start();
 
+      // place/active visuellement les boutons même sans CSS Swiper
       function ensureBtnPosition(btn, side){
         if (!btn) return;
         btn.style.cursor = 'pointer';
-        btn.style.zIndex = '2';
-        if (!window.Swiper) {
-          btn.style.position = 'absolute';
-          btn.style.top = '50%';
-          btn.style.transform = 'translateY(-50%)';
-          btn.style[side] = '8px';
-          btn.style.background = 'rgba(0,0,0,.25)';
-          btn.style.width = '44px';
-          btn.style.height = '44px';
-          btn.style.borderRadius = '50%';
-          btn.style.display = 'flex';
-          btn.style.alignItems = 'center';
-          btn.style.justifyContent = 'center';
-        }
+        btn.style.zIndex = '6';
+        btn.style.position = 'absolute';
+        btn.style.top = '50%';
+        btn.style.transform = 'translateY(-50%)';
+        btn.style[side] = '10px';
+        btn.style.background = 'rgba(0,0,0,.25)';
+        btn.style.width = '44px';
+        btn.style.height = '44px';
+        btn.style.borderRadius = '50%';
+        btn.style.display = 'flex';
+        btn.style.alignItems = 'center';
+        btn.style.justifyContent = 'center';
       }
       ensureBtnPosition(nextBtn, 'right');
       ensureBtnPosition(prevBtn, 'left');
@@ -510,6 +522,10 @@
             observeParents: true,
             watchSlidesProgress: true
           });
+
+          // 🔒 Force la cliquabilité en cas de CSS tiers capricieux
+          if (nextEl){ nextEl.style.pointerEvents = 'auto'; nextEl.style.zIndex = '6'; }
+          if (prevEl){ prevEl.style.pointerEvents = 'auto'; prevEl.style.zIndex = '6'; }
           return;
         } catch(e){
           console.warn('Swiper init error:', e);
