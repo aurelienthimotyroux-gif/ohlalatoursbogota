@@ -361,3 +361,16 @@ form button:hover { background-color: #0056b3; }
 .tour-swiper img { width: 100%; height: 100%; object-fit: cover; }
 .tour-swiper .swiper-button-next,
 .tour-swiper .swiper-button-prev { z-index: 5; pointer-events: auto; }
+
+/* === HOTFIX: unblock clicks & drags on carousels === */
+/* Désactiver la capture de clics par l’overlay global */
+.hero::after { pointer-events: none; }
+
+/* S’assurer que le carrousel est au-dessus des calques voisins */
+.tour-swiper { position: relative; z-index: 2; }
+.tour-swiper .swiper-button-next,
+.tour-swiper .swiper-button-prev { z-index: 5; }
+
+/* Par sécurité: tout “gradient/overlay/mask” ne doit pas piéger les clics */
+[class*="gradient"], [class*="overlay"], [class*="mask"] { pointer-events: none; }
+
