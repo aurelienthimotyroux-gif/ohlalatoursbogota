@@ -334,40 +334,21 @@ form button:hover { background-color: #0056b3; }
 /* ⚠️ Cette accolade isolée cassait le CSS : je la conserve en commentaire pour ne rien supprimer
 } */
 
-
-/* =========================================================
-   ✅ AJOUT NON DESTRUCTIF — Forcer l’effet de glissement Swiper
-   (rien d’au-dessus n’a été modifié/supprimé)
-   ========================================================= */
-.tour-swiper .swiper-wrapper{
-  transition-property: transform;
-  transition-duration: .7s;              /* correspond à speed: 700 en JS */
-  transition-timing-function: ease;
-  will-change: transform;
-}
-.tour-swiper .swiper-slide{
-  backface-visibility: hidden;
-  transform: translateZ(0);
-}
+/* ===============================
+   AJOUT (sans rien supprimer) :
+   Forcer l’effet de glissement et
+   garder les flèches cliquables
+   =============================== */
+.tour-swiper { position: relative; }
 .tour-swiper .swiper-button-next,
-.tour-swiper .swiper-button-prev{
+.tour-swiper .swiper-button-prev {
+  z-index: 5;
   pointer-events: auto;
-  z-index: 10;                           /* au-dessus des images si besoin */
-}
-
-/* --- Fix Swiper: réactive la transition du carrousel --- */
-.tour-swiper .swiper-wrapper{
-  transition-property: transform !important;
-  transition-duration: 700ms !important;              /* vitesse du slide */
-  transition-timing-function: ease !important;        /* courbe de glissement */
-}
-/* --- Swiper 11: réactiver le glissement (durée + easing via variables) --- */
-.tour-swiper{
-  --swiper-wrapper-transition-duration: 700ms !important;
-  --swiper-wrapper-transition-timing-function: ease !important;
 }
 .tour-swiper .swiper-wrapper{
   transition-property: transform !important;
+  transition-duration: 650ms !important;
+  transition-timing-function: cubic-bezier(.22,.61,.36,1) !important;
   will-change: transform;
 }
 
