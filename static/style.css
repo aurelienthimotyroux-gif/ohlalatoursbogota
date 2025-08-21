@@ -333,3 +333,25 @@ form button:hover { background-color: #0056b3; }
 
 /* ⚠️ Cette accolade isolée cassait le CSS : je la conserve en commentaire pour ne rien supprimer
 } */
+
+
+/* =========================================================
+   ✅ AJOUT NON DESTRUCTIF — Forcer l’effet de glissement Swiper
+   (rien d’au-dessus n’a été modifié/supprimé)
+   ========================================================= */
+.tour-swiper .swiper-wrapper{
+  transition-property: transform;
+  transition-duration: .7s;              /* correspond à speed: 700 en JS */
+  transition-timing-function: ease;
+  will-change: transform;
+}
+.tour-swiper .swiper-slide{
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+.tour-swiper .swiper-button-next,
+.tour-swiper .swiper-button-prev{
+  pointer-events: auto;
+  z-index: 10;                           /* au-dessus des images si besoin */
+}
+
