@@ -133,6 +133,38 @@
     @media (min-width: 768px){ .sticky-cta { display: none; } }
   </style>
 
+  <!-- ✅ Styles AJOUTÉS pour le header fixe + logo (aucune suppression de tes styles) -->
+  <style>
+    .site-header{
+      position:fixed; top:0; left:0; right:0; z-index:70;
+      display:flex; align-items:center; justify-content:space-between;
+      padding:10px 16px; gap:16px;
+      background:transparent; transition:background .25s ease, box-shadow .25s ease;
+    }
+    .brand{display:inline-flex; align-items:center; gap:10px}
+    .logo{height:44px; width:auto; display:block}
+    @media (max-width:640px){ .logo{height:32px} }
+
+    .main-nav{display:flex; align-items:center; gap:18px; font-weight:600}
+    .main-nav a{text-decoration:none}
+    .lang-switcher{display:flex; gap:8px; margin-left:8px}
+    .lang-switcher a{font-size:20px; line-height:1; padding:4px 6px; border-radius:6px}
+
+    /* Sur la page d'accueil (hero en fond) : liens & logo blancs au départ */
+    .header-on-hero .main-nav a{color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.35)}
+    .logo--dark{display:none}
+
+    /* Au scroll ou sur pages fond clair : fond verre + logo couleur */
+    .site-header.scrolled{
+      background: rgba(255,255,255,.86);
+      backdrop-filter: saturate(180%) blur(8px);
+      box-shadow: 0 2px 10px rgba(0,0,0,.08);
+    }
+    .site-header.scrolled .logo--light{display:none}
+    .site-header.scrolled .logo--dark{display:block}
+    .site-header.scrolled .main-nav a{color:#0f172a}
+  </style>
+
   <!-- Sprite d'icônes SVG (étoiles) -->
   <svg xmlns="http://www.w3.org/2000/svg" style="display:none;">
     <symbol id="icon-star-full" viewBox="0 0 24 24" aria-hidden="true">
@@ -190,6 +222,35 @@
   </script>
 </head>
 <body>
+
+  <!-- ✅ Header FIXE ajouté (logo + nav + drapeaux) -->
+  <header class="site-header header-on-hero">
+    <a href="{{ url_for('index', lang=get_locale()) }}" class="brand" aria-label="Oh La La Tours Bogotá — Accueil">
+      <!-- logo blanc sur la photo -->
+      <img class="logo logo--light"
+           src="{{ url_for('static', filename='img/logo/logo-ohlala-white-360.png') }}"
+           srcset="{{ url_for('static', filename='img/logo/logo-ohlala-white-720@2x.png') }} 2x"
+           alt="Oh La La Tours Bogotá">
+      <!-- logo couleur au scroll / fonds clairs -->
+      <img class="logo logo--dark"
+           src="{{ url_for('static', filename='img/logo/logo-ohlala-teal-gold-360.png') }}"
+           srcset="{{ url_for('static', filename='img/logo/logo-ohlala-teal-gold-720@2x.png') }} 2x"
+           alt="Oh La La Tours Bogotá">
+    </a>
+
+    <nav class="main-nav" aria-label="{{ _('Navigation principale') }}">
+      <a href="{{ url_for('index', lang=get_locale()) }}">{{ _("Accueil") }}</a>
+      <a href="{{ url_for('tours', lang=get_locale()) }}">{{ _("Nos tours") }}</a>
+      <a href="{{ url_for('transport', lang=get_locale()) }}">{{ _("Service de Transport") }}</a>
+      <a href="{{ url_for('reservation', lang=get_locale()) }}">{{ _("Réservation") }}</a>
+
+      <div class="lang-switcher" aria-label="{{ _('Changer de langue') }}">
+        <a href="{{ lang_url('fr') }}" lang="fr" aria-label="Français">🇫🇷<span class="sr-only">Français</span></a>
+        <a href="{{ lang_url('en') }}" lang="en" aria-label="English">🇺🇸<span class="sr-only">English</span></a>
+        <a href="{{ lang_url('es') }}" lang="es" aria-label="Español">🇪🇸<span class="sr-only">Español</span></a>
+      </div>
+    </nav>
+  </header>
 
   <header class="hero"
           role="img"
@@ -393,6 +454,18 @@
     })();
   </script>
 
+  <!-- ✅ Script AJOUTÉ : toggle du header au scroll -->
+  <script>
+    (function(){
+      const header = document.querySelector('.site-header');
+      if(!header) return;
+      function onScroll(){ header.classList.toggle('scrolled', window.scrollY > 60); }
+      onScroll();
+      window.addEventListener('scroll', onScroll, {passive:true});
+    })();
+  </script>
+
 </body>
 </html>
+
 

@@ -370,3 +370,33 @@ form button:hover { background-color: #0056b3; }
    on neutralise explicitement les overlays visuels */
 .hero::after { pointer-events: none !important; }
 
+.site-header{
+  position:fixed; top:0; left:0; right:0; z-index:50;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:12px 18px;
+}
+.brand{display:inline-flex; align-items:center}
+.logo{height:44px; width:auto; display:block}
+@media (max-width:640px){ .logo{height:32px} }
+
+.main-nav{display:flex; align-items:center; gap:20px}
+.main-nav a{font-weight:600; text-decoration:none}
+
+/* Drapeaux à droite */
+.lang-switcher{display:flex; gap:8px; margin-left:12px}
+.lang-switcher a{font-size:20px; line-height:1; padding:6px; border-radius:6px}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
+/* Par défaut (sur la photo hero) : logo blanc + liens clairs */
+.logo--dark{display:none}
+.header-on-hero .main-nav a{color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.35)}
+
+/* Au scroll ou sur pages sans hero : logo couleur + liens foncés */
+.site-header.scrolled .logo--light{display:none}
+.site-header.scrolled .logo--dark{display:block}
+.site-header.scrolled .main-nav a{color:#1a1a1a}
+
+/* Option lisibilité drapeaux sur la photo */
+.header-on-hero .lang-switcher a{background:rgba(0,0,0,.25); backdrop-filter:blur(4px)}
+.site-header.scrolled .lang-switcher a{background:transparent}
+
