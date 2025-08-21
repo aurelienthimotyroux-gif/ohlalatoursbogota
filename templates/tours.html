@@ -416,26 +416,51 @@
   <!-- JS Swiper -->
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', function(){
-      document.querySelectorAll('.tour-swiper').forEach(function(slider){
-        new Swiper(slider, {
-          loop: true,
-          speed: 700,
-          effect: 'slide',
-          cssMode: false,
-          autoplay: { delay: 3500, disableOnInteraction: false, pauseOnMouseEnter: true },
-          observer: true,
-          observeParents: true,
-          navigation: {
-            nextEl: slider.querySelector('.swiper-button-next'),
-            prevEl: slider.querySelector('.swiper-button-prev'),
-          },
-          simulateTouch: true,
-          grabCursor: true,
-          keyboard: { enabled: true, onlyInViewport: true }
+    (function(){
+      function initTourSwipers(){
+        document.querySelectorAll('.tour-swiper').forEach(function(slider){
+          if (slider.dataset.initialized === "1") return;
+          slider.dataset.initialized = "1";
+          var nextBtn = slider.querySelector('.swiper-button-next');
+          var prevBtn = slider.querySelector('.swiper-button-prev');
+
+          new Swiper(slider, {
+            slidesPerView: 1,
+            spaceBetween: 0,
+            effect: 'slide',
+            speed: 700,
+            loop: true,
+            loopAdditionalSlides: 1,
+            watchOverflow: true,
+            preloadImages: true,
+            lazy: {
+              loadPrevNext: true
+            },
+            autoplay: {
+              delay: 3500,
+              disableOnInteraction: false,
+              pauseOnMouseEnter: true
+            },
+            observer: true,
+            observeParents: true,
+            observeSlideChildren: true,
+            simulateTouch: true,
+            grabCursor: true,
+            keyboard: { enabled: true, onlyInViewport: true },
+            navigation: {
+              nextEl: nextBtn,
+              prevEl: prevBtn
+            }
+          });
         });
-      });
-    });
+      }
+      if (document.readyState === "loading") {
+        document.addEventListener('DOMContentLoaded', initTourSwipers);
+        window.addEventListener('load', initTourSwipers);
+      } else {
+        initTourSwipers();
+      }
+    })();
   </script>
 </body>
 </html>
