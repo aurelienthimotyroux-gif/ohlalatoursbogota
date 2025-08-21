@@ -1,31 +1,37 @@
-<!-- CMP / consentmanager -->
-<script type="text/javascript" data-cmp-ab="1"
-        src="https://cdn.consentmanager.net/delivery/autoblocking/62cc8437f29ac.js"
-        data-cmp-host="b.delivery.consentmanager.net"
-        data-cmp-cdn="cdn.consentmanager.net"
-        data-cmp-codesrc="16"></script>
+<!DOCTYPE html>
+<html lang="{{ get_locale() }}">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ _("Service de Transport") }} — Oh La La Tours Bogotá</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-<!-- Google Consent Mode (valeurs par défaut = refus) -->
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){ dataLayer.push(arguments); }
-  gtag('consent', 'default', {
-    ad_storage: 'denied',
-    analytics_storage: 'denied',
-    ad_user_data: 'denied',
-    ad_personalization: 'denied',
-    wait_for_update: 500
-  });
-</script>
+  <!-- CMP / consentmanager -->
+  <script type="text/javascript" data-cmp-ab="1"
+          src="https://cdn.consentmanager.net/delivery/autoblocking/62cc8437f29ac.js"
+          data-cmp-host="b.delivery.consentmanager.net"
+          data-cmp-cdn="cdn.consentmanager.net"
+          data-cmp-codesrc="16"></script>
 
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-92M6CENDXH"></script>
-<script>
-  gtag('js', new Date());
-  // Id de mesure GA4
-  gtag('config', 'G-92M6CENDXH', { anonymize_ip: true });
-</script>
+  <!-- Google Consent Mode (valeurs par défaut = refus) -->
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    gtag('consent', 'default', {
+      ad_storage: 'denied',
+      analytics_storage: 'denied',
+      ad_user_data: 'denied',
+      ad_personalization: 'denied',
+      wait_for_update: 500
+    });
+  </script>
 
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-92M6CENDXH"></script>
+  <script>
+    gtag('js', new Date());
+    // Id de mesure GA4
+    gtag('config', 'G-92M6CENDXH', { anonymize_ip: true });
+  </script>
 
   <!-- ✅ Canonical + hreflang -->
   <link rel="canonical" href="https://www.ohlalatoursbogota.com{{ request.path }}{% if get_locale()!='fr' %}?lang={{ get_locale() }}{% endif %}">
@@ -52,6 +58,38 @@
   <!-- ✅ Favicon + CSS global -->
   <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+  <!-- ✅ Styles AJOUTÉS pour le header fixe + logo -->
+  <style>
+    .site-header{
+      position:fixed; top:0; left:0; right:0; z-index:70;
+      display:flex; align-items:center; justify-content:space-between;
+      padding:10px 16px; gap:16px;
+      background:transparent; transition:background .25s ease, box-shadow .25s ease;
+    }
+    .brand{display:inline-flex; align-items:center; gap:10px}
+    .logo{height:44px; width:auto; display:block}
+    @media (max-width:640px){ .logo{height:32px} }
+
+    .main-nav{display:flex; align-items:center; gap:18px; font-weight:600}
+    .main-nav a{text-decoration:none}
+    .lang-switcher{display:flex; gap:8px; margin-left:8px}
+    .lang-switcher a{font-size:20px; line-height:1; padding:4px 6px; border-radius:6px}
+
+    /* Sur cette page (hero en fond) : liens & logo blancs au départ */
+    .header-on-hero .main-nav a{color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.35)}
+    .logo--dark{display:none}
+
+    /* Au scroll / fond clair */
+    .site-header.scrolled{
+      background: rgba(255,255,255,.86);
+      backdrop-filter: saturate(180%) blur(8px);
+      box-shadow: 0 2px 10px rgba(0,0,0,.08);
+    }
+    .site-header.scrolled .logo--light{display:none}
+    .site-header.scrolled .logo--dark{display:block}
+    .site-header.scrolled .main-nav a{color:#0f172a}
+  </style>
 
   <!-- ✅ Styles locaux (on conserve le design : image à droite) -->
   <style>
@@ -105,25 +143,38 @@
 </head>
 <body>
 
-  <!-- Bandeau image avec topbar (lang + nav) et titre -->
+  <!-- ✅ Nouveau header fixe (logo + nav + drapeaux) -->
+  <header class="site-header header-on-hero">
+    <a href="{{ url_for('index', lang=get_locale()) }}" class="brand" aria-label="Oh La La Tours Bogotá — Accueil">
+      <!-- logo blanc sur la photo -->
+      <img class="logo logo--light"
+           src="{{ url_for('static', filename='img/logo/logo-ohlala-white-360.png') }}"
+           srcset="{{ url_for('static', filename='img/logo/logo-ohlala-white-720@2x.png') }} 2x"
+           alt="Oh La La Tours Bogotá">
+      <!-- logo couleur au scroll / fonds clairs -->
+      <img class="logo logo--dark"
+           src="{{ url_for('static', filename='img/logo/logo-ohlala-teal-gold-360.png') }}"
+           srcset="{{ url_for('static', filename='img/logo/logo-ohlala-teal-gold-720@2x.png') }} 2x"
+           alt="Oh La La Tours Bogotá">
+    </a>
+
+    <nav class="main-nav" aria-label="{{ _('Navigation principale') }}">
+      <a href="{{ url_for('index', lang=get_locale()) }}">{{ _("Accueil") }}</a>
+      <a href="{{ url_for('tours', lang=get_locale()) }}">{{ _("Nos tours") }}</a>
+      <a href="{{ url_for('transport', lang=get_locale()) }}">{{ _("Service de Transport") }}</a>
+      <a href="{{ url_for('reservation', lang=get_locale()) }}">{{ _("Réservation") }}</a>
+
+      <div class="lang-switcher" aria-label="{{ _('Changer de langue') }}">
+        <a href="{{ lang_url('fr') }}" lang="fr" aria-label="Français">🇫🇷<span class="sr-only">Français</span></a>
+        <a href="{{ lang_url('en') }}" lang="en" aria-label="English">🇺🇸<span class="sr-only">English</span></a>
+        <a href="{{ lang_url('es') }}" lang="es" aria-label="Español">🇪🇸<span class="sr-only">Español</span></a>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Bandeau image + titre (ancienne topbar supprimée) -->
   <header class="hero background-half"
           style="background-image: url('{{ url_for('static', filename='images/bg_transport.webp') }}');">
-
-    <div class="hero-topbar">
-      <div id="lang-switcher" aria-label="{{ _('Choix de la langue') }}">
-        <a href="{{ lang_url('fr') }}">🇫🇷</a> |
-        <a href="{{ lang_url('en') }}">🇺🇸</a> |
-        <a href="{{ lang_url('es') }}">🇪🇸</a>
-      </div>
-
-      <nav class="nav-hero" aria-label="{{ _('Navigation principale') }}">
-        <a href="{{ url_for('index', lang=get_locale()) }}">{{ _("Accueil") }}</a> |
-        <a href="{{ url_for('tours', lang=get_locale()) }}">{{ _("Nos tours") }}</a> |
-        <a href="{{ url_for('transport', lang=get_locale()) }}">{{ _("Service de Transport") }}</a> |
-        <a href="{{ url_for('reservation', lang=get_locale()) }}">{{ _("Réservation") }}</a>
-      </nav>
-    </div>
-
     <h1 class="hero-title">{{ _("Service de Transport — Hôtel ⇄ Aéroport Bogotá") }}</h1>
   </header>
 
@@ -210,6 +261,17 @@
       }]
     }
   }
+  </script>
+
+  <!-- ✅ Script AJOUTÉ : toggle du header au scroll -->
+  <script>
+    (function(){
+      const header = document.querySelector('.site-header');
+      if(!header) return;
+      function onScroll(){ header.classList.toggle('scrolled', window.scrollY > 60); }
+      onScroll();
+      window.addEventListener('scroll', onScroll, {passive:true});
+    })();
   </script>
 </body>
 </html>

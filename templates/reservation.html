@@ -45,6 +45,38 @@
   <style>
     .sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,1px,1px);white-space:nowrap;border:0}
   </style>
+
+  <!-- ✅ Styles AJOUTÉS pour le header fixe + logo -->
+  <style>
+    .site-header{
+      position:fixed; top:0; left:0; right:0; z-index:70;
+      display:flex; align-items:center; justify-content:space-between;
+      padding:10px 16px; gap:16px;
+      background:transparent; transition:background .25s ease, box-shadow .25s ease;
+    }
+    .brand{display:inline-flex; align-items:center; gap:10px}
+    .logo{height:44px; width:auto; display:block}
+    @media (max-width:640px){ .logo{height:32px} }
+
+    .main-nav{display:flex; align-items:center; gap:18px; font-weight:600}
+    .main-nav a{text-decoration:none}
+    .lang-switcher{display:flex; gap:8px; margin-left:8px}
+    .lang-switcher a{font-size:20px; line-height:1; padding:4px 6px; border-radius:6px}
+
+    /* Sur cette page (hero en fond) : liens & logo blancs au départ */
+    .header-on-hero .main-nav a{color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.35)}
+    .logo--dark{display:none}
+
+    /* Au scroll / fond clair */
+    .site-header.scrolled{
+      background: rgba(255,255,255,.86);
+      backdrop-filter: saturate(180%) blur(8px);
+      box-shadow: 0 2px 10px rgba(0,0,0,.08);
+    }
+    .site-header.scrolled .logo--light{display:none}
+    .site-header.scrolled .logo--dark{display:block}
+    .site-header.scrolled .main-nav a{color:#0f172a}
+  </style>
 </head>
 
   <!-- ✅ Canonical + hreflang -->
@@ -82,26 +114,42 @@
 </head>
 <body>
 
-  <!-- Bandeau -->
+  <!-- ✅ Nouveau header fixe (logo + nav + drapeaux) -->
+  <header class="site-header header-on-hero">
+    <a href="{{ url_for('index', lang=get_locale()) }}" class="brand" aria-label="Oh La La Tours Bogotá — Accueil">
+      <!-- logo blanc sur la photo -->
+      <img class="logo logo--light"
+           src="{{ url_for('static', filename='img/logo/logo-ohlala-white-360.png') }}"
+           srcset="{{ url_for('static', filename='img/logo/logo-ohlala-white-720@2x.png') }} 2x"
+           alt="Oh La La Tours Bogotá">
+      <!-- logo couleur au scroll / fonds clairs -->
+      <img class="logo logo--dark"
+           src="{{ url_for('static', filename='img/logo/logo-ohlala-teal-gold-360.png') }}"
+           srcset="{{ url_for('static', filename='img/logo/logo-ohlala-teal-gold-720@2x.png') }} 2x"
+           alt="Oh La La Tours Bogotá">
+    </a>
+
+    <nav class="main-nav" aria-label="{{ _('Navigation principale') }}">
+      <a href="{{ url_for('index', lang=get_locale()) }}">{{ _("Accueil") }}</a>
+      <a href="{{ url_for('tours', lang=get_locale()) }}">{{ _("Nos tours") }}</a>
+      <a href="{{ url_for('transport', lang=get_locale()) }}">{{ _("Service de Transport") }}</a>
+      <a href="{{ url_for('reservation', lang=get_locale()) }}">{{ _("Réservation") }}</a>
+
+      <div class="lang-switcher" aria-label="{{ _('Changer de langue') }}">
+        <a href="{{ lang_url('fr') }}" lang="fr" aria-label="Français">🇫🇷<span class="sr-only">Français</span></a>
+        <a href="{{ lang_url('en') }}" lang="en" aria-label="English">🇺🇸<span class="sr-only">English</span></a>
+        <a href="{{ lang_url('es') }}" lang="es" aria-label="Español">🇪🇸<span class="sr-only">Español</span></a>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Bandeau (ancienne topbar supprimée) -->
   <header class="hero background-half"
           style="background-image: url('{{ url_for('static', filename='images/bg_reservation.jpg') }}');"
           role="img"
           aria-label="{{ _('Panorama de Bogotá, téléphérique de Monserrate et rues coloniales de la Candelaria ; réservez vos visites privées (Candelaria, Monserrate, Zipaquirá, La Chorrera, finca café) et transferts aéroport. EN: Bogotá skyline and Monserrate cable car; book private tours & airport transfer. ES: Bogotá al atardecer con teleférico de Monserrate; reserva tours privados y traslado al aeropuerto') }}"
           title="{{ _('Réservation de visites et transferts — Oh La La Tours Bogotá') }}"
           aria-describedby="hero-desc">
-    <div class="hero-topbar">
-      <div id="lang-switcher" aria-label="{{ _('Choix de la langue') }}">
-        <a href="{{ lang_url('fr') }}">🇫🇷</a> |
-        <a href="{{ lang_url('en') }}">🇺🇸</a> |
-        <a href="{{ lang_url('es') }}">🇪🇸</a>
-      </div>
-      <nav class="nav-hero" aria-label="{{ _('Navigation principale') }}">
-        <a href="{{ url_for('index', lang=get_locale()) }}">{{ _("Accueil") }}</a> |
-        <a href="{{ url_for('tours', lang=get_locale()) }}">{{ _("Nos tours") }}</a> |
-        <a href="{{ url_for('transport', lang=get_locale()) }}">{{ _("Service de Transport") }}</a> |
-        <a href="{{ url_for('reservation', lang=get_locale()) }}">{{ _("Réservation") }}</a>
-      </nav>
-    </div>
     <h1 class="hero-title">
       {{ _("Réserver votre visite") }}{% if tour %} : {{ _(tour.capitalize()) }}{% endif %}
     </h1>
@@ -379,8 +427,18 @@
   }
   </script>
 
+  <!-- ✅ Script AJOUTÉ : toggle du header au scroll -->
+  <script>
+    (function(){
+      const header = document.querySelector('.site-header');
+      if(!header) return;
+      function onScroll(){ header.classList.toggle('scrolled', window.scrollY > 60); }
+      onScroll();
+      window.addEventListener('scroll', onScroll, {passive:true});
+    })();
+  </script>
+
 </body>
 </html>
-
 
 
