@@ -66,6 +66,20 @@
   <!-- CSS -->
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+
+  <!-- FIX SWIPER: forcer la transition du wrapper (au cas où un CSS externe la neutralise) -->
+  <style>
+    .tour-swiper .swiper-wrapper{
+      transition-property: transform !important;
+      transition-duration: 700ms !important;
+      transition-timing-function: ease !important;
+      will-change: transform;
+    }
+    .tour-swiper .swiper-slide{
+      backface-visibility: hidden;
+      transform: translateZ(0);
+    }
+  </style>
 </head>
 <body>
 
@@ -334,12 +348,11 @@
       if (!window.Swiper) return; // sécurité
 
       document.querySelectorAll('.tour-swiper').forEach(function(slider){
-        new Swiper(slider, {
-          // ✅ on ne change rien d’autre, on précise juste la vitesse/effet
+        const sw = new Swiper(slider, {
           loop: true,
           speed: 700,                 // effet glissant visible
-          effect: 'slide',            // glissement (par défaut mais explicite)
-          cssMode: false,             // force l’usage des transitions (pas de scroll natif)
+          effect: 'slide',            // glissement
+          cssMode: false,             // transitions JS/CSS (pas de scroll-snap)
           autoplay: { delay: 3000, disableOnInteraction: false },
           navigation: {
             nextEl: slider.querySelector('.swiper-button-next'),
@@ -350,8 +363,18 @@
           observer: true,
           observeParents: true
         });
+
+        /* FIX SWIPER: force la transition au niveau inline (priorité max) */
+        const wrap = slider.querySelector('.swiper-wrapper');
+        if (wrap){
+          wrap.style.transitionProperty = 'transform';
+          wrap.style.transitionDuration = '700ms';
+          wrap.style.transitionTimingFunction = 'ease';
+          wrap.style.willChange = 'transform';
+        }
       });
     });
   </script>
 </body>
 </html>
+
