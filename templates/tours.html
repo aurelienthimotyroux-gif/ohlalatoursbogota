@@ -190,6 +190,7 @@
   }
 ] %}
 
+{# Descriptions alt #}
 {% set alt_map = {
   'candelaria1.jpg': _('Maisons coloniales colorées dans la Candelaria centre historique de Bogota quartier colonial bogota graffitis bogota street art ruelles pavées andines maisons colorées façades chorro de quevedo guide francophone centre historique'),
   'candelaria2.jpg': _('Street art de Bogota pendant la visite guidée de la Candelaria '),
@@ -280,6 +281,7 @@
         </div>
         {% endif %}
 
+        <!-- MÉTA sous les inclus : Durée / Langues / Tarif + Réserver -->
         <div class="tour-meta">
           <ul class="tour-chips" aria-label="{{ _('Informations pratiques') }}">
             {% for info in tour.infos %}
@@ -327,21 +329,24 @@
 
   <!-- JS Swiper -->
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-
-  <!-- Init Swiper: effet glissant (slide) + flèches internes -->
   <script>
-    window.addEventListener('load', function(){
+    document.addEventListener('DOMContentLoaded', function(){
+      if (!window.Swiper) return; // sécurité
+
       document.querySelectorAll('.tour-swiper').forEach(function(slider){
         new Swiper(slider, {
+          // ✅ on ne change rien d’autre, on précise juste la vitesse/effet
           loop: true,
-          slidesPerView: 1,
-          speed: 700,
-          // effet "slide" (par défaut) pour un glissement visible
-          autoplay: { delay: 3000, disableOnInteraction: false, pauseOnMouseEnter: true },
+          speed: 700,                 // effet glissant visible
+          effect: 'slide',            // glissement (par défaut mais explicite)
+          cssMode: false,             // force l’usage des transitions (pas de scroll natif)
+          autoplay: { delay: 3000, disableOnInteraction: false },
           navigation: {
             nextEl: slider.querySelector('.swiper-button-next'),
-            prevEl: slider.querySelector('.swiper-button-prev')
+            prevEl: slider.querySelector('.swiper-button-prev'),
           },
+          simulateTouch: true,
+          allowTouchMove: true,
           observer: true,
           observeParents: true
         });
@@ -350,4 +355,3 @@
   </script>
 </body>
 </html>
-
