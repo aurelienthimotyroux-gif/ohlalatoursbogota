@@ -31,6 +31,9 @@ a:hover { text-decoration: underline; }
   display: flex; align-items: center; justify-content: center; text-align: center;
 }
 .hero::after { content: ""; position: absolute; inset: 0; background: rgba(0,0,0,.35); }
+/* ⬇️ Empêche l’overlay de bloquer le carrousel */
+.hero::after { pointer-events: none; }
+
 .hero-title {
   position: relative; z-index: 1; color: #fff;
   font-size: 2.6rem; line-height: 1.2; padding: 0 16px;
@@ -133,13 +136,24 @@ form button:hover { background-color: #0056b3; }
 .tour-card.left { flex-direction: row; }
 .tour-card.right { flex-direction: row-reverse; }
 
-.tour-swiper { width: 50%; height: 350px; border-radius: 10px; overflow: hidden; }
-.tour-swiper img { width: 100%; height: 100%; object-fit: cover; }
+/* — bloc image — */
+.tour-swiper {
+  width: 50%; height: 350px; border-radius: 10px; overflow: hidden;
+  /* Renforts carrousel */
+  position: relative; z-index: 2; touch-action: pan-y;
+}
+.tour-swiper .swiper-wrapper { height: 100%; }
+.tour-swiper .swiper-slide { width: 100% !important; display: flex; }
+.tour-swiper img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
 /* Flèches Swiper */
 .swiper-button-next, .swiper-button-prev {
   color: #fff !important; text-shadow: 1px 1px 5px rgba(0,0,0,.6);
 }
+/* S’assure que les flèches sont cliquables au-dessus de tout */
+.tour-swiper .swiper-button-next,
+.tour-swiper .swiper-button-prev { z-index: 5; pointer-events: auto; }
+
 .swiper-button-next::after, .swiper-button-prev::after { font-size: 24px; }
 
 /* Contenu tours */
@@ -257,45 +271,40 @@ form button:hover { background-color: #0056b3; }
 @media (prefers-reduced-motion: reduce){
   .swiper, .tour-swiper { animation: none !important; }
 }
+
 /* ====== Taille des onglets de navigation (toutes pages) ====== */
 .nav-hero{
-  /* augmente la taille du texte du menu (les | suivent aussi car ils sont hors <a>) */
   font-size: clamp(17px, 2.0vw, 22px);
-  gap: 18px;                    /* un peu plus d’espace entre les liens */
+  gap: 18px;
 }
-
 .nav-hero a{
-  font-weight: 700;             /* déjà en gras la plupart du temps, on force partout */
+  font-weight: 700;
   line-height: 1.2;
 }
-
-/* Option : taille un peu plus grande aussi sur mobile si tu veux */
 @media (max-width: 900px){
   .nav-hero{ font-size: 18px; }
 }
+
 /* — forcer photo + texte côte à côte en desktop — */
 .tour-card{
   display:flex;
-  flex-wrap:wrap;          /* pour que les blocs dessous passent à la ligne */
+  flex-wrap:wrap;
   align-items:flex-start;
 }
-
 .tour-swiper{
   flex:0 0 48%;
   max-width:48%;
-  height:350px;            /* ta hauteur existante */
+  height:350px;
   border-radius:10px;
   overflow:hidden;
 }
-
 .tour-card .content{
   flex:0 0 48%;
   max-width:48%;
   padding:15px;
   border-radius:10px;
-  max-width:680px;         /* garde ton style */
+  max-width:680px;
 }
-
 /* “Inclus” et “Meta” (Durée/Langues/Tarif + Réserver) sous l’ensemble */
 .tour-includes{
   flex:0 0 100%;
@@ -313,10 +322,8 @@ form button:hover { background-color: #0056b3; }
   flex-wrap:wrap;
   margin-top:6px;
 }
-
 /* Alternance gauche/droite conservée via .right (déjà présent) */
 .tour-card.right{ flex-direction:row-reverse; }
-
 /* Mobile : on repasse en colonne */
 @media (max-width:900px){
   .tour-swiper,
@@ -325,52 +332,6 @@ form button:hover { background-color: #0056b3; }
     max-width:100%;
   }
 }
-/* --- Swiper: s'assurer du bon positionnement et des dimensions --- */
-.tour-swiper{ position: relative; }                 /* n'affecte pas la mise en page */
-.tour-swiper .swiper-wrapper{ height: 100%; }       /* évite un wrapper à 0px */
-.tour-swiper .swiper-slide{ display: flex; }        /* garde la hauteur */
-.tour-swiper img{ width: 100%; height: 100%; object-fit: cover; }
 
-/* ⚠️ Cette accolade isolée cassait le CSS : je la conserve en commentaire pour ne rien supprimer
-} */
-
-/* ===============================
-   AJOUT (sans rien supprimer) :
-   Forcer l’effet de glissement et
-   garder les flèches cliquables
-   =============================== */
-.tour-swiper { position: relative; }
-.tour-swiper .swiper-button-next,
-.tour-swiper .swiper-button-prev {
-  z-index: 5;
-  pointer-events: auto;
-}
-.tour-swiper .swiper-wrapper{
-  transition-property: transform !important;
-  transition-duration: 650ms !important;
-  transition-timing-function: cubic-bezier(.22,.61,.36,1) !important;
-  will-change: transform;
-}
-
-
-
-/* === FIX: Swiper robustness for touch + arrows + width === */
-.tour-swiper { position: relative; touch-action: pan-y; }
-.tour-swiper .swiper-wrapper { height: 100%; }
-.tour-swiper .swiper-slide { width: 100% !important; display: flex; }
-.tour-swiper img { width: 100%; height: 100%; object-fit: cover; }
-.tour-swiper .swiper-button-next,
-.tour-swiper .swiper-button-prev { z-index: 5; pointer-events: auto; }
-
-/* === HOTFIX: unblock clicks & drags on carousels === */
-/* Désactiver la capture de clics par l’overlay global */
-.hero::after { pointer-events: none; }
-
-/* S’assurer que le carrousel est au-dessus des calques voisins */
-.tour-swiper { position: relative; z-index: 2; }
-.tour-swiper .swiper-button-next,
-.tour-swiper .swiper-button-prev { z-index: 5; }
-
-/* Par sécurité: tout “gradient/overlay/mask” ne doit pas piéger les clics */
+/* Sécurité globale : ne pas laisser d’overlays capter les clics */
 [class*="gradient"], [class*="overlay"], [class*="mask"] { pointer-events: none; }
-
