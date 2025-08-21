@@ -6,6 +6,7 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 from flask_sqlalchemy import SQLAlchemy
 from functools import wraps
 from sqlalchemy import inspect  # pour vérifier/creer proprement les tables
+from urllib.parse import urlsplit, urlunsplit, parse_qsl, urlencode  # ✅ AJOUT: pour la normalisation des URLs
 
 # ------------------------------------------------------------------
 # Utils: parser "22 février 2020" / "30 julio 2019" / "17 Aug 2025"
@@ -121,6 +122,34 @@ def lang_url(lang_code: str):
     return url_for(endpoint, **args)
 
 app.jinja_env.globals["lang_url"] = lang_url
+
+# ✅ AJOUT: normaliser les URLs — retirer ?lang=fr et tout lang invalide
+@app.before_request
+def _normalize_lang_fr():
+    # Ne toucher qu’aux requêtes idempotentes
+    if request.method not in ("GET", "HEAD"):
+        return None
+
+    lang = request.args.get("lang")
+    # Retirer ?lang=fr (on veut / et /tours canoniques pour FR)
+    if lang == "fr":
+        parts = urlsplit(request.url)
+        qs = [(k, v) for (k, v) in parse_qsl(parts.query, keep_blank_values=True) if k.lower() != "lang"]
+        new_query = urlencode(qs, doseq=True)
+        clean_url = urlunsplit((parts.scheme, parts.netloc, parts.path, new_query, parts.fragment))
+        if clean_url != request.url:
+            return redirect(clean_url, code=301)
+
+    # Nettoyer un lang invalide (ex: ?lang=de)
+    if lang and lang not in ("fr", "en", "es"):
+        parts = urlsplit(request.url)
+        qs = [(k, v) for (k, v) in parse_qsl(parts.query, keep_blank_values=True) if k.lower() != "lang"]
+        new_query = urlencode(qs, doseq=True)
+        clean_url = urlunsplit((parts.scheme, parts.netloc, parts.path, new_query, parts.fragment))
+        if clean_url != request.url:
+            return redirect(clean_url, code=301)
+
+    return None
 
 # ------------------------------------------------------------------
 # SQLAlchemy (models AVANT les routes)
