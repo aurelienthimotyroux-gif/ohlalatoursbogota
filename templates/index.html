@@ -86,13 +86,9 @@
   <!-- Police -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 
-  <!-- ▶️ Accueil uniquement — rendre les 3 traits du burger blancs -->
+  <!-- Styles internes existants -->
   <style>
-    /* Burger visible blanc sur le hero */
-    .hero-topbar .burger span { background: #fff !important; }
-    #burger[aria-expanded="true"] span { background: #fff !important; }
-
-    /* Styles internes spécifiques aux avis + divers */
+    /* Styles spécifiques aux avis + divers */
     .testimonials { background:#fff; padding:40px 20px; margin-top:40px; }
     .testimonials .container { max-width:1000px; margin:0 auto; }
     .testimonials h2 { text-align:center; margin-bottom:22px; font-size:28px; }
@@ -102,21 +98,16 @@
     @media (max-width:640px){ .testimonials-grid{ grid-template-columns:1fr;} }
 
     .testimonial-card { background:#fafafa; border:1px solid #eee; border-radius:12px; padding:16px; box-shadow:0 4px 14px rgba(0,0,0,.06); }
-
     .t-head { display:grid; grid-template-columns:auto 1fr; gap:6px 10px; align-items:center; margin-bottom:10px; }
     .t-name { font-weight:600; }
     .t-meta { color:#666; font-size:14px; }
-
     .t-stars { display:inline-flex; gap:4px; align-items:center; margin-bottom:8px; }
     .t-stars svg { width:18px; height:18px; }
-
     .testimonial-card .t-text{ font-size:15px; color:#333; line-height:1.5; white-space:pre-wrap; word-break:break-word; }
     .testimonial-card .t-text.clamp{ display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:4; overflow:hidden; }
     .testimonial-card.expanded .t-text{ -webkit-line-clamp:unset; display:block; overflow:visible; }
-
     .testimonial-card .t-toggle{ margin-top:8px; background:none; border:0; color:#007bff; font:inherit; cursor:pointer; padding:0; }
     .testimonial-card .t-toggle:hover{ text-decoration:underline; }
-
     .comment-section-title { text-align:center; font-size:2rem; margin-bottom:20px; }
 
     .hero .nav-hero a { text-decoration:none; }
@@ -133,7 +124,7 @@
     @media (min-width: 768px){ .sticky-cta { display: none; } }
   </style>
 
-  <!-- ✅ Styles AJOUTÉS pour le header fixe + logo (aucune suppression de tes styles) -->
+  <!-- ✅ Styles AJOUTÉS pour le header fixe + logo -->
   <style>
     .site-header{
       position:fixed; top:0; left:0; right:0; z-index:70;
@@ -154,7 +145,7 @@
     .header-on-hero .main-nav a{color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.35)}
     .logo--dark{display:none}
 
-    /* Au scroll ou sur pages fond clair : fond verre + logo couleur */
+    /* Au scroll / fond clair */
     .site-header.scrolled{
       background: rgba(255,255,255,.86);
       backdrop-filter: saturate(180%) blur(8px);
@@ -223,15 +214,13 @@
 </head>
 <body>
 
-  <!-- ✅ Header FIXE ajouté (logo + nav + drapeaux) -->
+  <!-- ✅ Nouveau header fixe (logo + nav + drapeaux) -->
   <header class="site-header header-on-hero">
     <a href="{{ url_for('index', lang=get_locale()) }}" class="brand" aria-label="Oh La La Tours Bogotá — Accueil">
-      <!-- logo blanc sur la photo -->
       <img class="logo logo--light"
            src="{{ url_for('static', filename='img/logo/logo-ohlala-white-360.png') }}"
            srcset="{{ url_for('static', filename='img/logo/logo-ohlala-white-720@2x.png') }} 2x"
            alt="Oh La La Tours Bogotá">
-      <!-- logo couleur au scroll / fonds clairs -->
       <img class="logo logo--dark"
            src="{{ url_for('static', filename='img/logo/logo-ohlala-teal-gold-360.png') }}"
            srcset="{{ url_for('static', filename='img/logo/logo-ohlala-teal-gold-720@2x.png') }} 2x"
@@ -252,29 +241,12 @@
     </nav>
   </header>
 
+  <!-- 🎯 Ancienne topbar (drapeaux + burger + nav-hero) SUPPRIMÉE -->
+
   <header class="hero"
           role="img"
           aria-label="Bogota Monserrate Candelaria street art visites guidées privées guide francophone café colombien cathédrale de sel Zipaquira Hacienda Coloma transport privé transfert aéroport safe friendly professional travel Colombia colombie chorrera gastronomie"
           style="background-image: url('{{ url_for('static', filename='images/accueil.jpg') }}');">
-    <div class="hero-topbar">
-      <div id="lang-switcher" aria-label="{{ _('Choix de la langue') }}">
-        <a href="{{ lang_url('fr') }}" aria-label="Français">🇫🇷</a> |
-        <a href="{{ lang_url('en') }}" aria-label="English">🇺🇸</a> |
-        <a href="{{ lang_url('es') }}" aria-label="Español">🇪🇸</a>
-      </div>
-
-      <button class="burger" id="burger" aria-expanded="false" aria-controls="nav-menu" style="margin-left:auto; margin-right:8px;">
-        <span></span><span></span><span></span>
-        <span class="sr-only">{{ _("Ouvrir le menu") }}</span>
-      </button>
-
-      <nav class="nav-hero" id="nav-menu" aria-label="{{ _('Navigation principale') }}">
-        <a href="{{ url_for('index', lang=get_locale()) }}">{{ _("Accueil") }}</a> |
-        <a href="{{ url_for('tours', lang=get_locale()) }}">{{ _("Nos tours") }}</a> |
-        <a href="{{ url_for('transport', lang=get_locale()) }}">{{ _("Service de Transport") }}</a> |
-        <a href="{{ url_for('reservation', lang=get_locale()) }}">{{ _("Réservation") }}</a>
-      </nav>
-    </div>
 
     <!-- Texte associé invisible pour SEO/Accessibilité (FR + EN + ES, sans virgules) -->
     <span class="sr-only">
@@ -359,7 +331,6 @@
       <h2>{{ _("Avis des voyageurs") }}</h2>
 
       <div class="testimonials-grid">
-        {# Liste unique (DB + fallback fusionnés et triés côté Python) #}
         {% for comment in comments or [] %}
           <div class="testimonial-card">
             <div class="t-head">
@@ -397,28 +368,20 @@
         {% endfor %}
       </div>
 
-      {# ---- Ancien bloc "fallback" côté template : conservé mais désactivé ----
+      {# Fallback désactivé (conservé) #}
       {% set fallback_comments = [] %}
       {% set db_pairs = namespace(seen={}) %}
       {% for c in comments or [] %}
         {% set kp = (c.name ~ '|' ~ (c.country or '')) %}
         {% set _ = db_pairs.seen.update({kp: 1}) %}
       {% endfor %}
-
       <div class="testimonials-grid">
-        {% for comment in comments or [] %}
-          <!-- doublon évité : cette boucle est déjà rendue au-dessus -->
-        {% endfor %}
-
+        {% for comment in comments or [] %}{% endfor %}
         {% for fb in fallback_comments %}
           {% set kp = fb.name ~ '|' ~ fb.country %}
-          {% if not (kp in db_pairs.seen) %}
-            <!-- fallback rendu ici AVANT : maintenant géré côté Python -->
-          {% endif %}
+          {% if not (kp in db_pairs.seen) %}{% endif %}
         {% endfor %}
       </div>
-      #}
-
     </div>
   </section>
 
@@ -431,28 +394,6 @@
       <a class="btn" href="{{ url_for('reservation', lang=get_locale()) }}">{{ _("Réserver") }}</a>
     </div>
   </div>
-
-  <!-- ✅ Script burger minimal -->
-  <script>
-    (function(){
-      var burger = document.getElementById('burger');
-      var nav = document.getElementById('nav-menu');
-      if (!burger || !nav) return;
-      burger.addEventListener('click', function(){
-        var expanded = burger.getAttribute('aria-expanded') === 'true';
-        burger.setAttribute('aria-expanded', String(!expanded));
-        nav.classList.toggle('open');
-        document.body.classList.toggle('no-scroll', !expanded);
-      });
-      nav.addEventListener('click', function(e){
-        var a = e.target.closest('a');
-        if (!a) return;
-        burger.setAttribute('aria-expanded', 'false');
-        nav.classList.remove('open');
-        document.body.classList.remove('no-scroll');
-      });
-    })();
-  </script>
 
   <!-- ✅ Script AJOUTÉ : toggle du header au scroll -->
   <script>
@@ -467,5 +408,4 @@
 
 </body>
 </html>
-
 
