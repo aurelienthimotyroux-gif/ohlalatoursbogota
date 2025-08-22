@@ -806,15 +806,12 @@ def server_error(e):
 
 @app.route('/favicon.ico')
 def favicon():
-    candidates = [
-        os.path.join(app.root_path, 'static', 'img', 'favicon', 'favicon.ico'),
-        os.path.join(app.root_path, 'static', 'favicon.ico'),
-        os.path.join(app.root_path, 'favicon.ico'),
-    ]
-    for p in candidates:
-        if os.path.exists(p):
-            return send_file(p, mimetype='image/x-icon', max_age=0)
-    return abort(404)
+    # adapte le chemin si tu as mis les fichiers ailleurs
+    return send_from_directory(
+        os.path.join(app.static_folder, 'img', 'favicon'),
+        'favicon.ico',
+        mimetype='image/vnd.microsoft.icon'
+    )
 
 
 
