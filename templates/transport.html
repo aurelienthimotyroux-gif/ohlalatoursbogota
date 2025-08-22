@@ -12,7 +12,7 @@
           data-cmp-cdn="cdn.consentmanager.net"
           data-cmp-codesrc="16"></script>
 
-  <!-- Google Consent Mode -->
+  <!-- Google Consent Mode (valeurs par défaut = refus) -->
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){ dataLayer.push(arguments); }
@@ -25,21 +25,22 @@
     });
   </script>
 
-  <!-- Google tag -->
+  <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-92M6CENDXH"></script>
   <script>
     gtag('js', new Date());
+    // Id de mesure GA4
     gtag('config', 'G-92M6CENDXH', { anonymize_ip: true });
   </script>
 
-  <!-- Canonical + hreflang -->
+  <!-- ✅ Canonical + hreflang -->
   <link rel="canonical" href="https://www.ohlalatoursbogota.com{{ request.path }}{% if get_locale()!='fr' %}?lang={{ get_locale() }}{% endif %}">
   <link rel="alternate" href="{{ url_for('transport', lang='fr', _external=True) }}" hreflang="fr">
   <link rel="alternate" href="{{ url_for('transport', lang='en', _external=True) }}" hreflang="en">
   <link rel="alternate" href="{{ url_for('transport', lang='es', _external=True) }}" hreflang="es">
   <link rel="alternate" href="{{ url_for('transport', lang='fr', _external=True) }}" hreflang="x-default">
 
-  <!-- Open Graph -->
+  <!-- ✅ Open Graph -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://www.ohlalatoursbogota.com{{ request.path }}{% if get_locale()!='fr' %}?lang={{ get_locale() }}{% endif %}">
   <meta property="og:site_name" content="Oh La La Tours Bogotá">
@@ -54,11 +55,11 @@
     <meta property="og:locale" content="es_CO">
   {% endif %}
 
-  <!-- Favicon + CSS -->
+  <!-- ✅ Favicon + CSS global -->
   <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
-  <!-- ✅ Header fixe + logo + titre -->
+  <!-- ✅ Styles AJOUTÉS pour le header fixe + logo -->
   <style>
     .site-header{
       position:fixed; top:0; left:0; right:0; z-index:70;
@@ -67,25 +68,28 @@
       background:transparent; transition:background .25s ease, box-shadow .25s ease;
     }
     .brand{display:inline-flex; align-items:center; gap:10px}
-    .logo{height:44px; width:auto; display:block}
+    .logo{height:40px; width:auto; display:block} /* taille sobre comme accueil */
     @media (max-width:640px){ .logo{height:32px} }
-
-    /* ✅ Titre même style que accueil */
-    .site-title {
-      font-size: 1.35rem;   /* même taille que accueil */
-      font-weight: 600;
-      margin-left: 8px;
-      line-height: 1.2;
-    }
-    .header-on-hero .site-title{ color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.35); }
-    .site-header.scrolled .site-title{ color:#0f172a; text-shadow:none; }
 
     .main-nav{display:flex; align-items:center; gap:18px; font-weight:600}
     .main-nav a{text-decoration:none}
     .lang-switcher{display:flex; gap:8px; margin-left:8px}
     .lang-switcher a{font-size:20px; line-height:1; padding:4px 6px; border-radius:6px}
+
+    /* Titre "Oh La La Tours Bogotá" */
+    .site-title{
+      font-size:1.2rem;       /* même gabarit que l’accueil */
+      font-weight:600;
+      margin-left:8px;
+      line-height:1.2;
+    }
+
+    /* Sur cette page (hero en fond) : liens & titre & logo blancs au départ */
     .header-on-hero .main-nav a{color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.35)}
+    .header-on-hero .site-title{color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.35)}
     .logo--dark{display:none}
+
+    /* Au scroll / fond clair */
     .site-header.scrolled{
       background: rgba(255,255,255,.86);
       backdrop-filter: saturate(180%) blur(8px);
@@ -93,26 +97,58 @@
     }
     .site-header.scrolled .logo--light{display:none}
     .site-header.scrolled .logo--dark{display:block}
-    .site-header.scrolled .main-nav a{color:#0f172a}
+    .site-header.scrolled .main-nav a{color:#0f172a; text-shadow:none}
+    .site-header.scrolled .site-title{color:#0f172a; text-shadow:none}
   </style>
 
-  <!-- Styles locaux (inchangés) -->
+  <!-- ✅ Styles locaux (on conserve le design : image à droite) -->
   <style>
-    .transport-description { display: flex; flex-wrap: wrap; gap: 24px; align-items: center; padding: 20px; }
+    /* Bloc texte + image côte à côte */
+    .transport-description {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 24px;
+      align-items: center;
+      padding: 20px;
+    }
     .transport-text { flex: 1 1 400px; }
     .transport-img  { flex: 1 1 350px; }
-    .transport-img img { max-width: 100%; height: auto; border-radius: 12px; display: block; }
+    .transport-img img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 12px;
+      display: block;
+    }
+
+    /* Petites listes / chips déjà présentes dans ton design global */
     .tour-includes { position: relative; margin: 14px 0 12px; padding-left: 14px; }
-    .tour-includes::before { content: ""; position: absolute; left: 0; top: 4px; bottom: 4px; width: 4px; border-radius: 4px; background: linear-gradient(180deg, #f59e0b, #f97316); }
+    .tour-includes::before {
+      content: "";
+      position: absolute; left: 0; top: 4px; bottom: 4px; width: 4px;
+      border-radius: 4px; background: linear-gradient(180deg, #f59e0b, #f97316);
+    }
     .includes-title { margin: 0 0 8px; font-size: 14px; letter-spacing: .4px; text-transform: uppercase; opacity: .8; }
     .includes-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px 14px; grid-template-columns: 1fr; }
     .includes-list li { position: relative; padding-left: 26px; line-height: 1.6; }
     .includes-list li::before { content: "✓"; position: absolute; left: 0; top: 0; font-weight: 700; transform: translateY(1px); opacity: .9; }
+
     .tour-chips { list-style: none; padding: 0; margin: 12px 0 16px; display: flex; flex-wrap: wrap; gap: 16px; }
     .tour-chips .chip { background: none; border: none; padding: 0; font-size: 16px; line-height: 1.6; }
-    .btn-primary { appearance: none; border: 1px solid rgba(0,0,0,.2); background: #2563eb; color: #fff; padding: 12px 18px; border-radius: 12px; font-weight: 700; cursor: pointer; }
+
+    .btn-primary {
+      appearance: none; border: 1px solid rgba(0,0,0,.2);
+      background: #2563eb; color: #fff; padding: 12px 18px;
+      border-radius: 12px; font-weight: 700; cursor: pointer;
+    }
+
+    /* Note discrète à côté de la durée */
     .chip-note{ font-size:.95em; opacity:.85; }
-    @media (max-width: 900px){ .transport-description { flex-direction: column; } .transport-text, .transport-img { flex: 1 1 auto; } }
+
+    /* Responsive : on garde l’image sous le texte en mobile */
+    @media (max-width: 900px){
+      .transport-description { flex-direction: column; }
+      .transport-text, .transport-img { flex: 1 1 auto; }
+    }
   </style>
 
 <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='img/favicon/apple-touch-icon.png') }}">
@@ -121,33 +157,140 @@
 <link rel="manifest" href="{{ url_for('static', filename='img/favicon/site.webmanifest') }}">
 <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='img/favicon/favicon.ico') }}">
 <meta name="theme-color" content="#0b4654">
+
 <link rel="icon" href="/favicon.ico" sizes="any">
+
 <meta name="google-site-verification" content="4z28-XXEkdcB_VOcaGoy1bhgA-zj7xr6wSf76ZwZ4tQ" />
+
 </head>
 <body>
 
-<header class="site-header header-on-hero">
-  <div class="brand">
-    <img src="{{ url_for('static', filename='img/logo-light.png') }}" alt="Oh La La Tours Bogotá" class="logo logo--light">
-    <img src="{{ url_for('static', filename='img/logo-dark.png') }}" alt="Oh La La Tours Bogotá" class="logo logo--dark">
-    <span class="site-title">Oh La La Tours Bogotá</span>
-  </div>
-  <nav class="main-nav" aria-label="{{ _('Navigation principale') }}">
-    <a href="{{ url_for('index', lang=get_locale()) }}">{{ _("Accueil") }}</a>
-    <a href="{{ url_for('tours', lang=get_locale()) }}">{{ _("Nos tours") }}</a>
-    <a href="{{ url_for('transport', lang=get_locale()) }}">{{ _("Service de Transport") }}</a>
-    <a href="{{ url_for('reservation', lang=get_locale()) }}">{{ _("Réservation") }}</a>
-    <div class="lang-switcher" aria-label="{{ _('Changer de langue') }}">
-      <a href="{{ lang_url('fr') }}" lang="fr" aria-label="Français">🇫🇷</a>
-      <a href="{{ lang_url('en') }}" lang="en" aria-label="English">🇺🇸</a>
-      <a href="{{ lang_url('es') }}" lang="es" aria-label="Español">🇪🇸</a>
+  <!-- ✅ Nouveau header fixe (logo + nav + drapeaux) -->
+  <header class="site-header header-on-hero">
+    <div class="logo-container">
+      <!-- Logo clair (sur hero/photo) -->
+      <img src="{{ url_for('static', filename='img/logo-light.png') }}" alt="Oh La La Tours Bogotá" class="logo logo--light">
+      <!-- Logo foncé (après scroll, fond clair) -->
+      <img src="{{ url_for('static', filename='img/logo-dark.png') }}" alt="Oh La La Tours Bogotá" class="logo logo--dark">
+      <!-- Titre visible (blanc sur hero) -->
+      <span class="site-title">Oh La La Tours Bogotá</span>
     </div>
-  </nav>
-</header>
 
-<!-- Bandeau -->
-<header class="hero background-half"
-        style="background-image: url('{{ url_for('static', filename='images/bg_transport.webp') }}');">
-  <h1 class="hero-title">{{ _("Service de Transport — Hôtel ⇄ Aéroport Bogotá") }}</h1>
-</header>
+    <nav class="main-nav" aria-label="{{ _('Navigation principale') }}">
+      <a href="{{ url_for('index', lang=get_locale()) }}">{{ _("Accueil") }}</a>
+      <a href="{{ url_for('tours', lang=get_locale()) }}">{{ _("Nos tours") }}</a>
+      <a href="{{ url_for('transport', lang=get_locale()) }}">{{ _("Service de Transport") }}</a>
+      <a href="{{ url_for('reservation', lang=get_locale()) }}">{{ _("Réservation") }}</a>
+
+      <div class="lang-switcher" aria-label="{{ _('Changer de langue') }}">
+        <a href="{{ lang_url('fr') }}" lang="fr" aria-label="Français">🇫🇷<span class="sr-only">Français</span></a>
+        <a href="{{ lang_url('en') }}" lang="en" aria-label="English">🇺🇸<span class="sr-only">English</span></a>
+        <a href="{{ lang_url('es') }}" lang="es" aria-label="Español">🇪🇸<span class="sr-only">Español</span></a>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Bandeau image + titre (ancienne topbar supprimée) -->
+  <header class="hero background-half"
+          style="background-image: url('{{ url_for('static', filename='images/bg_transport.webp') }}');">
+    <h1 class="hero-title">{{ _("Service de Transport — Hôtel ⇄ Aéroport Bogotá") }}</h1>
+  </header>
+
+  <main>
+    <section id="transport" class="container">
+
+      <!-- Texte à gauche -->
+      <div class="transport-description">
+        <div class="transport-text">
+          <h2>{{ _("Transfert privé, ponctuel et sécurisé") }}</h2>
+          <p>
+            {{ _("Profitez d’un trajet confortable entre votre hébergement et l’aéroport El Dorado (BOG). Chauffeur professionnel et courtois, prise en charge à l’heure et service porte-à-porte.") }}
+          </p>
+
+          <!-- Inclus / Caractéristiques -->
+          <div class="tour-includes">
+            <h3 class="includes-title">{{ _("Ce qui est inclus :") }}</h3>
+            <ul class="includes-list">
+              <li>{{ _("Chauffeur professionnel, véhicule propre et assuré") }}</li>
+              <li>{{ _("Prise en charge à votre hôtel/appartement") }}</li>
+              <li>{{ _("Trajet direct vers l’aéroport (ou inversement)") }}</li>
+              <li>{{ _("Assistance pour les bagages") }}</li>
+              <li>{{ _("Prix fixe") }}: {{ _("60 000 COP") }} ({{ _("1 à 4 personnes") }})</li>
+            </ul>
+          </div>
+
+          <!-- Infos pratiques (chips) -->
+          <ul class="tour-chips" aria-label="{{ _('Informations pratiques') }}">
+            <li class="chip">
+              <strong>{{ _("Durée") }}:</strong>&nbsp;{{ _("~40–60 min") }}
+              <span class="chip-note">— {{ _("Le temps peut fortement varier selon le trafic : pensez à réserver avec une marge d’avance.") }}</span>
+            </li>
+            <li class="chip"><strong>{{ _("Langues") }}:</strong>&nbsp;🇪🇸 🇫🇷 🇺🇸</li>
+            <li class="chip"><strong>{{ _("Tarif") }}:</strong>&nbsp;{{ _("60 000 COP (1 à 4 personnes)") }}</li>
+          </ul>
+
+          <!-- Réservation -->
+          <h3>{{ _("Comment réserver ?") }}</h3>
+          <p>
+            {{ _("Réservez facilement par WhatsApp ou e-mail. Indiquez la date, l’heure de prise en charge, le numéro de vol et le nombre de passagers.") }}
+          </p>
+          <p>
+            <a class="btn-primary" href="https://wa.me/573000000000" target="_blank" rel="noopener">
+              {{ _("Réserver sur WhatsApp") }}
+            </a>
+            &nbsp;
+            <a class="btn-primary" href="mailto:contact@ohlalatoursbogota.com">
+              {{ _("Réserver par e-mail") }}
+            </a>
+          </p>
+
+          <p style="margin-top:10px;">
+            <small>{{ _("Besoin d’un siège enfant, d’un van ou d’horaires très matinaux ? Dites-le nous lors de la réservation.") }}</small>
+          </p>
+        </div>
+
+        <!-- Photo à droite (conservée) -->
+        <div class="transport-img">
+          <img src="{{ url_for('static', filename='images/transport_service.jpeg') }}"
+               alt="{{ _('Service de transport privé à Bogota professionnel van taxi aéroport el dorado trajet ponctuel sécurité tour bienvenue à bogota colombie amérique du sud') }}">
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <!-- ✅ Données structurées -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TaxiService",
+    "name": "Oh La La Tours Bogotá — Transport",
+    "areaServed": "Bogotá",
+    "priceRange": "60000 COP",
+    "description": {{ _("Transfert privé hôtel ⇄ aéroport à Bogotá. Prix fixe 60 000 COP pour 1 à 4 personnes.")|tojson }},
+    "hasOfferCatalog": {
+      "@type": "OfferCatalog",
+      "name": "Airport transfer",
+      "itemListElement": [{
+        "@type": "Offer",
+        "price": "60000",
+        "priceCurrency": "COP",
+        "category": "Transport"
+      }]
+    }
+  }
+  </script>
+
+  <!-- ✅ Script AJOUTÉ : toggle du header au scroll -->
+  <script>
+    (function(){
+      const header = document.querySelector('.site-header');
+      if(!header) return;
+      function onScroll(){ header.classList.toggle('scrolled', window.scrollY > 60); }
+      onScroll();
+      window.addEventListener('scroll', onScroll, {passive:true});
+    })();
+  </script>
+</body>
+</html>
 
