@@ -420,8 +420,8 @@ form button:hover { background-color: #0056b3; }
 .header-on-image .logo-light { display: block; }
 
 .site-title {
-  font-size: 1.6rem;         /* même taille que sur l’accueil */
-  font-weight: 700;          /* en gras */
+  font-size: 1.3rem;         /* même taille que sur l’accueil */
+  font-weight: 600;          /* en gras */
   line-height: 1.2;
   color: inherit;
 }
