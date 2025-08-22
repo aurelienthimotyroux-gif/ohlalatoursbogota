@@ -767,18 +767,49 @@ def submit_transfer():
 # Statique & SEO
 # ------------------------------------------------------------------
 # --- Sitemaps / Robots --------------------------------------------------------
+
 @app.route('/sitemap.xml')
 def sitemap_xml():
-    p = os.path.join(app.root_path, 'static', 'sitemap.xml')
-    try:
-        with open(p, 'rb') as f:
-            data = f.read()
-        # pas de cache pour forcer la prise en compte
-        resp = Response(data, mimetype='application/xml')
-        resp.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
-        return resp
-    except FileNotFoundError:
-        return "sitemap.xml not found", 404
+    xml = """<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://www.ohlalatoursbogota.com/</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.ohlalatoursbogota.com/?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.ohlalatoursbogota.com/?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.ohlalatoursbogota.com/?lang=es"/>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://www.ohlalatoursbogota.com/tours</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.ohlalatoursbogota.com/tours?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.ohlalatoursbogota.com/tours?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.ohlalatoursbogota.com/tours?lang=es"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.ohlalatoursbogota.com/transport</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.ohlalatoursbogota.com/transport?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.ohlalatoursbogota.com/transport?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.ohlalatoursbogota.com/transport?lang=es"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.ohlalatoursbogota.com/reservation</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.ohlalatoursbogota.com/reservation?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.ohlalatoursbogota.com/reservation?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.ohlalatoursbogota.com/reservation?lang=es"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+</urlset>
+"""
+    resp = Response(xml, mimetype='application/xml')
+    resp.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
+    return resp
 
 @app.route('/robots.txt')
 def robots_txt():
