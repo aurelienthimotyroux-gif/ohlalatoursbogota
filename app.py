@@ -811,7 +811,24 @@ def sitemap_noext():
 
 @app.route('/robots.txt')
 def robots_txt():
-    return send_from_directory(app.static_folder, 'robots.txt', mimetype='text/plain')
+    content = (
+        "User-agent: *\n"
+        "Allow: /\n"
+        "\n"
+        "User-agent: Googlebot\n"
+        "Allow: /\n"
+        "\n"
+        "User-agent: Googlebot-Image\n"
+        "Allow: /\n"
+        "\n"
+        "Sitemap: https://www.ohlalatoursbogota.com/sitemap.xml\n"
+    )
+    resp = make_response(content, 200)
+    resp.headers['Content-Type'] = 'text/plain; charset=utf-8'
+    # Empêche tout cache côté proxy/navigateur/Google
+    resp.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
+    return resp
+
 
 @app.get("/healthz")
 def healthz():
@@ -825,13 +842,19 @@ def not_found(e):
 def server_error(e):
     return render_template("500.html"), 500
 
+
 @app.route('/favicon.ico')
 def favicon():
-    return send_from_directory(
-        os.path.join(app.root_path, 'static', 'img', 'favicon'),
-        'favicon.ico',
-        mimetype='image/vnd.microsoft.icon'
-    )
+    candidates = [
+        os.path.join(app.root_path, 'static', 'img', 'favicon', 'favicon.ico'),
+        os.path.join(app.root_path, 'static', 'favicon.ico'),
+        os.path.join(app.root_path, 'favicon.ico'),
+    ]
+    for p in candidates:
+        if os.path.exists(p):
+            return send_file(p, mimetype='image/x-icon', max_age=0)
+    return abort(404)
+
 
 
 
