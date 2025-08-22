@@ -16,7 +16,7 @@
           data-cmp-cdn="cdn.consentmanager.net"
           data-cmp-codesrc="16"></script>
 
-  <!-- ✅ Google Consent Mode (valeurs par défaut = refus, optionnel mais recommandé) -->
+  <!-- ✅ Google Consent Mode -->
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){ dataLayer.push(arguments); }
@@ -29,16 +29,13 @@
     });
   </script>
 
-  <!-- ✅ Google tag (gtag.js) -->
+  <!-- ✅ Google tag -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-92M6CENDXH"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){ dataLayer.push(arguments); }
     gtag('js', new Date());
-    // Id de mesure GA4
-    gtag('config', 'G-92M6CENDXH', {
-      anonymize_ip: true  // optionnel mais recommandé
-    });
+    gtag('config', 'G-92M6CENDXH', { anonymize_ip: true });
   </script>
 
   <!-- ✅ Texte masqué accessible -->
@@ -66,6 +63,16 @@
     /* Sur cette page (hero en fond) : liens & logo blancs au départ */
     .header-on-hero .main-nav a{color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.35)}
     .logo--dark{display:none}
+
+    /* ✅ Titre ajouté */
+    .site-title{
+      font-size:1.35rem;
+      font-weight:600;
+      margin-left:8px;
+      line-height:1.2;
+    }
+    .header-on-hero .site-title{ color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.35); }
+    .site-header.scrolled .site-title{ color:#0f172a; text-shadow:none; }
 
     /* Au scroll / fond clair */
     .site-header.scrolled{
@@ -102,22 +109,13 @@
   <meta property="og:title" content="{{ _('Réserver votre visite – Oh La La Tours Bogotá') }}">
   <meta property="og:description" content="{{ _('Réservez une visite guidée : Candelaria, Monserrate, Zipaquirá, La Chorrera ou finca café. Paiement PayPal, guide francophone/anglais/espagnol.') }}">
   <meta property="og:image" content="{{ url_for('static', filename='images/bg_reservation.jpg', _external=True) }}">
-  <!-- ✅ ALT OG ajouté -->
-  <meta property="og:image:alt" content="{{ _('Panorama de Bogotá, téléphérique de Monserrate et rues coloniales de la Candelaria ; page de réservation pour visites privées et transferts. EN: Bogotá skyline and Monserrate cable car; private tours booking & airport transfer. ES: Bogotá al atardecer y teleférico de Monserrate; reserva de tours privados y traslado al aeropuerto') }}">
-  {% if get_locale() == 'fr' %}
-  <meta property="og:locale" content="fr_FR">
-  {% elif get_locale() == 'en' %}
-  <meta property="og:locale" content="en_US">
-  {% else %}
-  <meta property="og:locale" content="es_CO">
-  {% endif %}
+  <meta property="og:image:alt" content="{{ _('Panorama de Bogotá, téléphérique de Monserrate et rues coloniales de la Candelaria...') }}">
 
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="{{ _('Réserver votre visite – Oh La La Tours Bogotá') }}">
-  <meta name="twitter:description" content="{{ _('Réservez une visite guidée : Candelaria, Monserrate, Zipaquirá, La Chorrera ou finca café. Paiement PayPal, guide francophone/anglais/espagnol.') }}">
+  <meta name="twitter:description" content="{{ _('Réservez une visite guidée...') }}">
   <meta name="twitter:image" content="{{ url_for('static', filename='images/bg_reservation.jpg', _external=True) }}">
-  <!-- ✅ ALT Twitter ajouté -->
-  <meta name="twitter:image:alt" content="{{ _('Panorama de Bogotá, téléphérique de Monserrate et rues coloniales de la Candelaria ; page de réservation pour visites privées et transferts. EN: Bogotá skyline and Monserrate cable car; private tours booking & airport transfer. ES: Bogotá al atardecer y teleférico de Monserrate; reserva de tours privados y traslado al aeropuerto') }}">
+  <meta name="twitter:image:alt" content="{{ _('Panorama de Bogotá, téléphérique de Monserrate et rues coloniales de la Candelaria...') }}">
 
   <!-- ✅ CSS global -->
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
@@ -126,322 +124,163 @@
 
 <header class="site-header header-on-hero">
   <div class="logo-container">
-    <!-- Logo clair (sur hero/photo) -->
+    <!-- Logo clair -->
     <img src="{{ url_for('static', filename='img/logo-light.png') }}" alt="Oh La La Tours Bogotá" class="logo logo--light">
-    <!-- Logo foncé (après scroll, fond clair) -->
+    <!-- Logo foncé -->
     <img src="{{ url_for('static', filename='img/logo-dark.png') }}" alt="Oh La La Tours Bogotá" class="logo logo--dark">
+    <!-- ✅ Titre ajouté -->
     <span class="site-title">Oh La La Tours Bogotá</span>
   </div>
 
-
-    <nav class="main-nav" aria-label="{{ _('Navigation principale') }}">
-      <a href="{{ url_for('index', lang=get_locale()) }}">{{ _("Accueil") }}</a>
-      <a href="{{ url_for('tours', lang=get_locale()) }}">{{ _("Nos tours") }}</a>
-      <a href="{{ url_for('transport', lang=get_locale()) }}">{{ _("Service de Transport") }}</a>
-      <a href="{{ url_for('reservation', lang=get_locale()) }}">{{ _("Réservation") }}</a>
-
-      <div class="lang-switcher" aria-label="{{ _('Changer de langue') }}">
-        <a href="{{ lang_url('fr') }}" lang="fr" aria-label="Français">🇫🇷<span class="sr-only">Français</span></a>
-        <a href="{{ lang_url('en') }}" lang="en" aria-label="English">🇺🇸<span class="sr-only">English</span></a>
-        <a href="{{ lang_url('es') }}" lang="es" aria-label="Español">🇪🇸<span class="sr-only">Español</span></a>
-      </div>
-    </nav>
-  </header>
-
-  <!-- Bandeau (ancienne topbar supprimée) -->
-  <header class="hero background-half"
-          style="background-image: url('{{ url_for('static', filename='images/bg_reservation.jpg') }}');"
-          role="img"
-          aria-label="{{ _('Panorama de Bogotá, téléphérique de Monserrate et rues coloniales de la Candelaria ; réservez vos visites privées (Candelaria, Monserrate, Zipaquirá, La Chorrera, finca café) et transferts aéroport. EN: Bogotá skyline and Monserrate cable car; book private tours & airport transfer. ES: Bogotá al atardecer con teleférico de Monserrate; reserva tours privados y traslado al aeropuerto') }}"
-          title="{{ _('Réservation de visites et transferts — Oh La La Tours Bogotá') }}"
-          aria-describedby="hero-desc">
-    <h1 class="hero-title">
-      {{ _("Réserver votre visite") }}{% if tour %} : {{ _(tour.capitalize()) }}{% endif %}
-    </h1>
-    <!-- ✅ Texte associé masqué -->
-    <span id="hero-desc" class="sr-only">
-      {{ _('Image : Bogotá, Monserrate et La Candelaria. Réservez ici vos visites privées (Candelaria, Monserrate, Zipaquirá, La Chorrera, finca café) et vos transferts aéroport avec guide francophone/anglais/espagnol.') }}
-    </span>
-  </header>
-
-  <!-- Fil d’Ariane (accessibilité + SEO) -->
-  <nav aria-label="{{ _('Fil d’Ariane') }}" style="max-width:1000px;margin:10px auto;padding:0 20px;font-size:.95rem;">
-    <a href="{{ url_for('index', lang=get_locale()) }}">{{ _('Accueil') }}</a> ›
-    <a href="{{ url_for('tours', lang=get_locale()) }}">{{ _('Nos tours') }}</a> ›
-    <span aria-current="page">{{ _('Réservation') }}</span>
+  <nav class="main-nav" aria-label="{{ _('Navigation principale') }}">
+    <a href="{{ url_for('index', lang=get_locale()) }}">{{ _("Accueil") }}</a>
+    <a href="{{ url_for('tours', lang=get_locale()) }}">{{ _("Nos tours") }}</a>
+    <a href="{{ url_for('transport', lang=get_locale()) }}">{{ _("Service de Transport") }}</a>
+    <a href="{{ url_for('reservation', lang=get_locale()) }}">{{ _("Réservation") }}</a>
+    <div class="lang-switcher" aria-label="{{ _('Changer de langue') }}">
+      <a href="{{ lang_url('fr') }}" lang="fr" aria-label="Français">🇫🇷<span class="sr-only">Français</span></a>
+      <a href="{{ lang_url('en') }}" lang="en" aria-label="English">🇺🇸<span class="sr-only">English</span></a>
+      <a href="{{ lang_url('es') }}" lang="es" aria-label="Español">🇪🇸<span class="sr-only">Español</span></a>
+    </div>
   </nav>
+</header>
 
-  <!-- Formulaire -->
-  <main>
-    <section class="reservation-container">
-      <form class="reservation-form" method="POST" action="{{ url_for('reservation', lang=get_locale()) }}" novalidate>
-        {% if tour %}
-          <!-- Conservé (même si redondant avec le <select>) pour ne rien supprimer -->
-          <input type="hidden" name="tour" value="{{ tour }}">
-        {% endif %}
+<!-- Bandeau -->
+<header class="hero background-half"
+        style="background-image: url('{{ url_for('static', filename='images/bg_reservation.jpg') }}');">
+  <h1 class="hero-title">
+    {{ _("Réserver votre visite") }}{% if tour %} : {{ _(tour.capitalize()) }}{% endif %}
+  </h1>
+</header>
 
-        <label for="nom">{{ _("Nom") }}</label>
-        <input type="text" id="nom" name="nom" required autocomplete="name" inputmode="text">
+<!-- Fil d’Ariane -->
+<nav aria-label="{{ _('Fil d’Ariane') }}" style="max-width:1000px;margin:10px auto;padding:0 20px;font-size:.95rem;">
+  <a href="{{ url_for('index', lang=get_locale()) }}">{{ _('Accueil') }}</a> ›
+  <a href="{{ url_for('tours', lang=get_locale()) }}">{{ _('Nos tours') }}</a> ›
+  <span aria-current="page">{{ _('Réservation') }}</span>
+</nav>
 
-        <label for="email">{{ _("Email") }}</label>
-        <input type="email" id="email" name="email" required autocomplete="email" inputmode="email">
+<!-- Formulaire -->
+<main>
+  <section class="reservation-container">
+    <form class="reservation-form" method="POST" action="{{ url_for('reservation', lang=get_locale()) }}" novalidate>
+      {% if tour %}
+        <input type="hidden" name="tour" value="{{ tour }}">
+      {% endif %}
 
-        <label for="date">{{ _("Date souhaitée") }}</label>
-        <input type="date" id="date" name="date" required>
+      <label for="nom">{{ _("Nom") }}</label>
+      <input type="text" id="nom" name="nom" required autocomplete="name" inputmode="text">
 
-        <label for="message">{{ _("Message") }}</label>
-        <textarea id="message" name="message" rows="4" placeholder="{{ _('Infos utiles, horaires, etc.') }}"></textarea>
+      <label for="email">{{ _("Email") }}</label>
+      <input type="email" id="email" name="email" required autocomplete="email" inputmode="email">
 
-        <label for="tour">{{ _("Choisissez un tour") }}</label>
-        <select name="tour" id="tour" required>
-          <option value="">{{ _("-- Sélectionnez --") }}</option>
-          <option value="candelaria" {{ 'selected' if tour=='candelaria' else '' }}>{{ _("Visite historique de La Candelaria") }}</option>
-          <option value="monserrate" {{ 'selected' if tour=='monserrate' else '' }}>{{ _("Randonnée à Monserrate") }}</option>
-          <option value="zipaquira"  {{ 'selected' if tour=='zipaquira'  else '' }}>{{ _("Excursion à la Cathédrale de sel de Zipaquirá") }}</option>
-          <option value="chorrera"   {{ 'selected' if tour=='chorrera'   else '' }}>{{ _("Cascade de La Chorrera") }}</option>
-          <option value="finca-cafe" {{ 'selected' if tour=='finca-cafe' else '' }}>{{ _("Visite d’une finca à café") }}</option>
-        </select>
+      <label for="date">{{ _("Date souhaitée") }}</label>
+      <input type="date" id="date" name="date" required>
 
-        <!-- Mode de paiement (pour l’avenir) -->
-        <label for="payment-method">{{ _("Mode de paiement") }}</label>
-        <select id="payment-method" name="payment-method" aria-label="{{ _('Mode de paiement') }}">
-          <option value="paypal" selected>PayPal</option>
-        </select>
+      <label for="message">{{ _("Message") }}</label>
+      <textarea id="message" name="message" rows="4" placeholder="{{ _('Infos utiles, horaires, etc.') }}"></textarea>
 
-        <!-- Bloc PayPal -->
-        <div id="paypal-section" style="margin-top:12px;">
-          <label for="paypal-email">{{ _("Email PayPal") }}</label>
-          <input type="email" id="paypal-email" name="paypal-email" placeholder="{{ _('optionnel') }}" autocomplete="email" inputmode="email">
+      <label for="tour">{{ _("Choisissez un tour") }}</label>
+      <select name="tour" id="tour" required>
+        <option value="">{{ _("-- Sélectionnez --") }}</option>
+        <option value="candelaria" {{ 'selected' if tour=='candelaria' else '' }}>{{ _("Visite historique de La Candelaria") }}</option>
+        <option value="monserrate" {{ 'selected' if tour=='monserrate' else '' }}>{{ _("Randonnée à Monserrate") }}</option>
+        <option value="zipaquira"  {{ 'selected' if tour=='zipaquira'  else '' }}>{{ _("Excursion à la Cathédrale de sel de Zipaquirá") }}</option>
+        <option value="chorrera"   {{ 'selected' if tour=='chorrera'   else '' }}>{{ _("Cascade de La Chorrera") }}</option>
+        <option value="finca-cafe" {{ 'selected' if tour=='finca-cafe' else '' }}>{{ _("Visite d’une finca à café") }}</option>
+      </select>
 
-          <small style="display:block;margin-top:6px;">
-            {{ _("Pas de compte PayPal ? Choisissez l’option carte bancaire sur l’écran PayPal.") }}
-          </small>
+      <label for="payment-method">{{ _("Mode de paiement") }}</label>
+      <select id="payment-method" name="payment-method" aria-label="{{ _('Mode de paiement') }}">
+        <option value="paypal" selected>PayPal</option>
+      </select>
 
-          <!-- Bouton PayPal s’affiche ici -->
-          <div id="paypal-button-container" style="margin-top:12px;"></div>
-          <!-- Bouton CARTE s’affiche ici (ajout) -->
-          <div id="card-button-container" style="margin-top:12px;"></div>
+      <div id="paypal-section" style="margin-top:12px;">
+        <label for="paypal-email">{{ _("Email PayPal") }}</label>
+        <input type="email" id="paypal-email" name="paypal-email" placeholder="{{ _('optionnel') }}" autocomplete="email" inputmode="email">
+        <small style="display:block;margin-top:6px;">
+          {{ _("Pas de compte PayPal ? Choisissez l’option carte bancaire sur l’écran PayPal.") }}
+        </small>
+        <div id="paypal-button-container" style="margin-top:12px;"></div>
+        <div id="card-button-container" style="margin-top:12px;"></div>
+        <div id="paypal-error" role="alert" style="display:none;margin-top:10px;padding:10px;border:1px solid #f00;color:#B00020;background:#FEE;"></div>
+      </div>
 
-          <!-- Zone d’erreur visible si SDK non chargé -->
-          <div id="paypal-error" role="alert" style="display:none;margin-top:10px;padding:10px;border:1px solid #f00;color:#B00020;background:#FEE;"></div>
+      <button type="submit" id="form-submit">{{ _("Envoyer") }}</button>
+    </form>
+  </section>
+</main>
 
-          <noscript>
-            <p style="margin-top:8px;color:#b00;background:#fff4f4;border:1px solid #f3c2c2;padding:8px;">
-              {{ _("Le paiement PayPal nécessite JavaScript. Activez JavaScript ou contactez-nous par email/WhatsApp pour réserver.") }}
-            </p>
-          </noscript>
-        </div>
+<!-- PayPal SDK -->
+<script src="https://www.paypal.com/sdk/js?client-id={{ paypal_client_id }}&currency=EUR&intent=capture&components=buttons&enable-funding=card,credit,paylater&locale={% if get_locale()=='fr' %}fr_FR{% elif get_locale()=='en' %}en_US{% else %}es_ES{% endif %}"></script>
 
-        <button type="submit" id="form-submit">{{ _("Envoyer") }}</button>
-      </form>
-    </section>
-  </main>
-
-  <!-- SDK PayPal – LIVE/SANDBOX selon ton client-id -->
-  <!-- Autorise à la fois wallet PayPal et carte (locale adaptée) -->
-  <script src="https://www.paypal.com/sdk/js?client-id={{ paypal_client_id }}&currency=EUR&intent=capture&components=buttons&enable-funding=card,credit,paylater&locale={% if get_locale()=='fr' %}fr_FR{% elif get_locale()=='en' %}en_US{% else %}es_ES{% endif %}"></script>
-
-  <!-- Intégration PayPal -->
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      // Préselectionne le tour si fourni en querystring (?tour=…)
-      (function preselectTourFromQuery() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const t = urlParams.get('tour');
-        if (t) {
-          const select = document.getElementById('tour');
-          if (select && [...select.options].some(o => o.value === t)) {
-            select.value = t;
-          }
-        }
-      })();
-
-      // Prix par tour (à adapter)
-      const prices = {
-        candelaria: 1,
-        monserrate: 1,
-        zipaquira: 1,
-        chorrera: 1,
-        'finca-cafe': 50
-      };
-
-      // Empêche d’envoyer le formulaire quand PayPal est choisi
-      const form = document.querySelector('.reservation-form');
-      const methodSelect = document.getElementById('payment-method');
-      form.addEventListener('submit', function (e) {
-        if (methodSelect.value === 'paypal') {
-          e.preventDefault();
-          document.getElementById('paypal-section').scrollIntoView({ behavior: 'smooth', block: 'center' });
-          alert("{{ _('Pour payer avec PayPal, cliquez sur le bouton PayPal au-dessus de « Envoyer ».') }}");
-        }
-      });
-
-      // Rendu unique des boutons
-      let paypalRendered = false;
-
-      function renderPaypalButtons() {
-        if (paypalRendered) return;
-        const errBox = document.getElementById('paypal-error');
-
-        if (!window.paypal) {
-          errBox.style.display = 'block';
-          errBox.textContent = "{{ _('PayPal ne s’est pas chargé. Vérifiez votre Client ID et désactivez les bloqueurs.') }}";
-          return;
-        }
-
-        // --- Bouton PayPal (wallet) ---
-        paypal.Buttons({
-          fundingSource: paypal.FUNDING.PAYPAL,
-
-          createOrder: function (data, actions) {
-            const tourId = document.getElementById('tour').value || '';
-            const amount = (prices[tourId] || 40).toFixed(2);
-            const date = document.getElementById('date').value || '';
-            const nom  = document.getElementById('nom').value || '';
-
-            const description = `Tour: ${tourId || 'N/A'} | Date: ${date || 'N/A'} | Nom: ${nom || 'N/A'}`;
-
-            return actions.order.create({
-              purchase_units: [{
-                amount: { currency_code: 'EUR', value: amount },
-                description
-              }]
-            });
-          },
-
-          onApprove: function (data, actions) {
-            return actions.order.capture().then(function () {
-              window.location.href = '/paiement-reussi?orderID=' + data.orderID + '&lang={{ get_locale() }}';
-            });
-          },
-
-          onCancel: function () {
-            window.location.href = '/paiement-annule?lang={{ get_locale() }}';
-          },
-
-          onError: function (err) {
-            errBox.style.display = 'block';
-            errBox.textContent = 'PayPal: ' + (err && err.message ? err.message : err);
-            console.error('PayPal error:', err);
-          }
-        }).render('#paypal-button-container');
-
-        // --- Bouton Carte (via PayPal) ---
-        const cardBtn = paypal.Buttons({
-          fundingSource: paypal.FUNDING.CARD,
-          style: { layout: 'vertical', color: 'blue', shape: 'rect', label: 'pay' },
-
-          createOrder: function (data, actions) {
-            const tourId = document.getElementById('tour').value || '';
-            const amount = (prices[tourId] || 40).toFixed(2);
-            const date = document.getElementById('date').value || '';
-            const nom  = document.getElementById('nom').value || '';
-            const description = `Tour: ${tourId || 'N/A'} | Date: ${date || 'N/A'} | Nom: ${nom || 'N/A'}`;
-
-            return actions.order.create({
-              purchase_units: [{
-                amount: { currency_code: 'EUR', value: amount },
-                description
-              }]
-            });
-          },
-
-          onApprove: function (data, actions) {
-            return actions.order.capture().then(function () {
-              window.location.href = '/paiement-reussi?orderID=' + data.orderID + '&lang={{ get_locale() }}';
-            });
-          },
-
-          onCancel: function () {
-            window.location.href = '/paiement-annule?lang={{ get_locale() }}';
-          },
-
-          onError: function (err) {
-            errBox.style.display = 'block';
-            errBox.textContent = 'PayPal (carte): ' + (err && err.message ? err.message : err);
-            console.error('PayPal card error:', err);
-          }
-        });
-
-        if (cardBtn.isEligible()) {
-          cardBtn.render('#card-button-container');
-        }
-
-        paypalRendered = true;
+<!-- Intégration PayPal -->
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const prices = { candelaria: 1, monserrate: 1, zipaquira: 1, chorrera: 1, 'finca-cafe': 50 };
+    const form = document.querySelector('.reservation-form');
+    const methodSelect = document.getElementById('payment-method');
+    form.addEventListener('submit', function (e) {
+      if (methodSelect.value === 'paypal') {
+        e.preventDefault();
+        document.getElementById('paypal-section').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        alert("{{ _('Pour payer avec PayPal, cliquez sur le bouton PayPal au-dessus de « Envoyer ».') }}");
       }
-
-      // Rendre immédiatement
-      renderPaypalButtons();
     });
-  </script>
 
-  <!-- ✅ Données structurées : Service -->
-  <script type="application/ld+json">
-  {
-    "@context":"https://schema.org",
-    "@type":"Service",
-    "name":"Réservation de visites guidées à Bogotá",
-    "provider":{
-      "@type":"LocalBusiness",
-      "name":"Oh La La Tours Bogotá",
-      "areaServed":"Bogotá, Colombia",
-      "url":"https://www.ohlalatoursbogota.com/",
-      "availableLanguage":["French","Spanish","English"]
-    },
-    "serviceType":"Visites guidées privées et excursions",
-    "areaServed":"Bogotá, Colombia",
-    "offers":{
-      "@type":"AggregateOffer",
-      "priceCurrency":"EUR",
-      "lowPrice":"15.00",
-      "highPrice":"55.00",
-      "availability":"https://schema.org/InStock",
-      "url":"https://www.ohlalatoursbogota.com{{ request.path }}"
-    }
-  }
-  </script>
-
-  <!-- ✅ Données structurées : Breadcrumb -->
-  <script type="application/ld+json">
-  {
-    "@context":"https://schema.org",
-    "@type":"BreadcrumbList",
-    "itemListElement":[
-      {
-        "@type":"ListItem",
-        "position":1,
-        "name":"{{ _('Accueil') }}",
-        "item":"{{ url_for('index', lang=get_locale(), _external=True) }}"
-      },
-      {
-        "@type":"ListItem",
-        "position":2,
-        "name":"{{ _('Nos tours') }}",
-        "item":"{{ url_for('tours', lang=get_locale(), _external=True) }}"
-      },
-      {
-        "@type":"ListItem",
-        "position":3,
-        "name":"{{ _('Réservation') }}",
-        "item":"{{ url_for('reservation', lang=get_locale(), _external=True) }}"
+    let paypalRendered = false;
+    function renderPaypalButtons() {
+      if (paypalRendered) return;
+      const errBox = document.getElementById('paypal-error');
+      if (!window.paypal) {
+        errBox.style.display = 'block';
+        errBox.textContent = "{{ _('PayPal ne s’est pas chargé. Vérifiez votre Client ID et désactivez les bloqueurs.') }}";
+        return;
       }
-    ]
-  }
-  </script>
 
-  <!-- ✅ Script AJOUTÉ : toggle du header au scroll -->
-  <script>
-    (function(){
-      const header = document.querySelector('.site-header');
-      if(!header) return;
-      function onScroll(){ header.classList.toggle('scrolled', window.scrollY > 60); }
-      onScroll();
-      window.addEventListener('scroll', onScroll, {passive:true});
-    })();
-  </script>
+      paypal.Buttons({
+        fundingSource: paypal.FUNDING.PAYPAL,
+        createOrder: function (data, actions) {
+          const tourId = document.getElementById('tour').value || '';
+          const amount = (prices[tourId] || 40).toFixed(2);
+          return actions.order.create({
+            purchase_units: [{ amount: { currency_code: 'EUR', value: amount }, description: `Tour: ${tourId}` }]
+          });
+        },
+        onApprove: function (data, actions) {
+          return actions.order.capture().then(function () {
+            window.location.href = '/paiement-reussi?orderID=' + data.orderID + '&lang={{ get_locale() }}';
+          });
+        },
+        onCancel: function () { window.location.href = '/paiement-annule?lang={{ get_locale() }}'; },
+        onError: function (err) {
+          errBox.style.display = 'block';
+          errBox.textContent = 'PayPal: ' + (err && err.message ? err.message : err);
+        }
+      }).render('#paypal-button-container');
+
+      const cardBtn = paypal.Buttons({ fundingSource: paypal.FUNDING.CARD });
+      if (cardBtn.isEligible()) { cardBtn.render('#card-button-container'); }
+      paypalRendered = true;
+    }
+    renderPaypalButtons();
+  });
+</script>
+
+<!-- Données structurées -->
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Service","name":"Réservation de visites guidées à Bogotá"}</script>
+
+<!-- ✅ Script toggle du header -->
+<script>
+  (function(){
+    const header = document.querySelector('.site-header');
+    if(!header) return;
+    function onScroll(){ header.classList.toggle('scrolled', window.scrollY > 60); }
+    onScroll();
+    window.addEventListener('scroll', onScroll, {passive:true});
+  })();
+</script>
 
 </body>
 </html>
-
-
 
