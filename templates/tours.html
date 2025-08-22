@@ -215,7 +215,12 @@
     <!-- Logo foncé (après scroll, fond clair) -->
     <img src="{{ url_for('static', filename='img/logo-dark.png') }}" alt="Oh La La Tours Bogotá" class="logo logo--dark">
     <span class="site-title">Oh La La Tours Bogotá</span>
+    /* Header sur la hero : liens/titre en blanc */
+    .header-on-hero .site-title{ color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.35); }
+    .header-on-hero .main-nav a{ color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.35); }
   </div>
+
+
 
     <nav class="main-nav" aria-label="{{ _('Navigation principale') }}">
       <a href="{{ url_for('index', lang=get_locale()) }}">{{ _("Accueil") }}</a>
