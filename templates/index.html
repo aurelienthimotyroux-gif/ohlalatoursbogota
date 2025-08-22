@@ -11,14 +11,14 @@
   <!-- Keywords (facultatif) -->
   <meta name="keywords" content="visite guidée Bogotá, guide francophone Bogotá, excursion Bogotá, tours privés Bogotá, visiter la Candelaria Bogotá, excursion Zipaquirá depuis Bogotá, randonnée Monserrate Bogotá, café, Bogota, Colombie, Monserrate, Zipaquira, Coloma, Hacienda Coloma, guide, tejo, Chapinero, hôtel, hostel, Alejandra, gastronomie, pesos, taxi, transport, van, aéroport, français, anglais, espagnol, Aguila, Club Colombia, histoire, tours exceptionnels">
 
-  <!-- CMP / consentmanager (doit être tout en haut du <head>) -->
+  <!-- CMP / consentmanager -->
   <script type="text/javascript" data-cmp-ab="1"
           src="https://cdn.consentmanager.net/delivery/autoblocking/62cc8437f29ac.js"
           data-cmp-host="b.delivery.consentmanager.net"
           data-cmp-cdn="cdn.consentmanager.net"
           data-cmp-codesrc="16"></script>
 
-  <!-- Google Consent Mode (valeurs par défaut = refus) -->
+  <!-- Google Consent Mode -->
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){ dataLayer.push(arguments); }
@@ -35,10 +35,7 @@
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-92M6CENDXH"></script>
   <script>
     gtag('js', new Date());
-    // Id de mesure GA4
-    gtag('config', 'G-92M6CENDXH', {
-      anonymize_ip: true
-    });
+    gtag('config', 'G-92M6CENDXH', { anonymize_ip: true });
   </script>
 
   <!-- Canonical + hreflang -->
@@ -69,62 +66,28 @@
   <meta name="twitter:description" content="{{ _('Découvrez Bogotá : Candelaria, Monserrate, Zipaquirá, café à Hacienda Coloma. Visites en français, anglais et espagnol. Transferts aéroport, chauffeur/van privé.') }}">
   <meta name="twitter:image" content="{{ url_for('static', filename='images/accueil.jpg', _external=True) }}">
 
-  <!-- ✅ Perf & UI mobile -->
+  <!-- Perf & UI mobile -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <meta name="theme-color" content="#0e7490" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0b4654" media="(prefers-color-scheme: dark)">
 
-  <!-- CSS principal -->
+  <!-- CSS -->
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-
-  <!-- ✅ Pack mobile chargé uniquement sur mobile -->
-  <link rel="stylesheet"
-        href="{{ url_for('static', filename='mobile-pack.css', v=1) }}"
-        media="(max-width: 767px)">
-
-  <!-- Police -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='mobile-pack.css', v=1) }}" media="(max-width: 767px)">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 
-  <!-- Styles internes existants -->
-  <style>
-    /* Styles spécifiques aux avis + divers */
-    .testimonials { background:#fff; padding:40px 20px; margin-top:40px; }
-    .testimonials .container { max-width:1000px; margin:0 auto; }
-    .testimonials h2 { text-align:center; margin-bottom:22px; font-size:28px; }
+  <!-- Favicons -->
+  <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='img/favicon/apple-touch-icon.png') }}">
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='img/favicon/favicon-32x32.png') }}">
+  <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='img/favicon/favicon-16x16.png') }}">
+  <link rel="manifest" href="{{ url_for('static', filename='img/favicon/site.webmanifest') }}">
+  <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='img/favicon/favicon.ico') }}">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <meta name="theme-color" content="#0b4654">
+  <meta name="google-site-verification" content="4z28-XXEkdcB_VOcaGoy1bhgA-zj7xr6wSf76ZwZ4tQ" />
 
-    .testimonials-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }
-    @media (max-width:1024px){ .testimonials-grid{ grid-template-columns:repeat(2,1fr);} }
-    @media (max-width:640px){ .testimonials-grid{ grid-template-columns:1fr;} }
-
-    .testimonial-card { background:#fafafa; border:1px solid #eee; border-radius:12px; padding:16px; box-shadow:0 4px 14px rgba(0,0,0,.06); }
-    .t-head { display:grid; grid-template-columns:auto 1fr; gap:6px 10px; align-items:center; margin-bottom:10px; }
-    .t-name { font-weight:600; }
-    .t-meta { color:#666; font-size:14px; }
-    .t-stars { display:inline-flex; gap:4px; align-items:center; margin-bottom:8px; }
-    .t-stars svg { width:18px; height:18px; }
-    .testimonial-card .t-text{ font-size:15px; color:#333; line-height:1.5; white-space:pre-wrap; word-break:break-word; }
-    .testimonial-card .t-text.clamp{ display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:4; overflow:hidden; }
-    .testimonial-card.expanded .t-text{ -webkit-line-clamp:unset; display:block; overflow:visible; }
-    .testimonial-card .t-toggle{ margin-top:8px; background:none; border:0; color:#007bff; font:inherit; cursor:pointer; padding:0; }
-    .testimonial-card .t-toggle:hover{ text-decoration:underline; }
-    .comment-section-title { text-align:center; font-size:2rem; margin-bottom:20px; }
-
-    .hero .nav-hero a { text-decoration:none; }
-    .hero .nav-hero a:focus { outline:2px dashed #333; outline-offset:3px; }
-
-    .sr-only { position:absolute!important; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,1px,1px); white-space:nowrap; border:0; }
-
-    .flash-wrap { max-width:1000px; margin:16px auto; padding:0 20px; }
-    .flash { margin:8px 0; padding:10px; border-radius:8px; }
-    .flash-success{ background:#eefbf0; border:1px solid #b7ebc6; color:#1b5e20; }
-    .flash-error{ background:#fdeaea; border:1px solid #f5c2c2; color:#8a1f1f; }
-
-    /* Cache la sticky bar sur desktop ; visible sur mobile via mobile-pack.css */
-    @media (min-width: 768px){ .sticky-cta { display: none; } }
-  </style>
-
-  <!-- ✅ Styles AJOUTÉS pour le header fixe + logo -->
+  <!-- Styles spécifiques -->
   <style>
     .site-header{
       position:fixed; top:0; left:0; right:0; z-index:70;
@@ -132,20 +95,13 @@
       padding:10px 16px; gap:16px;
       background:transparent; transition:background .25s ease, box-shadow .25s ease;
     }
-    .brand{display:inline-flex; align-items:center; gap:10px}
+    .logo-container{display:flex; align-items:center; gap:10px}
     .logo{height:44px; width:auto; display:block}
     @media (max-width:640px){ .logo{height:32px} }
-
     .main-nav{display:flex; align-items:center; gap:18px; font-weight:600}
     .main-nav a{text-decoration:none}
-    .lang-switcher{display:flex; gap:8px; margin-left:8px}
-    .lang-switcher a{font-size:20px; line-height:1; padding:4px 6px; border-radius:6px}
-
-    /* Sur la page d'accueil (hero en fond) : liens & logo blancs au départ */
-    .header-on-hero .main-nav a{color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.35)}
+    .site-title{font-size:20px; font-weight:600; color:#0f172a}
     .logo--dark{display:none}
-
-    /* Au scroll / fond clair */
     .site-header.scrolled{
       background: rgba(255,255,255,.86);
       backdrop-filter: saturate(180%) blur(8px);
@@ -155,90 +111,26 @@
     .site-header.scrolled .logo--dark{display:block}
     .site-header.scrolled .main-nav a{color:#0f172a}
   </style>
+</head>
+<body>
 
 <header class="site-header">
   <div class="logo-container">
-    <!-- Logo clair (blanc) pour quand le header est sur une image -->
-    <img src="{{ url_for('static', filename='img/logo-light.png') }}" 
-         alt="Oh La La Tours Bogotá" class="logo logo--light">
-
-    <!-- Logo foncé (vert/or) pour quand le header a un fond clair -->
-    <img src="{{ url_for('static', filename='img/logo-dark.png') }}" 
-         alt="Oh La La Tours Bogotá" class="logo logo--dark">
-
+    <!-- Logo clair -->
+    <img src="{{ url_for('static', filename='img/logo-light.png') }}" alt="Oh La La Tours Bogotá" class="logo logo--light">
+    <!-- Logo foncé -->
+    <img src="{{ url_for('static', filename='img/logo-dark.png') }}" alt="Oh La La Tours Bogotá" class="logo logo--dark">
     <span class="site-title">Oh La La Tours Bogotá</span>
   </div>
 
-
-  <!-- Sprite d'icônes SVG (étoiles) -->
-  <svg xmlns="http://www.w3.org/2000/svg" style="display:none;">
-    <symbol id="icon-star-full" viewBox="0 0 24 24" aria-hidden="true">
-      <path fill="#ffb400" d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21z"/>
-    </symbol>
-    <symbol id="icon-star-half" viewBox="0 0 24 24" aria-hidden="true">
-      <path fill="#ffb400" d="M12 17.27V2L9.19 8.62 2 9.24l5.46 4.73L5.82 21z"/>
-      <path fill="none" stroke="#ffb400" stroke-width="1.5" d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21z"/>
-    </symbol>
-    <symbol id="icon-star-empty" viewBox="0 0 24 24" aria-hidden="true">
-      <path fill="none" stroke="#ffb400" stroke-width="1.5" d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21z"/>
-    </symbol>
-  </svg>
-
-  <!-- JS Lire plus / Lire moins -->
-  <script>
-    function toggleText(index) {
-      var textElement = document.getElementById("comment-" + index);
-      if (!textElement) return;
-      var card = textElement.closest(".testimonial-card");
-      var full = textElement.dataset.full || "";
-      if (!textElement.dataset.preview) {
-        textElement.dataset.preview = textElement.textContent;
-      }
-      var preview = textElement.dataset.preview;
-      var toggleButton = textElement.nextElementSibling;
-      var isExpanded = card.classList.contains("expanded");
-      if (isExpanded) {
-        textElement.textContent = preview;
-        card.classList.remove("expanded");
-        if (toggleButton) toggleButton.textContent = "{{ _('Lire plus') }}";
-      } else {
-        textElement.textContent = full;
-        card.classList.add("expanded");
-        if (toggleButton) toggleButton.textContent = "{{ _('Lire moins') }}";
-      }
-    }
-  </script>
-
-  <!-- Données structurées -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "TouristInformationCenter",
-    "name": "Oh La La Tours Bogotá",
-    "url": "https://www.ohlalatoursbogota.com/",
-    "image": "{{ url_for('static', filename='images/accueil.jpg', _external=True) }}",
-    "areaServed": "Bogotá, Colombia",
-    "address": { "@type": "PostalAddress", "addressLocality": "Bogotá", "addressCountry": "CO" },
-    "availableLanguage": ["French","Spanish","English"],
-    "email": "alejandramontana25.18@gmail.com",
-    "telephone": "+57-350-538-4537",
-    "sameAs": []
-  }
-  </script>
-
-<link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='img/favicon/apple-touch-icon.png') }}">
-<link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='img/favicon/favicon-32x32.png') }}">
-<link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='img/favicon/favicon-16x16.png') }}">
-<link rel="manifest" href="{{ url_for('static', filename='img/favicon/site.webmanifest') }}">
-<link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='img/favicon/favicon.ico') }}">
-<meta name="theme-color" content="#0b4654">
-
-<link rel="icon" href="/favicon.ico" sizes="any">
-
-<meta name="google-site-verification" content="4z28-XXEkdcB_VOcaGoy1bhgA-zj7xr6wSf76ZwZ4tQ" />
-
-</head>
-<body>
+  <!-- Navigation -->
+  <nav class="main-nav">
+    <a href="{{ url_for('index', lang=get_locale()) }}">{{ _('Accueil') }}</a>
+    <a href="{{ url_for('tours', lang=get_locale()) }}">{{ _('Nos tours') }}</a>
+    <a href="{{ url_for('transport', lang=get_locale()) }}">{{ _('Service de Transport') }}</a>
+    <a href="{{ url_for('reservation_page', lang=get_locale()) }}">{{ _('Réservation') }}</a>
+  </nav>
+</header>
 
   <!-- ✅ Nouveau header fixe (logo + nav + drapeaux) -->
   <header class="site-header header-on-hero">
