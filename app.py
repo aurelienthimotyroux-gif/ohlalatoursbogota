@@ -768,30 +768,14 @@ def submit_transfer():
 # ------------------------------------------------------------------
 # --- Sitemaps / Robots --------------------------------------------------------
 @app.route('/sitemap.xml')
-def sitemap_xml():
-    pages = [
-        ("https://www.ohlalatoursbogota.com/", "weekly", "1.0"),
-        ("https://www.ohlalatoursbogota.com/tours", "weekly", "0.9"),
-        ("https://www.ohlalatoursbogota.com/transport", "weekly", "0.8"),
-        ("https://www.ohlalatoursbogota.com/reservation", "weekly", "0.8"),
-    ]
+def serve_sitemap_xml():
+    # sert le fichier statique tel quel, avec le bon Content-Type
+    return send_from_directory(app.static_folder, 'sitemap.xml', mimetype='application/xml')
 
-    body = ['<?xml version="1.0" encoding="UTF-8"?>',
-            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
-    for loc, freq, prio in pages:
-        body.append(f"""  <url>
-    <loc>{loc}</loc>
-    <changefreq>{freq}</changefreq>
-    <priority>{prio}</priority>
-  </url>""")
-    body.append('</urlset>')
-    xml = "\n".join(body)
-
-    resp = make_response(xml, 200)
-    resp.headers['Content-Type'] = 'application/xml; charset=utf-8'
-    return resp@app.route('/sitemap')  # pratique si on tape sans extension
+# (optionnel) redirection propre /sitemap -> /sitemap.xml
+@app.route('/sitemap')
 def sitemap_noext():
-    return redirect(url_for('sitemap_xml'), code=301)
+    return redirect(url_for('serve_sitemap_xml'), code=301)
 
 @app.route('/robots.txt')
 def robots_txt():
@@ -801,8 +785,6 @@ def robots_txt():
     # IMPORTANT : on dit aux navigateurs/CDN de ne pas mettre en cache
     resp.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
     return resp
-
-
 
 @app.get("/healthz")
 def healthz():
