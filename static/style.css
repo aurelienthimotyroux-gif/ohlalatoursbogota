@@ -400,3 +400,23 @@ form button:hover { background-color: #0056b3; }
 .header-on-hero .lang-switcher a{background:rgba(0,0,0,.25); backdrop-filter:blur(4px)}
 .site-header.scrolled .lang-switcher a{background:transparent}
 
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo {
+  height: 40px; /* ajuste la taille */
+  width: auto;
+}
+
+/* Par défaut, afficher le logo foncé */
+.logo-dark { display: block; }
+.logo-light { display: none; }
+
+/* Quand le header est sur une image sombre */
+.header-on-image .logo-dark { display: none; }
+.header-on-image .logo-light { display: block; }
+
+

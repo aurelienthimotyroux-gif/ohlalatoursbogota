@@ -156,6 +156,20 @@
     .site-header.scrolled .main-nav a{color:#0f172a}
   </style>
 
+<header class="site-header">
+  <div class="logo-container">
+    <!-- Logo clair (blanc) pour quand le header est sur une image -->
+    <img src="{{ url_for('static', filename='img/logo-light.png') }}" 
+         alt="Oh La La Tours Bogotá" class="logo logo--light">
+
+    <!-- Logo foncé (vert/or) pour quand le header a un fond clair -->
+    <img src="{{ url_for('static', filename='img/logo-dark.png') }}" 
+         alt="Oh La La Tours Bogotá" class="logo logo--dark">
+
+    <span class="site-title">Oh La La Tours Bogotá</span>
+  </div>
+
+
   <!-- Sprite d'icônes SVG (étoiles) -->
   <svg xmlns="http://www.w3.org/2000/svg" style="display:none;">
     <symbol id="icon-star-full" viewBox="0 0 24 24" aria-hidden="true">
