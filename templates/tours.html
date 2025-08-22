@@ -143,7 +143,7 @@
     .tour-swiper .swiper-wrapper{ height: 100%; }
     .tour-swiper .swiper-slide{ display: flex; }
 
-    /* Flèches (on laisse la forme par défaut de Swiper) */
+    /* Flèches */
     .swiper-button-next, .swiper-button-prev {
       color: #fff !important;
       text-shadow: 0 0 6px rgba(0,0,0,.65);
@@ -164,22 +164,17 @@
     .includes-list li::before { content: "✓"; position: absolute; left: 0; top: 0; font-weight: 700; transform: translateY(1px); opacity: .9; }
     @media (min-width: 900px) { .includes-list { grid-template-columns: 1fr 1fr; } }
 
-    /* Chips Durée / Langues / Tarif (texte simple) */
+    /* Chips */
     .tour-chips { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 16px; }
     .tour-chips .chip { background: none !important; border: none !important; padding: 0 !important; border-radius: 0 !important; box-shadow: none !important; font-size: 16px; line-height: 1.6; }
     .tour-chips .chip strong { font-weight: 700; }
 
-    /* CTA sous "Inclus" */
-    .tour-meta{
-      flex-basis:100%; order:4; display:flex; align-items:center; gap:18px; flex-wrap:wrap; margin-top:8px;
-    }
+    .tour-meta{ flex-basis:100%; order:4; display:flex; align-items:center; gap:18px; flex-wrap:wrap; margin-top:8px; }
 
-    /* Bouton */
     .btn-primary { appearance: none; border: 1px solid rgba(0,0,0,.2); background: #2563eb; color: #fff; padding: 12px 18px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: transform .06s ease, filter .2s ease; }
     .btn-primary:hover { filter: brightness(1.05); }
     .btn-primary:active { transform: translateY(1px); }
 
-    /* Responsive */
     @media (max-width: 900px){
       .tour-card{ flex-direction: column !important; }
       .tour-swiper, .tour-card .content{ width: 100%; }
@@ -190,12 +185,10 @@
 
   <!-- 🔧 Bloc CSS additionnel (ajouté, rien supprimé) -->
   <style>
-    /* Surcouche de sécurité pour clics flèches et fallback */
     .tour-swiper{ isolation:isolate; }
     .tour-swiper .swiper-button-next,
     .tour-swiper .swiper-button-prev{ z-index: 9999 !important; pointer-events: auto !important; }
     .hero::after{ pointer-events: none !important; }
-    /* Fallback visuel quand Swiper indisponible */
     .no-swiper .swiper-wrapper{ display:block !important; }
     .no-swiper .swiper-slide{ display:none !important; }
     .no-swiper .swiper-slide._is-active{ display:block !important; }
@@ -220,13 +213,13 @@
     <a href="{{ url_for('index', lang=get_locale()) }}" class="brand" aria-label="Oh La La Tours Bogotá — Accueil">
       <!-- logo blanc sur la photo -->
       <img class="logo logo--light"
-           src="{{ url_for('static', filename='img/logo/logo-ohlala-white-360.png') }}"
-           srcset="{{ url_for('static', filename='img/logo/logo-ohlala-white-720@2x.png') }} 2x"
+           src="{{ url_for('static', filename='img/logo-light.png') }}"
+           srcset="{{ url_for('static', filename='img/logo-light.png') }} 2x"
            alt="Oh La La Tours Bogotá">
       <!-- logo couleur au scroll / fonds clairs -->
       <img class="logo logo--dark"
-           src="{{ url_for('static', filename='img/logo/logo-ohlala-teal-gold-360.png') }}"
-           srcset="{{ url_for('static', filename='img/logo/logo-ohlala-teal-gold-720@2x.png') }} 2x"
+           src="{{ url_for('static', filename='img/logo-dark.png') }}"
+           srcset="{{ url_for('static', filename='img/logo-dark.png') }} 2x"
            alt="Oh La La Tours Bogotá">
     </a>
 
@@ -370,183 +363,6 @@
   'finca-cafe1.jpg': _('Plantation de café grains et caféiers plantation café arabica cerises de café à la main séchage sur patios récolte manuelle dégustation café finca'),
   'finca-cafe2.jpg': _('Processus de torréfaction et mouture du café expresso machiato graine de café'),
   'finca-cafe3.jpg': _('Visite d’une finca café près de Bogotá grains fraîchement récoltés hacienda coloma rhum coloma rhum ')
-} %}
-{% set alt_map_en = {
-<!DOCTYPE html>
-<html lang="{{ get_locale() }}">
-<head>
-  <meta charset="UTF-8">
-  <title>{{ _("Types de visites") }} — Oh La La Tours Bogotá</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-  <!-- SEO -->
-  <meta name="description" content="{{ _('Tours privés à Bogotá : Candelaria, Monserrate, Zipaquirá, La Chorrera et finca café (Hacienda Coloma). Guide francophone, anglais et espagnol. Transport/van et transferts aéroport disponibles.') }}">
-  <meta name="keywords" content="tours privés Bogota visite guidée Bogota guide francophone Bogota excursion Zipaquira randonnée Monserrate Candelaria Hacienda Coloma cascade La Chorrera transport privé Bogota van transfert aéroport Bogota colombie capital amérique du sud Fusagasugá Fusagasuga rhum coloma café">
-
-  <!-- CMP / consentmanager -->
-  <script type="text/javascript" data-cmp-ab="1"
-          src="https://cdn.consentmanager.net/delivery/autoblocking/62cc8437f29ac.js"
-          data-cmp-host="b.delivery.consentmanager.net"
-          data-cmp-cdn="cdn.consentmanager.net"
-          data-cmp-codesrc="16"></script>
-
-  <!-- Google Consent Mode -->
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){ dataLayer.push(arguments); }
-    gtag('consent', 'default', {
-      ad_storage: 'denied',
-      analytics_storage: 'denied',
-      ad_user_data: 'denied',
-      ad_personalization: 'denied',
-      wait_for_update: 500
-    });
-  </script>
-
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-92M6CENDXH"></script>
-  <script>
-    gtag('js', new Date());
-    gtag('config', 'G-92M6CENDXH', { anonymize_ip: true });
-  </script>
-
-  <!-- Canonical + hreflang -->
-  <link rel="canonical" href="https://www.ohlalatoursbogota.com{{ request.path }}{% if get_locale()!='fr' %}?lang={{ get_locale() }}{% endif %}">
-  <link rel="alternate" href="{{ url_for('tours', lang='fr', _external=True) }}" hreflang="fr">
-  <link rel="alternate" href="{{ url_for('tours', lang='en', _external=True) }}" hreflang="en">
-  <link rel="alternate" href="{{ url_for('tours', lang='es', _external=True) }}" hreflang="es">
-  <link rel="alternate" href="{{ url_for('tours', lang='fr', _external=True) }}" hreflang="x-default">
-
-  <!-- Open Graph / Twitter -->
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://www.ohlalatoursbogota.com{{ request.path }}{% if get_locale()!='fr' %}?lang={{ get_locale() }}{% endif %}">
-  <meta property="og:site_name" content="Oh La La Tours Bogotá">
-  <meta property="og:title" content="{{ _('Tours privés à Bogotá – Candelaria Monserrate Zipaquirá café') }}">
-  <meta property="og:description" content="{{ _('Découvrez nos visites guidées Candelaria Monserrate Cathédrale de sel de Zipaquirá cascade La Chorrera et finca café Guides francophones Transport van et transferts aéroport') }}">
-  <meta property="og:image" content="{{ url_for('static', filename='images/header_tours.jpg', _external=True) }}">
-  {% if get_locale() == 'fr' %}
-  <meta property="og:locale" content="fr_FR">
-  {% elif get_locale() == 'en' %}
-  <meta property="og:locale" content="en_US">
-  {% else %}
-  <meta property="og:locale" content="es_CO">
-  {% endif %}
-
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="{{ _('Tours privés à Bogotá – Candelaria, Monserrate, Zipaquirá, café') }}">
-  <meta name="twitter:description" content="{{ _('Découvrez nos visites guidées : Candelaria, Monserrate, Cathédrale de sel de Zipaquirá, cascade La Chorrera et finca café. Guides francophones. Transport/van et transferts aéroport.') }}">
-  <meta name="twitter:image" content="{{ url_for('static', filename='images/header_tours.jpg', _external=True) }}">
-
-  <!-- CSS global + Swiper -->
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
-
-  <!-- Header fixe + logos -->
-  <style>
-    .site-header{
-      position:fixed; top:0; left:0; right:0; z-index:70;
-      display:flex; align-items:center; justify-content:space-between;
-      padding:10px 16px; gap:16px;
-      background:transparent; transition:background .25s ease, box-shadow .25s ease;
-    }
-    .brand{display:inline-flex; align-items:center; gap:10px}
-    .logo{height:44px; width:auto; display:block}
-    @media (max-width:640px){ .logo{height:32px} }
-
-    .site-title{font-weight:600; font-size:20px}
-    .main-nav{display:flex; align-items:center; gap:18px; font-weight:600}
-    .main-nav a{text-decoration:none}
-
-    /* Sur la hero : tout en blanc */
-    .header-on-hero .site-title{ color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.35); }
-    .header-on-hero .main-nav a{ color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.35); }
-    .logo--dark{display:none}
-
-    /* Au scroll : fond clair */
-    .site-header.scrolled{
-      background: rgba(255,255,255,.86);
-      backdrop-filter: saturate(180%) blur(8px);
-      box-shadow: 0 2px 10px rgba(0,0,0,.08);
-    }
-    .site-header.scrolled .site-title{ color:#0f172a; text-shadow:none; }
-    .site-header.scrolled .logo--light{display:none}
-    .site-header.scrolled .logo--dark{display:block}
-    .site-header.scrolled .main-nav a{color:#0f172a; text-shadow:none}
-  </style>
-
-  <!-- Mise en page (inchangée) -->
-  <style>
-    .hero { position: relative; width: 100%; height: 50vh; background-position: center; background-size: cover; display:flex; align-items:center; justify-content:center; text-align:center; }
-    .hero::after { content:""; position:absolute; inset:0; background:rgba(0,0,0,.35); pointer-events:none; }
-    .hero-title { position:relative; z-index:1; color:#fff; font-size:2.6rem; text-shadow:2px 2px 6px rgba(0,0,0,.7); padding:0 16px }
-
-    /* Couleurs de fond globales conservées */
-    body, main, section, .container, .testimonials, .testimonial-card, .tour-card .content { background-color: #f8f0e8 !important; }
-  </style>
-
-  <!-- Favicons -->
-  <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='img/favicon/apple-touch-icon.png') }}">
-  <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='img/favicon/favicon-32x32.png') }}">
-  <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='img/favicon/favicon-16x16.png') }}">
-  <link rel="manifest" href="{{ url_for('static', filename='img/favicon/site.webmanifest') }}">
-  <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='img/favicon/favicon.ico') }}">
-  <meta name="theme-color" content="#0b4654">
-  <link rel="icon" href="/favicon.ico" sizes="any">
-  <meta name="google-site-verification" content="4z28-XXEkdcB_VOcaGoy1bhgA-zj7xr6wSf76ZwZ4tQ" />
-</head>
-<body>
-
-  <!-- Header -->
-  <header class="site-header header-on-hero">
-    <a href="{{ url_for('index', lang=get_locale()) }}" class="brand" aria-label="Oh La La Tours Bogotá — Accueil">
-      <!-- logo clair (fond image) : contour noir + intérieur blanc -->
-      <img class="logo logo--light"
-           src="{{ url_for('static', filename='img/logo/logo-ohlala-white-outline-360.png') }}"
-           srcset="{{ url_for('static', filename='img/logo/logo-ohlala-white-outline-720@2x.png') }} 2x"
-           alt="Oh La La Tours Bogotá">
-      <!-- logo foncé (au scroll / fond clair) -->
-      <img class="logo logo--dark"
-           src="{{ url_for('static', filename='img/logo/logo-ohlala-teal-gold-360.png') }}"
-           srcset="{{ url_for('static', filename='img/logo/logo-ohlala-teal-gold-720@2x.png') }} 2x"
-           alt="Oh La La Tours Bogotá">
-    </a>
-
-    <nav class="main-nav" aria-label="{{ _('Navigation principale') }}">
-      <a href="{{ url_for('index', lang=get_locale()) }}">{{ _("Accueil") }}</a>
-      <a href="{{ url_for('tours', lang=get_locale()) }}">{{ _("Nos tours") }}</a>
-      <a href="{{ url_for('transport', lang=get_locale()) }}">{{ _("Service de Transport") }}</a>
-      <a href="{{ url_for('reservation', lang=get_locale()) }}">{{ _("Réservation") }}</a>
-      <div class="lang-switcher" aria-label="{{ _('Changer de langue') }}">
-        <a href="{{ lang_url('fr') }}" lang="fr" aria-label="Français">🇫🇷<span class="sr-only">Français</span></a>
-        <a href="{{ lang_url('en') }}" lang="en" aria-label="English">🇺🇸<span class="sr-only">English</span></a>
-        <a href="{{ lang_url('es') }}" lang="es" aria-label="Español">🇪🇸<span class="sr-only">Español</span></a>
-      </div>
-    </nav>
-  </header>
-
-  <!-- Hero -->
-  <header class="hero" style="background-image:url('{{ url_for('static', filename='images/header_tours.jpg') }}');">
-    <h1 class="hero-title">{{ _("Nos tours") }}</h1>
-  </header>
-
-  <!-- ======= VOTRE BLOC — INSÉRÉ TEL QUEL (RIEN SUPPRIMÉ) ======= -->
-{% set alt_map = {
-  'candelaria1.jpg': _('Maisons coloniales colorées dans le centre historique de La Candelaria à Bogota quartier colonial bogota street art fresques ruelles pavées façades colorées chorro de quevedo guide francophone centre historique'),
-  'candelaria2.jpg': _('Street art de Bogota pendant la visite à pied de La Candelaria fresques'),
-  'candelaria3.jpg': _('Ruelles pavées et façades coloniales de La Candelaria'),
-  'monserratevue.jpg': _('Vue panoramique depuis Monserrate au-dessus de Bogota téléphérique bogota sanctuaire señor caído vue panoramique bogota andes coucher de soleil monserrate funiculaire courte marche sommet'),
-  'monserrate2.jpg': _('Sanctuaire du Señor Caído à Monserrate'),
-  'monserrate3.jpg': _('Montée en téléphérique vers Monserrate'),
-  'monserrate4.jpg': _('Paysages andins autour de Bogota vus depuis Monserrate'),
-  'zipaquira1.jpg': _('Cathédrale de sel de Zipaquira galerie souterraine illuminée cathédrale de sel mine de sel souterraine croix sculptées en sel éclairage bleu violet chemin de croix galerie minière'),
-  'zipaquira2.jpg': _('Croix sculptées en sel à Zipaquira'),
-  'zipaquira3.jpg': _("Couloirs miniers et jeux de lumière à Zipaquira"),
-  'chorrera1.jpg': _("Sentier andin vers la cascade La Chorrera randonnée andine forêt de nuages cascade 590m réserve naturelle choachi ponts et sentiers brume tropicale"),
-  'chorrera2.jpeg': _("La Chorrera plus haute cascade de Colombie randonnée cascade"),
-  'chorrera3.jpeg': _("Paysage de montagne et brume près de la cascade La Chorrera"),
-  'finca-cafe1.jpg': _("Plantation de café arabica cerises de café en main séchage sur patios cueillette manuelle dégustation de café à la ferme"),
-  'finca-cafe2.jpg': _("Processus de torréfaction et mouture espresso grains de café"),
-  'finca-cafe3.jpg': _("Visite d'une finca café près de Bogota grains fraîchement cueillis hacienda coloma")
 } %}
 {% set alt_map_en = {
   'candelaria1.jpg': _('Colorful colonial houses in La Candelaria historic center of Bogota colonial quarter bogota bogota street art murals cobblestone alleys andean colorful facades chorro de quevedo french speaking guide historic center'),
@@ -711,10 +527,8 @@
         const nextEl = root.querySelector('.swiper-button-next');
         const prevEl = root.querySelector('.swiper-button-prev');
         const slides = Array.from(root.querySelectorAll('.swiper-slide'));
-        // Si Swiper existe et a attaché l'instance sur l'élément :
         const sw = root.swiper || root._swiper;
 
-        // Toujours forcer les clics à avancer/reculer
         if (nextEl){
           nextEl.addEventListener('click', function(e){
             if (sw && typeof sw.slideNext === 'function'){ sw.slideNext(); }
@@ -728,12 +542,10 @@
           }, { passive:true });
         }
 
-        // Si Swiper n'est pas dispo du tout (CDN/CMP) -> fallback visuel
         if (!(window.Swiper) || !(sw)){
           root.classList.add('no-swiper');
           if (!root.dataset._fallback){
             root.dataset._fallback = '1';
-            // Affiche la première slide
             if (slides.length){
               slides.forEach(s => s.classList.remove('_is-active'));
               slides[0].classList.add('_is-active');
@@ -782,4 +594,5 @@
   </script>
 </body>
 </html>
+
 
