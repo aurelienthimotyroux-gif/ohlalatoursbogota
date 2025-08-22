@@ -194,33 +194,36 @@
     .no-swiper .swiper-slide._is-active{ display:block !important; }
   </style>
 
-<link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='img/favicon/apple-touch-icon.png') }}">
-<link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='img/favicon/favicon-32x32.png') }}">
-<link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='img/favicon/favicon-16x16.png') }}">
-<link rel="manifest" href="{{ url_for('static', filename='img/favicon/site.webmanifest') }}">
-<link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='img/favicon/favicon.ico') }}">
-<meta name="theme-color" content="#0b4654">
+  <!-- ✅ AJOUT: titre blanc sur la hero + retour noir au scroll -->
+  <style>
+    .header-on-hero .site-title{ color:#fff !important; text-shadow:0 1px 2px rgba(0,0,0,.35); }
+    .site-header.scrolled .site-title{ color:#0f172a !important; text-shadow:none; }
+  </style>
 
-<link rel="icon" href="/favicon.ico" sizes="any">
-
-<meta name="google-site-verification" content="4z28-XXEkdcB_VOcaGoy1bhgA-zj7xr6wSf76ZwZ4tQ" />
-
+  <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='img/favicon/apple-touch-icon.png') }}">
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='img/favicon/favicon-32x32.png') }}">
+  <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='img/favicon/favicon-16x16.png') }}">
+  <link rel="manifest" href="{{ url_for('static', filename='img/favicon/site.webmanifest') }}">
+  <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='img/favicon/favicon.ico') }}">
+  <meta name="theme-color" content="#0b4654">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <meta name="google-site-verification" content="4z28-XXEkdcB_VOcaGoy1bhgA-zj7xr6wSf76ZwZ4tQ" />
 </head>
 <body>
 
-<header class="site-header header-on-hero">
-  <div class="logo-container">
-    <!-- Logo clair (sur hero/photo) -->
-    <img src="{{ url_for('static', filename='img/logo-light.png') }}" alt="Oh La La Tours Bogotá" class="logo logo--light">
-    <!-- Logo foncé (après scroll, fond clair) -->
-    <img src="{{ url_for('static', filename='img/logo-dark.png') }}" alt="Oh La La Tours Bogotá" class="logo logo--dark">
-    <span class="site-title">Oh La La Tours Bogotá</span>
-    /* Header sur la hero : liens/titre en blanc */
-    .header-on-hero .site-title{ color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.35); }
-    .header-on-hero .main-nav a{ color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.35); }
-  </div>
-
-
+  <!-- ✅ Nouveau header fixe (logo + nav + drapeaux) -->
+  <header class="site-header header-on-hero">
+    <a href="{{ url_for('index', lang=get_locale()) }}" class="brand" aria-label="Oh La La Tours Bogotá — Accueil">
+      <!-- Logo clair (sur la hero/photo) -->
+      <img class="logo logo--light"
+           src="{{ url_for('static', filename='img/logo-light.png') }}"
+           alt="Oh La La Tours Bogotá">
+      <!-- Logo foncé (au scroll / fond clair) -->
+      <img class="logo logo--dark"
+           src="{{ url_for('static', filename='img/logo-dark.png') }}"
+           alt="Oh La La Tours Bogotá">
+      <span class="site-title">Oh La La Tours Bogotá</span>
+    </a>
 
     <nav class="main-nav" aria-label="{{ _('Navigation principale') }}">
       <a href="{{ url_for('index', lang=get_locale()) }}">{{ _("Accueil") }}</a>
@@ -236,7 +239,7 @@
     </nav>
   </header>
 
-  <!-- Bandeau image + titre (ancienne topbar supprimée) -->
+  <!-- Bandeau image + titre -->
   <header class="hero background-half"
           style="background-image: url('{{ url_for('static', filename='images/header_tours.jpg') }}');">
       <h1 class="hero-title">{{ _("Nos tours") }}</h1>
@@ -593,5 +596,6 @@
   </script>
 </body>
 </html>
+
 
 
