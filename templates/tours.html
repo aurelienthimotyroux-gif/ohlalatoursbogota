@@ -411,7 +411,9 @@
           <div class="swiper-wrapper">
             {% for img in tour.images %}
             <div class="swiper-slide">
-              <img src="{{ url_for('static', filename='images/' ~ img) }}" alt="{{ tour.title }} {{ ALT.get(img) or alt_map.get(img, '') }}">
+              <img loading="lazy" decoding="async"
+                   src="{{ url_for('static', filename='images/' ~ img) }}"
+                   alt="{{ tour.title }} {{ ALT.get(img) or alt_map.get(img, '') }}">
             </div>
             {% endfor %}
           </div>
@@ -445,8 +447,10 @@
             {% endfor %}
           </ul>
 
-          <a href="{{ url_for('reservation', tour=tour.slug, lang=get_locale()) }}">
-            <button class="btn-primary">{{ _("Réserver") }}</button>
+          <!-- ✅ lien stylé en bouton (HTML valide) -->
+          <a class="btn-primary" role="button"
+             href="{{ url_for('reservation', tour=tour.slug, lang=get_locale()) }}">
+            {{ _("Réserver") }}
           </a>
         </div>
       </div>
@@ -499,8 +503,8 @@
             loop: true,
             loopAdditionalSlides: 1,
             watchOverflow: true,
-            preloadImages: true,
-            lazy: { loadPrevNext: true },
+            preloadImages: true,         // ✅ on garde le chargement direct
+            // lazy: { loadPrevNext: true }, // ❌ désactivé (on utilise loading="lazy")
             autoplay: { delay: 3500, disableOnInteraction: false, pauseOnMouseEnter: true },
             observer: true,
             observeParents: true,
@@ -596,6 +600,5 @@
   </script>
 </body>
 </html>
-
 
 

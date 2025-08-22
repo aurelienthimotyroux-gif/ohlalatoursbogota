@@ -199,7 +199,7 @@ form button:hover { background-color: #0056b3; }
 .btn-secondary:hover, .btn-dark:hover, .btn-outline:hover, .btn-outline-dark:hover, .btn-black:hover, .btn-default:hover,
 .btn-primary:hover { filter: brightness(1.05); }
 .btn:active, a.btn:active, button.btn:active,
-.btn-secondary:active, .btn-dark:active, .btn-outline:active, .btn-outline-dark:active, .btn-black:active, .btn-default:active,
+.btn-secondary:active, .btn-dark:active:active, .btn-outline:active, .btn-outline-dark:active, .btn-black:active, .btn-default:active,
 .btn-primary:active { transform: translateY(1px); }
 
 /* Zone "transport" : robustesse anti-chevauchement */
@@ -435,5 +435,36 @@ form button:hover { background-color: #0056b3; }
   color: #0f172a !important;
   text-shadow: none;
 }
+
+/* =========================
+   🔚 AJOUTS MINIMAUX
+   ========================= */
+
+/* 1) Slide plus “buttery” (courbe douce) — renfort */
+.tour-swiper .swiper-wrapper{
+  transition-timing-function: cubic-bezier(.22,.61,.36,1) !important;
+}
+
+/* 2) Images : rendu net (sans supprimer object-fit) */
+.tour-swiper img{
+  image-rendering: auto;
+}
+
+/* 3) Lien .btn-primary : focus clavier visible (a11y) */
+a.btn-primary{
+  display:inline-flex; align-items:center; justify-content:center;
+  text-decoration:none !important;
+}
+a.btn-primary:focus-visible{
+  outline:3px solid rgba(37,99,235,.5);
+  outline-offset:2px;
+  box-shadow:0 0 0 2px rgba(255,255,255,.9);
+}
+
+/* 4) Réduction d’animation si l’utilisateur préfère moins d’effets (complément) */
+@media (prefers-reduced-motion: reduce){
+  .tour-swiper .swiper-wrapper{ transition-duration: 0ms !important; }
+}
+
 
 
