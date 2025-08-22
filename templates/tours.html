@@ -484,109 +484,112 @@
   }
   </script>
 
-  <!-- JS Swiper (original) -->
-  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-  <script>
-    (function(){
-      function initTourSwipers(){
-        document.querySelectorAll('.tour-swiper').forEach(function(slider){
-          if (slider.dataset.initialized === "1") return;
-          slider.dataset.initialized = "1";
-          var nextBtn = slider.querySelector('.swiper-button-next');
-          var prevBtn = slider.querySelector('.swiper-button-prev');
+  <!-- Swiper bundle -->
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
-          new Swiper(slider, {
-            slidesPerView: 1,
-            spaceBetween: 0,
-            effect: 'slide',
-            speed: 700,
-            loop: true,
-            loopAdditionalSlides: 1,
-            watchOverflow: true,
-            preloadImages: true,         // ✅ on garde le chargement direct
-            // lazy: { loadPrevNext: true }, // ❌ désactivé (on utilise loading="lazy")
-            autoplay: { delay: 3500, disableOnInteraction: false, pauseOnMouseEnter: true },
-            observer: true,
-            observeParents: true,
-            observeSlideChildren: true,
-            simulateTouch: true,
-            grabCursor: true,
-            keyboard: { enabled: true, onlyInViewport: true },
-            navigation: { nextEl: nextBtn, prevEl: prevBtn }
-          });
-        });
-      }
-      if (document.readyState === "loading") {
-        document.addEventListener('DOMContentLoaded', initTourSwipers);
-        window.addEventListener('load', initTourSwipers);
-      } else {
-        initTourSwipers();
-      }
-    })();
-  </script>
+<script>
+(function(){
+  function initTourSwipers(){
+    document.querySelectorAll('.tour-swiper').forEach(function(slider){
+      if (slider.dataset.initialized === "1") return;
+      slider.dataset.initialized = "1";
 
-  <!-- 🔧 Script additionnel de secours (ajouté, rien supprimé) -->
-  <script>
-  (function(){
-    function wireFallback(){
-      document.querySelectorAll('.tour-swiper').forEach(function(root){
+      var nextBtn = slider.querySelector('.swiper-button-next');
+      var prevBtn = slider.querySelector('.swiper-button-prev');
+
+      // 1) Init Swiper (effet glissant)
+      const sw = new Swiper(slider, {
+        slidesPerView: 1,
+        spaceBetween: 0,
+        effect: 'slide',
+        speed: 700,
+        loop: true,
+        loopAdditionalSlides: 1,
+        watchOverflow: true,
+        preloadImages: true,
+        autoplay: { delay: 3500, disableOnInteraction: false, pauseOnMouseEnter: true },
+        observer: true,
+        observeParents: true,
+        observeSlideChildren: true,
+        simulateTouch: true,
+        grabCursor: true,
+        allowTouchMove: true,
+        keyboard: { enabled: true, onlyInViewport: true },
+        navigation: { nextEl: nextBtn, prevEl: prevBtn }
+      });
+
+      // 2) Forcer une transition fluide (au cas où un CSS override existe)
+      const wrapper = slider.querySelector('.swiper-wrapper');
+      if (wrapper){
+        wrapper.style.transitionTimingFunction = 'cubic-bezier(.22,.61,.36,1)';
+        wrapper.style.transitionDuration = '650ms';
+      }
+
+      // 3) Si un fallback a posé la classe, on la retire
+      slider.classList.remove('no-swiper');
+    });
+  }
+
+  function fallbackIfNeeded(){
+    // Exécuté après un court délai : si Swiper n'est pas là, activer le fallback
+    document.querySelectorAll('.tour-swiper').forEach(function(root){
+      const hasSwiper = !!(root.swiper || root._swiper);
+      if (window.Swiper && root.dataset.initialized === "1" && hasSwiper){
+        // Swiper OK : s'assurer que le fallback est désactivé
+        root.classList.remove('no-swiper');
+        return;
+      }
+
+      // Pas de Swiper -> fallback minimal (sans casser l’animation quand Swiper arrive plus tard)
+      if (!hasSwiper){
+        const slides = Array.from(root.querySelectorAll('.swiper-slide'));
+        root.classList.add('no-swiper');
+        if (slides.length){
+          slides.forEach(s => s.style.display = 'none');
+          slides[0].style.display = 'block';
+          slides[0].classList.add('_is-active');
+        }
+
         const nextEl = root.querySelector('.swiper-button-next');
         const prevEl = root.querySelector('.swiper-button-prev');
-        const slides = Array.from(root.querySelectorAll('.swiper-slide'));
-        const sw = root.swiper || root._swiper;
 
-        if (nextEl){
-          nextEl.addEventListener('click', function(e){
-            if (sw && typeof sw.slideNext === 'function'){ sw.slideNext(); }
-            else { manualNext(root, slides); }
-          }, { passive:true });
+        function showAt(i){
+          slides.forEach((s,k) => {
+            s.style.display = (k === i) ? 'block' : 'none';
+            s.classList.toggle('_is-active', k === i);
+          });
         }
-        if (prevEl){
-          prevEl.addEventListener('click', function(e){
-            if (sw && typeof sw.slidePrev === 'function'){ sw.slidePrev(); }
-            else { manualPrev(root, slides); }
-          }, { passive:true });
+        function currentIndex(){
+          const idx = slides.findIndex(s => s.classList.contains('_is-active'));
+          return (idx >= 0 ? idx : 0);
         }
+        nextEl && nextEl.addEventListener('click', () => {
+          const i = currentIndex();
+          showAt((i + 1) % slides.length);
+        }, {passive:true});
+        prevEl && prevEl.addEventListener('click', () => {
+          const i = currentIndex();
+          showAt((i - 1 + slides.length) % slides.length);
+        }, {passive:true});
+      }
+    });
+  }
 
-        if (!(window.Swiper) || !(sw)){
-          root.classList.add('no-swiper');
-          if (!root.dataset._fallback){
-            root.dataset._fallback = '1';
-            if (slides.length){
-              slides.forEach(s => s.classList.remove('_is-active'));
-              slides[0].classList.add('_is-active');
-              slides[0].style.display = 'block';
-            }
-          }
-        }
-      });
-    }
+  // Ordre d’exécution : init d’abord, fallback ensuite
+  function boot(){
+    initTourSwipers();
+    // Laisse le temps à Swiper de s’attacher à l’élément avant de juger
+    setTimeout(fallbackIfNeeded, 600);
+  }
 
-    function manualNext(root, slides){
-      if (!slides.length) return;
-      const idx = slides.findIndex(s => s.classList.contains('_is-active'));
-      const next = (idx >= 0 ? (idx + 1) % slides.length : 1 % slides.length);
-      showAt(slides, next);
-    }
-    function manualPrev(root, slides){
-      if (!slides.length) return;
-      const idx = slides.findIndex(s => s.classList.contains('_is-active'));
-      const prev = (idx >= 0 ? (idx - 1 + slides.length) % slides.length : 0);
-      showAt(slides, prev);
-    }
-    function showAt(slides, i){
-      slides.forEach((s,k) => {
-        if (k === i){ s.classList.add('_is-active'); s.style.display='block'; }
-        else { s.classList.remove('_is-active'); s.style.display='none'; }
-      });
-    }
-
-    if (document.readyState === 'loading'){
-      document.addEventListener('DOMContentLoaded', wireFallback);
-      window.addEventListener('load', wireFallback);
-    } else { wireFallback(); }
-  })();
-  </script>
+  if (document.readyState === "loading"){
+    document.addEventListener('DOMContentLoaded', boot);
+    window.addEventListener('load', boot);
+  } else {
+    boot();
+  }
+})();
+</script>
 
   <!-- ✅ Script AJOUTÉ : toggle du header au scroll -->
   <script>
