@@ -176,7 +176,7 @@
     <a href="{{ url_for('index', lang=get_locale()) }}">{{ _("Accueil") }}</a>
     <a href="{{ url_for('tours', lang=get_locale()) }}">{{ _("Nos tours") }}</a>
     <a href="{{ url_for('transport', lang=get_locale()) }}">{{ _("Service de Transport") }}</a>
-    <a href="{{ url_for('reservation_page', lang=get_locale()) }}">{{ _("Réservation") }}</a>
+    <a href="{{ url_for('reservation', lang=get_locale()) }}">{{ _("Réservation") }}</a>
     <div class="lang-switcher" aria-label="{{ _('Changer de langue') }}">
       <a href="{{ lang_url('fr') }}" lang="fr" aria-label="Français">🇫🇷<span class="sr-only">Français</span></a>
       <a href="{{ lang_url('en') }}" lang="en" aria-label="English">🇺🇸<span class="sr-only">English</span></a>
