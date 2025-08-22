@@ -29,7 +29,6 @@
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-92M6CENDXH"></script>
   <script>
     gtag('js', new Date());
-    // Id de mesure GA4
     gtag('config', 'G-92M6CENDXH', { anonymize_ip: true });
   </script>
 
@@ -91,9 +90,8 @@
     .site-header.scrolled .main-nav a{color:#0f172a}
   </style>
 
-  <!-- ✅ Styles locaux (on conserve le design : image à droite) -->
+  <!-- ✅ Styles locaux -->
   <style>
-    /* Bloc texte + image côte à côte */
     .transport-description {
       display: flex;
       flex-wrap: wrap;
@@ -109,32 +107,23 @@
       border-radius: 12px;
       display: block;
     }
-
-    /* Petites listes / chips déjà présentes dans ton design global */
     .tour-includes { position: relative; margin: 14px 0 12px; padding-left: 14px; }
     .tour-includes::before {
-      content: "";
-      position: absolute; left: 0; top: 4px; bottom: 4px; width: 4px;
+      content: ""; position: absolute; left: 0; top: 4px; bottom: 4px; width: 4px;
       border-radius: 4px; background: linear-gradient(180deg, #f59e0b, #f97316);
     }
     .includes-title { margin: 0 0 8px; font-size: 14px; letter-spacing: .4px; text-transform: uppercase; opacity: .8; }
     .includes-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px 14px; grid-template-columns: 1fr; }
     .includes-list li { position: relative; padding-left: 26px; line-height: 1.6; }
     .includes-list li::before { content: "✓"; position: absolute; left: 0; top: 0; font-weight: 700; transform: translateY(1px); opacity: .9; }
-
     .tour-chips { list-style: none; padding: 0; margin: 12px 0 16px; display: flex; flex-wrap: wrap; gap: 16px; }
     .tour-chips .chip { background: none; border: none; padding: 0; font-size: 16px; line-height: 1.6; }
-
     .btn-primary {
       appearance: none; border: 1px solid rgba(0,0,0,.2);
       background: #2563eb; color: #fff; padding: 12px 18px;
       border-radius: 12px; font-weight: 700; cursor: pointer;
     }
-
-    /* Note discrète à côté de la durée */
     .chip-note{ font-size:.95em; opacity:.85; }
-
-    /* Responsive : on garde l’image sous le texte en mobile */
     @media (max-width: 900px){
       .transport-description { flex-direction: column; }
       .transport-text, .transport-img { flex: 1 1 auto; }
@@ -147,26 +136,22 @@
 <link rel="manifest" href="{{ url_for('static', filename='img/favicon/site.webmanifest') }}">
 <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='img/favicon/favicon.ico') }}">
 <meta name="theme-color" content="#0b4654">
-
 <link rel="icon" href="/favicon.ico" sizes="any">
-
 <meta name="google-site-verification" content="4z28-XXEkdcB_VOcaGoy1bhgA-zj7xr6wSf76ZwZ4tQ" />
 
 </head>
 <body>
 
-  <!-- ✅ Nouveau header fixe (logo + nav + drapeaux) -->
+  <!-- ✅ Header fixe (logo blanc + logo couleur au scroll) -->
   <header class="site-header header-on-hero">
     <a href="{{ url_for('index', lang=get_locale()) }}" class="brand" aria-label="Oh La La Tours Bogotá — Accueil">
-      <!-- logo blanc sur la photo (version white-outline) -->
       <img class="logo logo--light"
-           src="{{ url_for('static', filename='img/logo/logo-ohlala-white-outline-360.png') }}"
-           srcset="{{ url_for('static', filename='img/logo/logo-ohlala-white-outline-720@2x.png') }} 2x"
+           src="{{ url_for('static', filename='img/logo-light.png') }}"
+           srcset="{{ url_for('static', filename='img/logo-light.png') }} 2x"
            alt="Oh La La Tours Bogotá">
-      <!-- logo couleur au scroll / fonds clairs -->
       <img class="logo logo--dark"
-           src="{{ url_for('static', filename='img/logo/logo-ohlala-teal-gold-360.png') }}"
-           srcset="{{ url_for('static', filename='img/logo/logo-ohlala-teal-gold-720@2x.png') }} 2x"
+           src="{{ url_for('static', filename='img/logo-dark.png') }}"
+           srcset="{{ url_for('static', filename='img/logo-dark.png') }} 2x"
            alt="Oh La La Tours Bogotá">
     </a>
 
@@ -175,16 +160,15 @@
       <a href="{{ url_for('tours', lang=get_locale()) }}">{{ _("Nos tours") }}</a>
       <a href="{{ url_for('transport', lang=get_locale()) }}">{{ _("Service de Transport") }}</a>
       <a href="{{ url_for('reservation', lang=get_locale()) }}">{{ _("Réservation") }}</a>
-
       <div class="lang-switcher" aria-label="{{ _('Changer de langue') }}">
-        <a href="{{ lang_url('fr') }}" lang="fr" aria-label="Français">🇫🇷<span class="sr-only">Français</span></a>
-        <a href="{{ lang_url('en') }}" lang="en" aria-label="English">🇺🇸<span class="sr-only">English</span></a>
-        <a href="{{ lang_url('es') }}" lang="es" aria-label="Español">🇪🇸<span class="sr-only">Español</span></a>
+        <a href="{{ lang_url('fr') }}" lang="fr" aria-label="Français">🇫🇷</a>
+        <a href="{{ lang_url('en') }}" lang="en" aria-label="English">🇺🇸</a>
+        <a href="{{ lang_url('es') }}" lang="es" aria-label="Español">🇪🇸</a>
       </div>
     </nav>
   </header>
 
-  <!-- Bandeau image + titre (ancienne topbar supprimée) -->
+  <!-- Bandeau image + titre -->
   <header class="hero background-half"
           style="background-image: url('{{ url_for('static', filename='images/bg_transport.webp') }}');">
     <h1 class="hero-title">{{ _("Service de Transport — Hôtel ⇄ Aéroport Bogotá") }}</h1>
@@ -192,16 +176,11 @@
 
   <main>
     <section id="transport" class="container">
-
-      <!-- Texte à gauche -->
       <div class="transport-description">
         <div class="transport-text">
           <h2>{{ _("Transfert privé, ponctuel et sécurisé") }}</h2>
-          <p>
-            {{ _("Profitez d’un trajet confortable entre votre hébergement et l’aéroport El Dorado (BOG). Chauffeur professionnel et courtois, prise en charge à l’heure et service porte-à-porte.") }}
-          </p>
+          <p>{{ _("Profitez d’un trajet confortable entre votre hébergement et l’aéroport El Dorado (BOG). Chauffeur professionnel et courtois, prise en charge à l’heure et service porte-à-porte.") }}</p>
 
-          <!-- Inclus / Caractéristiques -->
           <div class="tour-includes">
             <h3 class="includes-title">{{ _("Ce qui est inclus :") }}</h3>
             <ul class="includes-list">
@@ -213,7 +192,6 @@
             </ul>
           </div>
 
-          <!-- Infos pratiques (chips) -->
           <ul class="tour-chips" aria-label="{{ _('Informations pratiques') }}">
             <li class="chip">
               <strong>{{ _("Durée") }}:</strong>&nbsp;{{ _("~40–60 min") }}
@@ -223,37 +201,27 @@
             <li class="chip"><strong>{{ _("Tarif") }}:</strong>&nbsp;{{ _("60 000 COP (1 à 4 personnes)") }}</li>
           </ul>
 
-          <!-- Réservation -->
           <h3>{{ _("Comment réserver ?") }}</h3>
+          <p>{{ _("Réservez facilement par WhatsApp ou e-mail. Indiquez la date, l’heure de prise en charge, le numéro de vol et le nombre de passagers.") }}</p>
           <p>
-            {{ _("Réservez facilement par WhatsApp ou e-mail. Indiquez la date, l’heure de prise en charge, le numéro de vol et le nombre de passagers.") }}
-          </p>
-          <p>
-            <a class="btn-primary" href="https://wa.me/573000000000" target="_blank" rel="noopener">
-              {{ _("Réserver sur WhatsApp") }}
-            </a>
+            <a class="btn-primary" href="https://wa.me/573000000000" target="_blank" rel="noopener">{{ _("Réserver sur WhatsApp") }}</a>
             &nbsp;
-            <a class="btn-primary" href="mailto:contact@ohlalatoursbogota.com">
-              {{ _("Réserver par e-mail") }}
-            </a>
+            <a class="btn-primary" href="mailto:contact@ohlalatoursbogota.com">{{ _("Réserver par e-mail") }}</a>
           </p>
-
           <p style="margin-top:10px;">
             <small>{{ _("Besoin d’un siège enfant, d’un van ou d’horaires très matinaux ? Dites-le nous lors de la réservation.") }}</small>
           </p>
         </div>
 
-        <!-- Photo à droite (conservée) -->
         <div class="transport-img">
           <img src="{{ url_for('static', filename='images/transport_service.jpeg') }}"
-               alt="{{ _('Service de transport privé à Bogota professionnel van taxi aéroport el dorado trajet ponctuel sécurité tour bienvenue à bogota colombie amérique du sud') }}">
+               alt="{{ _('Service de transport privé à Bogota professionnel van taxi aéroport el dorado trajet ponctuel sécurité') }}">
         </div>
       </div>
-
     </section>
   </main>
 
-  <!-- ✅ Données structurées -->
+  <!-- Données structurées -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -275,7 +243,7 @@
   }
   </script>
 
-  <!-- ✅ Script AJOUTÉ : toggle du header au scroll -->
+  <!-- Toggle header au scroll -->
   <script>
     (function(){
       const header = document.querySelector('.site-header');
@@ -287,5 +255,4 @@
   </script>
 </body>
 </html>
-
 
