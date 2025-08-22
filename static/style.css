@@ -419,4 +419,21 @@ form button:hover { background-color: #0056b3; }
 .header-on-image .logo-dark { display: none; }
 .header-on-image .logo-light { display: block; }
 
+.site-title {
+  font-size: 1.6rem;         /* même taille que sur l’accueil */
+  font-weight: 700;          /* en gras */
+  line-height: 1.2;
+  color: inherit;
+}
+
+.header-on-hero .site-title {
+  color: #fff !important;
+  text-shadow: 0 1px 2px rgba(0,0,0,.35);
+}
+
+.site-header.scrolled .site-title {
+  color: #0f172a !important;
+  text-shadow: none;
+}
+
 
