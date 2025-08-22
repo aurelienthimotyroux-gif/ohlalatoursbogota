@@ -158,10 +158,10 @@
   <!-- ✅ Nouveau header fixe (logo + nav + drapeaux) -->
   <header class="site-header header-on-hero">
     <a href="{{ url_for('index', lang=get_locale()) }}" class="brand" aria-label="Oh La La Tours Bogotá — Accueil">
-      <!-- logo blanc sur la photo -->
+      <!-- logo blanc sur la photo (version white-outline) -->
       <img class="logo logo--light"
-           src="{{ url_for('static', filename='img/logo/logo-ohlala-white-360.png') }}"
-           srcset="{{ url_for('static', filename='img/logo/logo-ohlala-white-720@2x.png') }} 2x"
+           src="{{ url_for('static', filename='img/logo/logo-ohlala-white-outline-360.png') }}"
+           srcset="{{ url_for('static', filename='img/logo/logo-ohlala-white-outline-720@2x.png') }} 2x"
            alt="Oh La La Tours Bogotá">
       <!-- logo couleur au scroll / fonds clairs -->
       <img class="logo logo--dark"

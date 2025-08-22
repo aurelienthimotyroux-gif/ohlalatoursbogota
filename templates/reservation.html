@@ -78,18 +78,15 @@
     .site-header.scrolled .main-nav a{color:#0f172a}
   </style>
 
-<link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='img/favicon/apple-touch-icon.png') }}">
-<link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='img/favicon/favicon-32x32.png') }}">
-<link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='img/favicon/favicon-16x16.png') }}">
-<link rel="manifest" href="{{ url_for('static', filename='img/favicon/site.webmanifest') }}">
-<link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='img/favicon/favicon.ico') }}">
-<meta name="theme-color" content="#0b4654">
-
-<link rel="icon" href="/favicon.ico" sizes="any">
-
-<meta name="google-site-verification" content="4z28-XXEkdcB_VOcaGoy1bhgA-zj7xr6wSf76ZwZ4tQ" />
-
-</head>
+  <!-- ✅ Favicons -->
+  <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='img/favicon/apple-touch-icon.png') }}">
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='img/favicon/favicon-32x32.png') }}">
+  <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='img/favicon/favicon-16x16.png') }}">
+  <link rel="manifest" href="{{ url_for('static', filename='img/favicon/site.webmanifest') }}">
+  <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='img/favicon/favicon.ico') }}">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <meta name="theme-color" content="#0b4654">
+  <meta name="google-site-verification" content="4z28-XXEkdcB_VOcaGoy1bhgA-zj7xr6wSf76ZwZ4tQ" />
 
   <!-- ✅ Canonical + hreflang -->
   <link rel="canonical" href="https://www.ohlalatoursbogota.com{{ request.path }}{% if get_locale()!='fr' %}?lang={{ get_locale() }}{% endif %}">
@@ -122,6 +119,7 @@
   <!-- ✅ ALT Twitter ajouté -->
   <meta name="twitter:image:alt" content="{{ _('Panorama de Bogotá, téléphérique de Monserrate et rues coloniales de la Candelaria ; page de réservation pour visites privées et transferts. EN: Bogotá skyline and Monserrate cable car; private tours booking & airport transfer. ES: Bogotá al atardecer y teleférico de Monserrate; reserva de tours privados y traslado al aeropuerto') }}">
 
+  <!-- ✅ CSS global -->
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
@@ -230,7 +228,7 @@
           <div id="card-button-container" style="margin-top:12px;"></div>
 
           <!-- Zone d’erreur visible si SDK non chargé -->
-          <div id="paypal-error" role="alert" style="display:none;margin-top:10px;padding:10px;border:1px solid #f00;color:#b00;background:#fee;"></div>
+          <div id="paypal-error" role="alert" style="display:none;margin-top:10px;padding:10px;border:1px solid #f00;color:#B00020;background:#FEE;"></div>
 
           <noscript>
             <p style="margin-top:8px;color:#b00;background:#fff4f4;border:1px solid #f3c2c2;padding:8px;">
@@ -283,10 +281,10 @@
         }
       });
 
-      // Rendu unique du bouton Wallet
+      // Rendu unique des boutons
       let paypalRendered = false;
 
-      function renderPaypalButton() {
+      function renderPaypalButtons() {
         if (paypalRendered) return;
         const errBox = document.getElementById('paypal-error');
 
@@ -327,66 +325,62 @@
           },
 
           onError: function (err) {
-            const errBox = document.getElementById('paypal-error');
             errBox.style.display = 'block';
             errBox.textContent = 'PayPal: ' + (err && err.message ? err.message : err);
             console.error('PayPal error:', err);
           }
-        })
-        .render('#paypal-button-container')
-        .then(function () { paypalRendered = true; });
+        }).render('#paypal-button-container');
 
-        // --- Bouton Carte via PayPal (en plus du wallet) ---
-        (function renderCardButton() {
-          const cardBtn = paypal.Buttons({
-            fundingSource: paypal.FUNDING.CARD,
-            style: { layout: 'vertical', color: 'blue', shape: 'rect', label: 'pay' },
+        // --- Bouton Carte (via PayPal) ---
+        const cardBtn = paypal.Buttons({
+          fundingSource: paypal.FUNDING.CARD,
+          style: { layout: 'vertical', color: 'blue', shape: 'rect', label: 'pay' },
 
-            createOrder: function (data, actions) {
-              const tourId = document.getElementById('tour').value || '';
-              const amount = (prices[tourId] || 40).toFixed(2);
-              const date = document.getElementById('date').value || '';
-              const nom  = document.getElementById('nom').value || '';
-              const description = `Tour: ${tourId || 'N/A'} | Date: ${date || 'N/A'} | Nom: ${nom || 'N/A'}`;
+          createOrder: function (data, actions) {
+            const tourId = document.getElementById('tour').value || '';
+            const amount = (prices[tourId] || 40).toFixed(2);
+            const date = document.getElementById('date').value || '';
+            const nom  = document.getElementById('nom').value || '';
+            const description = `Tour: ${tourId || 'N/A'} | Date: ${date || 'N/A'} | Nom: ${nom || 'N/A'}`;
 
-              return actions.order.create({
-                purchase_units: [{
-                  amount: { currency_code: 'EUR', value: amount },
-                  description
-                }]
-              });
-            },
+            return actions.order.create({
+              purchase_units: [{
+                amount: { currency_code: 'EUR', value: amount },
+                description
+              }]
+            });
+          },
 
-            onApprove: function (data, actions) {
-              return actions.order.capture().then(function () {
-                window.location.href = '/paiement-reussi?orderID=' + data.orderID + '&lang={{ get_locale() }}';
-              });
-            },
+          onApprove: function (data, actions) {
+            return actions.order.capture().then(function () {
+              window.location.href = '/paiement-reussi?orderID=' + data.orderID + '&lang={{ get_locale() }}';
+            });
+          },
 
-            onCancel: function () {
-              window.location.href = '/paiement-annule?lang={{ get_locale() }}';
-            },
+          onCancel: function () {
+            window.location.href = '/paiement-annule?lang={{ get_locale() }}';
+          },
 
-            onError: function (err) {
-              const errBox = document.getElementById('paypal-error');
-              errBox.style.display = 'block';
-              errBox.textContent = 'PayPal (carte): ' + (err && err.message ? err.message : err);
-              console.error('PayPal card error:', err);
-            }
-          });
-
-          if (cardBtn.isEligible()) {
-            cardBtn.render('#card-button-container');
+          onError: function (err) {
+            errBox.style.display = 'block';
+            errBox.textContent = 'PayPal (carte): ' + (err && err.message ? err.message : err);
+            console.error('PayPal card error:', err);
           }
-        })();
+        });
+
+        if (cardBtn.isEligible()) {
+          cardBtn.render('#card-button-container');
+        }
+
+        paypalRendered = true;
       }
 
-      // Rendre les boutons immédiatement
-      renderPaypalButton();
+      // Rendre immédiatement
+      renderPaypalButtons();
     });
   </script>
 
-  <!-- ✅ Données structurées : Service + Breadcrumb -->
+  <!-- ✅ Données structurées : Service -->
   <script type="application/ld+json">
   {
     "@context":"https://schema.org",
@@ -412,6 +406,7 @@
   }
   </script>
 
+  <!-- ✅ Données structurées : Breadcrumb -->
   <script type="application/ld+json">
   {
     "@context":"https://schema.org",
@@ -452,5 +447,6 @@
 
 </body>
 </html>
+
 
 
