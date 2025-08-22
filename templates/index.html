@@ -87,7 +87,7 @@
   <meta name="theme-color" content="#0b4654">
   <meta name="google-site-verification" content="4z28-XXEkdcB_VOcaGoy1bhgA-zj7xr6wSf76ZwZ4tQ" />
 
-  <!-- Styles spécifiques -->
+  <!-- Styles spécifiques (header, logos, etc.) -->
   <style>
     .site-header{
       position:fixed; top:0; left:0; right:0; z-index:70;
@@ -101,7 +101,11 @@
     .main-nav{display:flex; align-items:center; gap:18px; font-weight:600}
     .main-nav a{text-decoration:none}
     .site-title{font-size:20px; font-weight:600; color:#0f172a}
+
+    /* par défaut: logo clair visible, foncé caché (hero photo) */
     .logo--dark{display:none}
+
+    /* Au scroll / fond clair */
     .site-header.scrolled{
       background: rgba(255,255,255,.86);
       backdrop-filter: saturate(180%) blur(8px);
@@ -110,220 +114,278 @@
     .site-header.scrolled .logo--light{display:none}
     .site-header.scrolled .logo--dark{display:block}
     .site-header.scrolled .main-nav a{color:#0f172a}
+
+    /* Styles existants pour avis, etc. (conservés) */
+    .testimonials { background:#fff; padding:40px 20px; margin-top:40px; }
+    .testimonials .container { max-width:1000px; margin:0 auto; }
+    .testimonials h2 { text-align:center; margin-bottom:22px; font-size:28px; }
+    .testimonials-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }
+    @media (max-width:1024px){ .testimonials-grid{ grid-template-columns:repeat(2,1fr);} }
+    @media (max-width:640px){ .testimonials-grid{ grid-template-columns:1fr;} }
+    .testimonial-card { background:#fafafa; border:1px solid #eee; border-radius:12px; padding:16px; box-shadow:0 4px 14px rgba(0,0,0,.06); }
+    .t-head { display:grid; grid-template-columns:auto 1fr; gap:6px 10px; align-items:center; margin-bottom:10px; }
+    .t-name { font-weight:600; }
+    .t-meta { color:#666; font-size:14px; }
+    .t-stars { display:inline-flex; gap:4px; align-items:center; margin-bottom:8px; }
+    .t-stars svg { width:18px; height:18px; }
+    .testimonial-card .t-text{ font-size:15px; color:#333; line-height:1.5; white-space:pre-wrap; word-break:break-word; }
+    .testimonial-card .t-text.clamp{ display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:4; overflow:hidden; }
+    .testimonial-card.expanded .t-text{ -webkit-line-clamp:unset; display:block; overflow:visible; }
+    .testimonial-card .t-toggle{ margin-top:8px; background:none; border:0; color:#007bff; font:inherit; cursor:pointer; padding:0; }
+    .testimonial-card .t-toggle:hover{ text-decoration:underline; }
+    .comment-section-title { text-align:center; font-size:2rem; margin-bottom:20px; }
+    .hero .nav-hero a { text-decoration:none; }
+    .hero .nav-hero a:focus { outline:2px dashed #333; outline-offset:3px; }
+    .sr-only { position:absolute!important; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,1px,1px); white-space:nowrap; border:0; }
+    .flash-wrap { max-width:1000px; margin:16px auto; padding:0 20px; }
+    .flash { margin:8px 0; padding:10px; border-radius:8px; }
+    .flash-success{ background:#eefbf0; border:1px solid #b7ebc6; color:#1b5e20; }
+    .flash-error{ background:#fdeaea; border:1px solid #f5c2c2; color:#8a1f1f; }
+    @media (min-width: 768px){ .sticky-cta { display: none; } }
   </style>
 </head>
+
 <body>
 
+<!-- Sprite d'icônes SVG (étoiles) -->
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none;">
+  <symbol id="icon-star-full" viewBox="0 0 24 24" aria-hidden="true">
+    <path fill="#ffb400" d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21z"/>
+  </symbol>
+  <symbol id="icon-star-half" viewBox="0 0 24 24" aria-hidden="true">
+    <path fill="#ffb400" d="M12 17.27V2L9.19 8.62 2 9.24l5.46 4.73L5.82 21z"/>
+    <path fill="none" stroke="#ffb400" stroke-width="1.5" d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21z"/>
+  </symbol>
+  <symbol id="icon-star-empty" viewBox="0 0 24 24" aria-hidden="true">
+    <path fill="none" stroke="#ffb400" stroke-width="1.5" d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21z"/>
+  </symbol>
+</svg>
+
+<!-- HEADER (logos light/dark + nav) -->
 <header class="site-header">
   <div class="logo-container">
-    <!-- Logo clair -->
+    <!-- Logo clair (sur hero/photo) -->
     <img src="{{ url_for('static', filename='img/logo-light.png') }}" alt="Oh La La Tours Bogotá" class="logo logo--light">
-    <!-- Logo foncé -->
+    <!-- Logo foncé (après scroll, fond clair) -->
     <img src="{{ url_for('static', filename='img/logo-dark.png') }}" alt="Oh La La Tours Bogotá" class="logo logo--dark">
     <span class="site-title">Oh La La Tours Bogotá</span>
   </div>
 
   <!-- Navigation -->
-  <nav class="main-nav">
-    <a href="{{ url_for('index', lang=get_locale()) }}">{{ _('Accueil') }}</a>
-    <a href="{{ url_for('tours', lang=get_locale()) }}">{{ _('Nos tours') }}</a>
-    <a href="{{ url_for('transport', lang=get_locale()) }}">{{ _('Service de Transport') }}</a>
-    <a href="{{ url_for('reservation_page', lang=get_locale()) }}">{{ _('Réservation') }}</a>
+  <nav class="main-nav" aria-label="{{ _('Navigation principale') }}">
+    <a href="{{ url_for('index', lang=get_locale()) }}">{{ _("Accueil") }}</a>
+    <a href="{{ url_for('tours', lang=get_locale()) }}">{{ _("Nos tours") }}</a>
+    <a href="{{ url_for('transport', lang=get_locale()) }}">{{ _("Service de Transport") }}</a>
+    <a href="{{ url_for('reservation_page', lang=get_locale()) }}">{{ _("Réservation") }}</a>
+    <div class="lang-switcher" aria-label="{{ _('Changer de langue') }}">
+      <a href="{{ lang_url('fr') }}" lang="fr" aria-label="Français">🇫🇷<span class="sr-only">Français</span></a>
+      <a href="{{ lang_url('en') }}" lang="en" aria-label="English">🇺🇸<span class="sr-only">English</span></a>
+      <a href="{{ lang_url('es') }}" lang="es" aria-label="Español">🇪🇸<span class="sr-only">Español</span></a>
+    </div>
   </nav>
 </header>
 
-  <!-- ✅ Nouveau header fixe (logo + nav + drapeaux) -->
-  <header class="site-header header-on-hero">
-    <a href="{{ url_for('index', lang=get_locale()) }}" class="brand" aria-label="Oh La La Tours Bogotá — Accueil">
-      <img class="logo logo--light"
-           src="{{ url_for('static', filename='img/logo/logo-ohlala-white-360.png') }}"
-           srcset="{{ url_for('static', filename='img/logo/logo-ohlala-white-720@2x.png') }} 2x"
-           alt="Oh La La Tours Bogotá">
-      <img class="logo logo--dark"
-           src="{{ url_for('static', filename='img/logo/logo-ohlala-teal-gold-360.png') }}"
-           srcset="{{ url_for('static', filename='img/logo/logo-ohlala-teal-gold-720@2x.png') }} 2x"
-           alt="Oh La La Tours Bogotá">
-    </a>
+<!-- HERO (image de couverture) -->
+<header class="hero"
+        role="img"
+        aria-label="Bogota Monserrate Candelaria street art visites guidées privées guide francophone café colombien cathédrale de sel Zipaquira Hacienda Coloma transport privé transfert aéroport safe friendly professional travel Colombia colombie chorrera gastronomie"
+        style="background-image: url('{{ url_for('static', filename='images/accueil.jpg') }}');">
 
-    <nav class="main-nav" aria-label="{{ _('Navigation principale') }}">
-      <a href="{{ url_for('index', lang=get_locale()) }}">{{ _("Accueil") }}</a>
-      <a href="{{ url_for('tours', lang=get_locale()) }}">{{ _("Nos tours") }}</a>
-      <a href="{{ url_for('transport', lang=get_locale()) }}">{{ _("Service de Transport") }}</a>
-      <a href="{{ url_for('reservation', lang=get_locale()) }}">{{ _("Réservation") }}</a>
+  <span class="sr-only">
+    {{ _('Photo de couverture Bogotá Monserrate Candelaria street art Cathédrale de sel Zipaquirá Hacienda Coloma visites guidées privées guide francophone transport privé transfert aéroport') }}
+    Cover photo Bogota Monserrate Candelaria street art Salt Cathedral Zipaquira coffee farm Hacienda Coloma private tours French speaking guide private transport airport transfer
+    Foto de portada Bogotá Monserrate Candelaria arte urbano Catedral de Sal Zipaquirá finca cafetera Hacienda Coloma tours privados guía francófona transporte privado traslado aeropuerto
+  </span>
 
-      <div class="lang-switcher" aria-label="{{ _('Changer de langue') }}">
-        <a href="{{ lang_url('fr') }}" lang="fr" aria-label="Français">🇫🇷<span class="sr-only">Français</span></a>
-        <a href="{{ lang_url('en') }}" lang="en" aria-label="English">🇺🇸<span class="sr-only">English</span></a>
-        <a href="{{ lang_url('es') }}" lang="es" aria-label="Español">🇪🇸<span class="sr-only">Español</span></a>
-      </div>
-    </nav>
-  </header>
+  <h1 class="hero-title">{{ _("Bienvenue à Bogotá !") }}</h1>
+</header>
 
-  <!-- 🎯 Ancienne topbar (drapeaux + burger + nav-hero) SUPPRIMÉE -->
-
-  <header class="hero"
-          role="img"
-          aria-label="Bogota Monserrate Candelaria street art visites guidées privées guide francophone café colombien cathédrale de sel Zipaquira Hacienda Coloma transport privé transfert aéroport safe friendly professional travel Colombia colombie chorrera gastronomie"
-          style="background-image: url('{{ url_for('static', filename='images/accueil.jpg') }}');">
-
-    <!-- Texte associé invisible pour SEO/Accessibilité (FR + EN + ES, sans virgules) -->
-    <span class="sr-only">
-      {{ _('Photo de couverture Bogotá Monserrate Candelaria street art Cathédrale de sel Zipaquirá Hacienda Coloma visites guidées privées guide francophone transport privé transfert aéroport') }}
-      Cover photo Bogota Monserrate Candelaria street art Salt Cathedral Zipaquira coffee farm Hacienda Coloma private tours French speaking guide private transport airport transfer
-      Foto de portada Bogotá Monserrate Candelaria arte urbano Catedral de Sal Zipaquirá finca cafetera Hacienda Coloma tours privados guía francófona transporte privado traslado aeropuerto
-    </span>
-
-    <h1 class="hero-title">{{ _("Bienvenue à Bogotá !") }}</h1>
-  </header>
-
-  <!-- Messages flash -->
-  {% with msgs = get_flashed_messages(with_categories=true) %}
-    {% if msgs %}
-      <div class="flash-wrap" role="status" aria-live="polite">
-        {% for cat, msg in msgs %}
-          <div class="flash flash-{{ cat }}">
-            {{ msg }}
-          </div>
-        {% endfor %}
-      </div>
-    {% endif %}
-  {% endwith %}
-
-  <main style="max-width: 1000px; margin: 30px auto; padding: 0 20px;">
-    <section>
-      <p>{{ _("Je suis Alejandra, guide locale passionnée, et je vous invite à découvrir une Bogotá authentique, vibrante et pleine de vie.") }}</p>
-      <p>{{ _("À travers mes visites en petits groupes, nous explorerons son histoire, sa culture et ses saveurs : balades dans les quartiers historiques, expériences culinaires, escapades en pleine nature et excursions uniques aux alentours, comme la célèbre Cathédrale de sel de Zipaquirá.") }}</p>
-      <p>{{ _("Plus qu’une simple visite, je vous propose une immersion vivante et chaleureuse, une expérience à ressentir et à emporter avec vous.") }}</p>
-      <p>{{ _("Je propose des visites guidées à Bogotá avec un guide francophone, des tours privés vers la Candelaria, Monserrate et Zipaquirá, ainsi qu’un service de transport (taxi/van) et transferts aéroport.") }}</p>
-    </section>
-
-    <section style="margin-top: 20px;">
-      <a class="btn" href="{{ url_for('tours', lang=get_locale()) }}" role="button" style="display:inline-block;padding:10px 16px;border-radius:8px;background:#222;color:#fff;text-decoration:none;">{{ _("Voir les types de visites") }}</a>
-      <a class="btn" href="{{ url_for('reservation', lang=get_locale()) }}" role="button" style="display:inline-block;padding:10px 16px;border-radius:8px;background:#007bff;color:#fff;text-decoration:none;margin-left:10px;">{{ _("Réserver maintenant") }}</a>
-    </section>
-  </main>
-
-  <!-- SECTION CONTACT -->
-  <section style="background: #f9f9f9; padding: 40px 20px; margin-top: 40px;">
-    <div style="max-width: 1000px; margin: auto; display: flex; flex-wrap: wrap; align-items: flex-start; gap: 20px;">
-      <div style="flex: 1; min-width: 250px; min-height: 300px;">
-        <img 
-          src="{{ url_for('static', filename='images/alejandra.jpg') }}"
-          alt="{{ _('Alejandra, votre guide à Bogotá') }} guide francophone Bogotá guide locale visites privées La Candelaria Monserrate Zipaquirá Hacienda Coloma café colombien transport privé transfert aéroport tejo gastronomie culture amicale professionnelle bienvenue a bogota que faire à bogota
-               French speaking tour guide in Bogota local guide private tours historic center La Candelaria Monserrate Salt Cathedral Zipaquira coffee farm Hacienda Coloma private transport airport transfer friendly professional safe
-               guía francófona en Bogotá guía local tours privados centro histórico La Candelaria Monserrate Catedral de Sal Zipaquirá finca cafetera Hacienda Coloma transporte privado traslado aeropuerto amable profesional segura"
-          loading="lazy" decoding="async" width="800" height="600"
-          style="display: block; width: 100%; height: 100%; object-fit: cover; border-radius: 10px; background: #ddd;">
-      </div>
-      <div style="flex: 1; min-width: 250px;">
-        <h2>{{ _("Contact") }}</h2>
-        <p><strong>{{ _("Email") }} :</strong> <a href="mailto:alejandramontana25.18@gmail.com">alejandramontana25.18@gmail.com</a></p>
-        <p><strong>{{ _("WhatsApp") }} :</strong> <a href="https://wa.me/573505384537" target="_blank" rel="noopener">+57 350 538 4537</a></p>
-        <p>{{ _("N’hésitez pas à me contacter pour toute question ou réservation.") }}</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- Formulaire Laisser un commentaire -->
-  <section style="max-width: 1000px; margin: 30px auto; padding: 0 20px;">
-    <h2 class="comment-section-title">{{ _("À votre tour de laisser un joli commentaire") }}</h2>
-    <form method="POST" action="{{ url_for('submit_comment', lang=get_locale()) }}" style="background:#fafafa; border-radius:14px; padding:20px; box-shadow:0 6px 18px rgba(0,0,0,0.08); display:grid; gap:12px; max-width:600px;">
-      <label>{{ _("Votre nom et pays") }}<br><input name="name" required aria-required="true"></label>
-      <label>{{ _("Votre commentaire") }}<br><textarea name="message" rows="4" required aria-required="true"></textarea></label>
-      <label>{{ _("Votre note") }}<br>
-        <select name="rating" required aria-required="true">
-          <option value="1">★</option>
-          <option value="2">★★</option>
-          <option value="3">★★★</option>
-          <option value="4">★★★★</option>
-          <option value="5" selected>★★★★★</option>
-        </select>
-      </label>
-      <button type="submit">{{ _("Envoyer") }}</button>
-    </form>
-  </section>
-
-  <!-- Section Commentaires -->
-  <section class="testimonials">
-    <div class="container">
-      <h2>{{ _("Avis des voyageurs") }}</h2>
-
-      <div class="testimonials-grid">
-        {% for comment in comments or [] %}
-          <div class="testimonial-card">
-            <div class="t-head">
-              <div class="t-name">
-                {{ comment.name }}{% if comment.country %} · {{ comment.country }}{% endif %}
-              </div>
-              <div class="t-meta">{{ comment.date_str }}</div>
-            </div>
-
-            <div class="t-stars" aria-label="{{ comment.rating }} / 5">
-              {% for i in range(1, 6) %}
-                {% if comment.rating >= i %}
-                  <svg><use href="#icon-star-full"></use></svg>
-                {% elif comment.rating >= i - 0.5 %}
-                  <svg><use href="#icon-star-half"></use></svg>
-                {% else %}
-                  <svg><use href="#icon-star-empty"></use></svg>
-                {% endif %}
-              {% endfor %}
-              <span class="sr-only">{{ comment.rating }} / 5</span>
-            </div>
-
-            {% set is_long = (comment.message|length > 200) %}
-            <p class="t-text{{ ' clamp' if is_long else '' }}"
-               id="comment-{{ loop.index }}"
-               data-full="{{ comment.message|e }}">
-              {{ (comment.message[:200] ~ '...') if is_long else comment.message }}
-            </p>
-            <button class="t-toggle"
-                    onclick="toggleText('{{ loop.index }}')"
-                    style="{{ '' if is_long else 'display:none;' }}">
-              {{ _("Lire plus") }}
-            </button>
-          </div>
-        {% endfor %}
-      </div>
-
-      {# Fallback désactivé (conservé) #}
-      {% set fallback_comments = [] %}
-      {% set db_pairs = namespace(seen={}) %}
-      {% for c in comments or [] %}
-        {% set kp = (c.name ~ '|' ~ (c.country or '')) %}
-        {% set _ = db_pairs.seen.update({kp: 1}) %}
+<!-- Messages flash -->
+{% with msgs = get_flashed_messages(with_categories=true) %}
+  {% if msgs %}
+    <div class="flash-wrap" role="status" aria-live="polite">
+      {% for cat, msg in msgs %}
+        <div class="flash flash-{{ cat }}">{{ msg }}</div>
       {% endfor %}
-      <div class="testimonials-grid">
-        {% for comment in comments or [] %}{% endfor %}
-        {% for fb in fallback_comments %}
-          {% set kp = fb.name ~ '|' ~ fb.country %}
-          {% if not (kp in db_pairs.seen) %}{% endif %}
-        {% endfor %}
-      </div>
     </div>
+  {% endif %}
+{% endwith %}
+
+<main style="max-width: 1000px; margin: 30px auto; padding: 0 20px;">
+  <section>
+    <p>{{ _("Je suis Alejandra, guide locale passionnée, et je vous invite à découvrir une Bogotá authentique, vibrante et pleine de vie.") }}</p>
+    <p>{{ _("À travers mes visites en petits groupes, nous explorerons son histoire, sa culture et ses saveurs : balades dans les quartiers historiques, expériences culinaires, escapades en pleine nature et excursions uniques aux alentours, comme la célèbre Cathédrale de sel de Zipaquirá.") }}</p>
+    <p>{{ _("Plus qu’une simple visite, je vous propose une immersion vivante et chaleureuse, une expérience à ressentir et à emporter avec vous.") }}</p>
+    <p>{{ _("Je propose des visites guidées à Bogotá avec un guide francophone, des tours privés vers la Candelaria, Monserrate et Zipaquirá, ainsi qu’un service de transport (taxi/van) et transferts aéroport.") }}</p>
   </section>
 
-  <!-- ✅ Sticky bar mobile uniquement -->
-  <div class="sticky-cta">
-    <div class="container row">
-      <a class="btn btn-outline"
-         href="https://wa.me/573505384537?text={{ _('Bonjour Alejandra ! Je suis intéressé par une visite 🤗') | urlencode }}"
-         target="_blank" rel="noopener">WhatsApp</a>
-      <a class="btn" href="{{ url_for('reservation', lang=get_locale()) }}">{{ _("Réserver") }}</a>
+  <section style="margin-top: 20px;">
+    <a class="btn" href="{{ url_for('tours', lang=get_locale()) }}" role="button" style="display:inline-block;padding:10px 16px;border-radius:8px;background:#222;color:#fff;text-decoration:none;">{{ _("Voir les types de visites") }}</a>
+    <a class="btn" href="{{ url_for('reservation', lang=get_locale()) }}" role="button" style="display:inline-block;padding:10px 16px;border-radius:8px;background:#007bff;color:#fff;text-decoration:none;margin-left:10px;">{{ _("Réserver maintenant") }}</a>
+  </section>
+</main>
+
+<!-- SECTION CONTACT -->
+<section style="background: #f9f9f9; padding: 40px 20px; margin-top: 40px;">
+  <div style="max-width: 1000px; margin: auto; display: flex; flex-wrap: wrap; align-items: flex-start; gap: 20px;">
+    <div style="flex: 1; min-width: 250px; min-height: 300px;">
+      <img 
+        src="{{ url_for('static', filename='images/alejandra.jpg') }}"
+        alt="{{ _('Alejandra, votre guide à Bogotá') }} guide francophone Bogotá guide locale visites privées La Candelaria Monserrate Zipaquirá Hacienda Coloma café colombien transport privé transfert aéroport tejo gastronomie culture amicale professionnelle bienvenue a bogota que faire à bogota
+             French speaking tour guide in Bogota local guide private tours historic center La Candelaria Monserrate Salt Cathedral Zipaquira coffee farm Hacienda Coloma private transport airport transfer friendly professional safe
+             guía francófona en Bogotá guía local tours privados centro histórico La Candelaria Monserrate Catedral de Sal Zipaquirá finca cafetera Hacienda Coloma transporte privado traslado aeropuerto amable profesional segura"
+        loading="lazy" decoding="async" width="800" height="600"
+        style="display: block; width: 100%; height: 100%; object-fit: cover; border-radius: 10px; background: #ddd;">
+    </div>
+    <div style="flex: 1; min-width: 250px;">
+      <h2>{{ _("Contact") }}</h2>
+      <p><strong>{{ _("Email") }} :</strong> <a href="mailto:alejandramontana25.18@gmail.com">alejandramontana25.18@gmail.com</a></p>
+      <p><strong>{{ _("WhatsApp") }} :</strong> <a href="https://wa.me/573505384537" target="_blank" rel="noopener">+57 350 538 4537</a></p>
+      <p>{{ _("N’hésitez pas à me contacter pour toute question ou réservation.") }}</p>
     </div>
   </div>
+</section>
 
-  <!-- ✅ Script AJOUTÉ : toggle du header au scroll -->
-  <script>
-    (function(){
-      const header = document.querySelector('.site-header');
-      if(!header) return;
-      function onScroll(){ header.classList.toggle('scrolled', window.scrollY > 60); }
-      onScroll();
-      window.addEventListener('scroll', onScroll, {passive:true});
-    })();
-  </script>
+<!-- Formulaire Laisser un commentaire -->
+<section style="max-width: 1000px; margin: 30px auto; padding: 0 20px;">
+  <h2 class="comment-section-title">{{ _("À votre tour de laisser un joli commentaire") }}</h2>
+  <form method="POST" action="{{ url_for('submit_comment', lang=get_locale()) }}" style="background:#fafafa; border-radius:14px; padding:20px; box-shadow:0 6px 18px rgba(0,0,0,0.08); display:grid; gap:12px; max-width:600px;">
+    <label>{{ _("Votre nom et pays") }}<br><input name="name" required aria-required="true"></label>
+    <label>{{ _("Votre commentaire") }}<br><textarea name="message" rows="4" required aria-required="true"></textarea></label>
+    <label>{{ _("Votre note") }}<br>
+      <select name="rating" required aria-required="true">
+        <option value="1">★</option>
+        <option value="2">★★</option>
+        <option value="3">★★★</option>
+        <option value="4">★★★★</option>
+        <option value="5" selected>★★★★★</option>
+      </select>
+    </label>
+    <button type="submit">{{ _("Envoyer") }}</button>
+  </form>
+</section>
+
+<!-- Section Commentaires -->
+<section class="testimonials">
+  <div class="container">
+    <h2>{{ _("Avis des voyageurs") }}</h2>
+
+    <div class="testimonials-grid">
+      {% for comment in comments or [] %}
+        <div class="testimonial-card">
+          <div class="t-head">
+            <div class="t-name">
+              {{ comment.name }}{% if comment.country %} · {{ comment.country }}{% endif %}
+            </div>
+            <div class="t-meta">{{ comment.date_str }}</div>
+          </div>
+
+          <div class="t-stars" aria-label="{{ comment.rating }} / 5">
+            {% for i in range(1, 6) %}
+              {% if comment.rating >= i %}
+                <svg><use href="#icon-star-full"></use></svg>
+              {% elif comment.rating >= i - 0.5 %}
+                <svg><use href="#icon-star-half"></use></svg>
+              {% else %}
+                <svg><use href="#icon-star-empty"></use></svg>
+              {% endif %}
+            {% endfor %}
+            <span class="sr-only">{{ comment.rating }} / 5</span>
+          </div>
+
+          {% set is_long = (comment.message|length > 200) %}
+          <p class="t-text{{ ' clamp' if is_long else '' }}"
+             id="comment-{{ loop.index }}"
+             data-full="{{ comment.message|e }}">
+            {{ (comment.message[:200] ~ '...') if is_long else comment.message }}
+          </p>
+          <button class="t-toggle"
+                  onclick="toggleText('{{ loop.index }}')"
+                  style="{{ '' if is_long else 'display:none;' }}">
+            {{ _("Lire plus") }}
+          </button>
+        </div>
+      {% endfor %}
+    </div>
+
+    {% set fallback_comments = [] %}
+    {% set db_pairs = namespace(seen={}) %}
+    {% for c in comments or [] %}
+      {% set kp = (c.name ~ '|' ~ (c.country or '')) %}
+      {% set _ = db_pairs.seen.update({kp: 1}) %}
+    {% endfor %}
+    <div class="testimonials-grid">
+      {% for comment in comments or [] %}{% endfor %}
+      {% for fb in fallback_comments %}
+        {% set kp = fb.name ~ '|' ~ fb.country %}
+        {% if not (kp in db_pairs.seen) %}{% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- Sticky bar mobile -->
+<div class="sticky-cta">
+  <div class="container row">
+    <a class="btn btn-outline"
+       href="https://wa.me/573505384537?text={{ _('Bonjour Alejandra ! Je suis intéressé par une visite 🤗') | urlencode }}"
+       target="_blank" rel="noopener">WhatsApp</a>
+    <a class="btn" href="{{ url_for('reservation', lang=get_locale()) }}">{{ _("Réserver") }}</a>
+  </div>
+</div>
+
+<!-- JS Lire plus / Lire moins -->
+<script>
+  function toggleText(index) {
+    var textElement = document.getElementById("comment-" + index);
+    if (!textElement) return;
+    var card = textElement.closest(".testimonial-card");
+    var full = textElement.dataset.full || "";
+    if (!textElement.dataset.preview) { textElement.dataset.preview = textElement.textContent; }
+    var preview = textElement.dataset.preview;
+    var toggleButton = textElement.nextElementSibling;
+    var isExpanded = card.classList.contains("expanded");
+    if (isExpanded) {
+      textElement.textContent = preview;
+      card.classList.remove("expanded");
+      if (toggleButton) toggleButton.textContent = "{{ _('Lire plus') }}";
+    } else {
+      textElement.textContent = full;
+      card.classList.add("expanded");
+      if (toggleButton) toggleButton.textContent = "{{ _('Lire moins') }}";
+    }
+  }
+</script>
+
+<!-- Données structurées -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TouristInformationCenter",
+  "name": "Oh La La Tours Bogotá",
+  "url": "https://www.ohlalatoursbogota.com/",
+  "image": "{{ url_for('static', filename='images/accueil.jpg', _external=True) }}",
+  "areaServed": "Bogotá, Colombia",
+  "address": { "@type": "PostalAddress", "addressLocality": "Bogotá", "addressCountry": "CO" },
+  "availableLanguage": ["French","Spanish","English"],
+  "email": "alejandramontana25.18@gmail.com",
+  "telephone": "+57-350-538-4537",
+  "sameAs": []
+}
+</script>
+
+<!-- Script : toggle du header au scroll -->
+<script>
+  (function(){
+    const header = document.querySelector('.site-header');
+    if(!header) return;
+    function onScroll(){ header.classList.toggle('scrolled', window.scrollY > 60); }
+    onScroll();
+    window.addEventListener('scroll', onScroll, {passive:true});
+  })();
+</script>
 
 </body>
 </html>
+
 
