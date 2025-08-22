@@ -1,3 +1,5 @@
+from flask import Flask, render_template, request, url_for, flash, redirect, \
+    send_from_directory, session, make_response, send_file, Response
 from flask import Flask, render_template, request, url_for, flash, redirect, send_from_directory, send_file, session, make_response, Response, abort
 from flask_babel import Babel, _
 import os, requests, logging, re, secrets, unicodedata
@@ -821,42 +823,10 @@ def robots_txt():
     return resp
 from flask import Response  # (si ce n’est pas déjà importé)
 
-@app.route('/sitemap-live.xml')
-def sitemap_live_xml():
-    xml = """<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:xhtml="http://www.w3.org/1999/xhtml">
-  <!-- build: force-refresh 2025-08-22 -->
-  <url>
-    <loc>https://www.ohlalatoursbogota.com/</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://www.ohlalatoursbogota.com/?lang=fr"/>
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
-  </url>
-  <url>
-    <loc>https://www.ohlalatoursbogota.com/tours</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://www.ohlalatoursbogota.com/tours?lang=fr"/>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://www.ohlalatoursbogota.com/transport</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://www.ohlalatoursbogota.com/transport?lang=fr"/>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.ohlalatoursbogota.com/reservation</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://www.ohlalatoursbogota.com/reservation?lang=fr"/>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-</urlset>
-"""
-    resp = Response(xml, mimetype='application/xml; charset=utf-8')
-    resp.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
-    return resp
-
+@app.route("/sitemap.xml")
+def sitemap_xml():
+    # URL canonique = fichier statique
+    return redirect(url_for("static", filename="sitemap.xml"), code=301)
 
 @app.get("/healthz")
 def healthz():
