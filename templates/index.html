@@ -105,6 +105,10 @@
     /* par défaut: logo clair visible, foncé caché (hero photo) */
     .logo--dark{display:none}
 
+    /* Header sur la hero : liens/titre en blanc */
+    .header-on-hero .site-title{ color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.35); }
+    .header-on-hero .main-nav a{ color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.35); }
+
     /* Au scroll / fond clair */
     .site-header.scrolled{
       background: rgba(255,255,255,.86);
@@ -114,6 +118,7 @@
     .site-header.scrolled .logo--light{display:none}
     .site-header.scrolled .logo--dark{display:block}
     .site-header.scrolled .main-nav a{color:#0f172a}
+    .site-header.scrolled .site-title{ color:#0f172a; }
 
     /* Styles existants pour avis, etc. (conservés) */
     .testimonials { background:#fff; padding:40px 20px; margin-top:40px; }
@@ -162,21 +167,13 @@
 </svg>
 
 <!-- HEADER (logos light/dark + nav) -->
-<header class="site-header">
+<header class="site-header header-on-hero">
   <div class="logo-container">
     <!-- Logo clair (sur hero/photo) -->
     <img src="{{ url_for('static', filename='img/logo-light.png') }}" alt="Oh La La Tours Bogotá" class="logo logo--light">
     <!-- Logo foncé (après scroll, fond clair) -->
     <img src="{{ url_for('static', filename='img/logo-dark.png') }}" alt="Oh La La Tours Bogotá" class="logo logo--dark">
     <span class="site-title">Oh La La Tours Bogotá</span>
-
-/* Header posé sur la hero : tout en blanc */
-.header-on-hero .site-title{ color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.35); }
-.header-on-hero .main-nav a{ color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.35); }
-
-/* Quand on scrolle (fond clair), on repasse en sombre (déjà présent pour .main-nav a) */
-.site-header.scrolled .site-title{ color:#0f172a; }
-
   </div>
 
   <!-- Navigation -->
@@ -189,9 +186,6 @@
       <a href="{{ lang_url('fr') }}" lang="fr" aria-label="Français">🇫🇷<span class="sr-only">Français</span></a>
       <a href="{{ lang_url('en') }}" lang="en" aria-label="English">🇺🇸<span class="sr-only">English</span></a>
       <a href="{{ lang_url('es') }}" lang="es" aria-label="Español">🇪🇸<span class="sr-only">Español</span></a>
-
-<header class="site-header header-on-hero">
-
     </div>
   </nav>
 </header>
@@ -398,5 +392,4 @@
 
 </body>
 </html>
-
 
