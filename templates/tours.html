@@ -208,20 +208,14 @@
 </head>
 <body>
 
-  <!-- ✅ Nouveau header fixe (logo + nav + drapeaux) -->
-  <header class="site-header header-on-hero">
-  <a href="{{ url_for('index', lang=get_locale()) }}" class="brand" aria-label="Oh La La Tours Bogotá — Accueil">
-    <img class="logo logo--light"
-         src="{{ url_for('static', filename='img/logo/logo-ohlala-white-outline-360.png') }}"
-         srcset="{{ url_for('static', filename='img/logo/logo-ohlala-white-outline-720@2x.png') }} 2x"
-         alt="Oh La La Tours Bogotá">
-    <img class="logo logo--dark"
-         src="{{ url_for('static', filename='img/logo/logo-ohlala-teal-gold-360.png') }}"
-         srcset="{{ url_for('static', filename='img/logo/logo-ohlala-teal-gold-720@2x.png') }} 2x"
-         alt="Oh La La Tours Bogotá">
-    <!-- ✅ LIGNE AJOUTÉE, rien d'autre changé -->
+<header class="site-header header-on-hero">
+  <div class="logo-container">
+    <!-- Logo clair (sur hero/photo) -->
+    <img src="{{ url_for('static', filename='img/logo-light.png') }}" alt="Oh La La Tours Bogotá" class="logo logo--light">
+    <!-- Logo foncé (après scroll, fond clair) -->
+    <img src="{{ url_for('static', filename='img/logo-dark.png') }}" alt="Oh La La Tours Bogotá" class="logo logo--dark">
     <span class="site-title">Oh La La Tours Bogotá</span>
-
+  </div>
 
     <nav class="main-nav" aria-label="{{ _('Navigation principale') }}">
       <a href="{{ url_for('index', lang=get_locale()) }}">{{ _("Accueil") }}</a>
