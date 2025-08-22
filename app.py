@@ -1,14 +1,15 @@
-from flask import Flask, render_template, request, url_for, flash, redirect, \
-    send_from_directory, session, make_response, send_file, Response
-from flask import Flask, render_template, request, url_for, flash, redirect, send_from_directory, send_file, session, make_response, Response, abort
+from flask import (
+    Flask, render_template, request, url_for, flash, redirect,
+    send_from_directory, send_file, session, make_response, Response, abort
+)
 from flask_babel import Babel, _
 import os, requests, logging, re, secrets, unicodedata
 from datetime import datetime
 from werkzeug.middleware.proxy_fix import ProxyFix
 from flask_sqlalchemy import SQLAlchemy
 from functools import wraps
-from sqlalchemy import inspect  # pour vérifier/creer proprement les tables
-from urllib.parse import urlsplit, urlunsplit, parse_qsl, urlencode  # ✅ AJOUT: pour la normalisation des URLs
+from sqlalchemy import inspect
+from urllib.parse import urlsplit, urlunsplit, parse_qsl, urlencode
 
 # ------------------------------------------------------------------
 # Utils: parser "22 février 2020" / "30 julio 2019" / "17 Aug 2025"
@@ -770,48 +771,7 @@ def submit_transfer():
 # ------------------------------------------------------------------
 # --- Sitemaps / Robots --------------------------------------------------------
 
-@app.route('/sitemap.xml')
-def sitemap_xml():
-    xml = """<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:xhtml="http://www.w3.org/1999/xhtml">
-  <url>
-    <loc>https://www.ohlalatoursbogota.com/</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://www.ohlalatoursbogota.com/?lang=fr"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://www.ohlalatoursbogota.com/?lang=en"/>
-    <xhtml:link rel="alternate" hreflang="es" href="https://www.ohlalatoursbogota.com/?lang=es"/>
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
-  </url>
-  <url>
-    <loc>https://www.ohlalatoursbogota.com/tours</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://www.ohlalatoursbogota.com/tours?lang=fr"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://www.ohlalatoursbogota.com/tours?lang=en"/>
-    <xhtml:link rel="alternate" hreflang="es" href="https://www.ohlalatoursbogota.com/tours?lang=es"/>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://www.ohlalatoursbogota.com/transport</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://www.ohlalatoursbogota.com/transport?lang=fr"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://www.ohlalatoursbogota.com/transport?lang=en"/>
-    <xhtml:link rel="alternate" hreflang="es" href="https://www.ohlalatoursbogota.com/transport?lang=es"/>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.ohlalatoursbogota.com/reservation</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://www.ohlalatoursbogota.com/reservation?lang=fr"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://www.ohlalatoursbogota.com/reservation?lang=en"/>
-    <xhtml:link rel="alternate" hreflang="es" href="https://www.ohlalatoursbogota.com/reservation?lang=es"/>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-</urlset>
-"""
-    resp = Response(xml, mimetype='application/xml')
-    resp.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
-    return resp
+
 
 @app.route('/robots.txt')
 def robots_txt():
@@ -823,10 +783,13 @@ def robots_txt():
     return resp
 from flask import Response  # (si ce n’est pas déjà importé)
 
-@app.route("/sitemap.xml")
+@app.get("/sitemap.xml")
 def sitemap_xml():
-    # URL canonique = fichier statique
-    return redirect(url_for("static", filename="sitemap.xml"), code=301)
+    resp = make_response(
+        send_from_directory(app.static_folder, "sitemap.xml", mimetype="application/xml")
+    )
+    resp.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, max-age=0"
+    return resp
 
 @app.get("/healthz")
 def healthz():
