@@ -811,23 +811,13 @@ def sitemap_noext():
 
 @app.route('/robots.txt')
 def robots_txt():
-    content = (
-        "User-agent: *\n"
-        "Allow: /\n"
-        "\n"
-        "User-agent: Googlebot\n"
-        "Allow: /\n"
-        "\n"
-        "User-agent: Googlebot-Image\n"
-        "Allow: /\n"
-        "\n"
-        "Sitemap: https://www.ohlalatoursbogota.com/sitemap.xml\n"
+    resp = make_response(
+        send_from_directory(app.static_folder, 'robots.txt', mimetype='text/plain')
     )
-    resp = make_response(content, 200)
-    resp.headers['Content-Type'] = 'text/plain; charset=utf-8'
-    # Empêche tout cache côté proxy/navigateur/Google
+    # IMPORTANT : on dit aux navigateurs/CDN de ne pas mettre en cache
     resp.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
     return resp
+
 
 
 @app.get("/healthz")
