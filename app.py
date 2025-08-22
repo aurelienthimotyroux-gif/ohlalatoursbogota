@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, url_for, flash, redirect, send_from_directory, session, make_response
+from flask import Flask, render_template, request, url_for, flash, redirect, send_from_directory, send_file, session, make_response, Response, abort
 from flask_babel import Babel, _
 import os, requests, logging, re, secrets, unicodedata
 from datetime import datetime
@@ -768,14 +768,17 @@ def submit_transfer():
 # ------------------------------------------------------------------
 # --- Sitemaps / Robots --------------------------------------------------------
 @app.route('/sitemap.xml')
-def serve_sitemap_xml():
-    # sert le fichier statique tel quel, avec le bon Content-Type
-    return send_from_directory(app.static_folder, 'sitemap.xml', mimetype='application/xml')
-
-# (optionnel) redirection propre /sitemap -> /sitemap.xml
-@app.route('/sitemap')
-def sitemap_noext():
-    return redirect(url_for('serve_sitemap_xml'), code=301)
+def sitemap_xml():
+    p = os.path.join(app.root_path, 'static', 'sitemap.xml')
+    try:
+        with open(p, 'rb') as f:
+            data = f.read()
+        # pas de cache pour forcer la prise en compte
+        resp = Response(data, mimetype='application/xml')
+        resp.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
+        return resp
+    except FileNotFoundError:
+        return "sitemap.xml not found", 404
 
 @app.route('/robots.txt')
 def robots_txt():
@@ -810,7 +813,6 @@ def favicon():
         if os.path.exists(p):
             return send_file(p, mimetype='image/x-icon', max_age=0)
     return abort(404)
-
 
 
 
