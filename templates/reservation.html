@@ -216,116 +216,61 @@
 
 <!-- Intégration PayPal (server-side + fallback front) -->
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
-    const prices = { candelaria: 1, monserrate: 1, zipaquira: 1, chorrera: 1, 'finca-cafe': 50 };
-    const form = document.querySelector('.reservation-form');
-    const methodSelect = document.getElementById('payment-method');
-    const errBox = document.getElementById('paypal-error');
+document.addEventListener('DOMContentLoaded', function () {
+  const prices = { candelaria: 1, monserrate: 1, zipaquira: 1, chorrera: 1, 'finca-cafe': 50 };
+  const errBox = document.getElementById('paypal-error');
 
-    form.addEventListener('submit', function (e) {
-      if (methodSelect.value === 'paypal') {
-        e.preventDefault();
-        document.getElementById('paypal-section').scrollIntoView({ behavior: 'smooth', block: 'center' });
-        alert("{{ _('Pour payer avec PayPal, cliquez sur le bouton PayPal au-dessus de « Envoyer ».') }}");
-      }
-    });
+  function getAmount() {
+    const tourId = document.getElementById('tour').value || '';
+    return { tourId, amount: (prices[tourId] || 40).toFixed(2) };
+  }
 
-    function amountForSelection() {
-      const tourId = document.getElementById('tour').value || '';
-      return { tourId, amount: (prices[tourId] || 40).toFixed(2) };
-    }
+  if (!window.paypal) {
+    errBox.style.display = 'block';
+    errBox.textContent = "PayPal SDK introuvable (bloqueur ? mauvais script ?)";
+    return;
+  }
 
-    let paypalRendered = false;
-    function renderPaypalButtons() {
-      if (paypalRendered) return;
+  paypal.Buttons({
+    fundingSource: paypal.FUNDING.PAYPAL,
 
-      if (!window.paypal) {
+    // Création d’order 100% front → ouvre toujours la pop-up
+    createOrder: function (data, actions) {
+      const { tourId, amount } = getAmount();
+      return actions.order.create({
+        intent: "CAPTURE",
+        purchase_units: [{
+          amount: { currency_code: "USD", value: amount },
+          description: `Tour: ${tourId}`
+        }]
+      });
+    },
+
+    // Capture 100% front
+    onApprove: async function (data, actions) {
+      try {
+        const details = await actions.order.capture();
+        // succès → redirection
+        window.location.href = '/paiement-reussi?orderID=' + data.orderID + '&lang={{ get_locale() }}';
+      } catch (e) {
         errBox.style.display = 'block';
-        errBox.textContent = "{{ _('PayPal ne s’est pas chargé. Vérifiez votre Client ID et désactivez les bloqueurs.') }}";
-        return;
+        errBox.textContent = 'PayPal (capture): ' + (e.message || e);
       }
+    },
 
-      paypal.Buttons({
-        fundingSource: paypal.FUNDING.PAYPAL,
+    onCancel: function () {
+      window.location.href = '/paiement-annule?lang={{ get_locale() }}';
+    },
 
-        // 1) On tente la création d'order côté serveur
-        createOrder: async function (data, actions) {
-          const { tourId, amount } = amountForSelection();
-          try {
-            const res = await fetch("/api/paypal/create-order", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ amount, tour: tourId })
-            });
-            if (!res.ok) throw new Error("HTTP " + res.status);
-            const j = await res.json();
-            if (!j.id) throw new Error("Réponse invalide (id manquant)");
-            return j.id;
-          } catch (e) {
-            console.warn("create-order server KO → fallback front:", e);
-            // Fallback front pour garantir l’ouverture de la pop-up
-            return actions.order.create({
-              intent: "CAPTURE",
-              purchase_units: [{
-                amount: { currency_code: "USD", value: amount },
-                description: `Tour: ${tourId}`
-              }]
-            });
-          }
-        },
-
-        // 2) Capture côté serveur ; sinon fallback front
-        onApprove: async function (data, actions) {
-          try {
-            const name = document.getElementById('nom').value || '';
-            const cliEmail = document.getElementById('email').value || '';
-            const tourId = document.getElementById('tour').value || '';
-            const dateWanted = document.getElementById('date').value || '';
-            const note = document.getElementById('message').value || '';
-
-            const res = await fetch("/api/paypal/capture-order/" + data.orderID, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ name, email: cliEmail, tour: tourId, date: dateWanted, message: note })
-            });
-            if (!res.ok) throw new Error("HTTP " + res.status);
-            const capture = await res.json();
-
-            const ok = capture.status === "COMPLETED" ||
-              (capture.purchase_units && capture.purchase_units[0]?.payments?.captures?.[0]?.status === "COMPLETED");
-
-            if (ok) {
-              window.location.href = '/paiement-reussi?orderID=' + data.orderID + '&lang={{ get_locale() }}';
-              return;
-            }
-            throw new Error("Paiement non complété (server)");
-          } catch (e) {
-            console.warn("capture server KO → fallback front:", e);
-            // Fallback front (ancienne méthode)
-            const details = await actions.order.capture();
-            if (details.status === "COMPLETED") {
-              window.location.href = '/paiement-reussi?orderID=' + data.orderID + '&lang={{ get_locale() }}';
-            } else {
-              errBox.style.display = 'block';
-              errBox.textContent = 'PayPal: Paiement non complété (fallback).';
-            }
-          }
-        },
-
-        onCancel: function () { window.location.href = '/paiement-annule?lang={{ get_locale() }}'; },
-        onError: function (err) {
-          errBox.style.display = 'block';
-          errBox.textContent = 'PayPal: ' + (err && err.message ? err.message : err);
-        }
-      }).render('#paypal-button-container');
-
-      const cardBtn = paypal.Buttons({ fundingSource: paypal.FUNDING.CARD });
-      if (cardBtn.isEligible()) { cardBtn.render('#card-button-container'); }
-      paypalRendered = true;
+    onError: function (err) {
+      errBox.style.display = 'block';
+      errBox.textContent = 'PayPal: ' + (err && err.message ? err.message : err);
     }
+  }).render('#paypal-button-container');
 
-    renderPaypalButtons();
-  });
+  const cardBtn = paypal.Buttons({ fundingSource: paypal.FUNDING.CARD });
+  if (cardBtn.isEligible()) { cardBtn.render('#card-button-container'); }
+});
 </script>
 
 <!-- Données structurées -->
