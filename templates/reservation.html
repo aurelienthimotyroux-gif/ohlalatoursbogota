@@ -6,8 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <!-- ✅ Meta SEO -->
-  <meta name="description" content="{{ _('Réservez votre visite guidée à Bogotá : Candelaria, Monserrate, Zipaquirá, La Chorrera et finca café. Guide francophone/anglais/espagnol.') }}">
-  <meta name="keywords" content="réservation tour Bogotá, réserver visite guidée Bogotá, tours privés Bogotá, Candelaria, Monserrate, Zipaquirá, La Chorrera, Hacienda Coloma, guide francophone Bogotá">
+  <meta name="description" content="{{ _('Réservez votre visite guidée à Bogotá : Candelaria, Monserrate, Zipaquirá, La Chorrera et finca café. Guide francophone/anglais/espagnol. Paiement PayPal sécurisé.') }}">
+  <meta name="keywords" content="réservation tour Bogotá, réserver visite guidée Bogotá, tours privés Bogotá, Candelaria, Monserrate, Zipaquirá, La Chorrera, Hacienda Coloma, guide francophone Bogotá, paiement PayPal Bogotá">
 
   <!-- ✅ CMP / consentmanager (doit être avant GA) -->
   <script type="text/javascript" data-cmp-ab="0"
@@ -60,9 +60,11 @@
     .lang-switcher{display:flex; gap:8px; margin-left:8px}
     .lang-switcher a{font-size:20px; line-height:1; padding:4px 6px; border-radius:6px}
 
+    /* Sur cette page (hero en fond) : liens & logo blancs au départ */
     .header-on-hero .main-nav a{color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.35)}
     .logo--dark{display:none}
 
+    /* ✅ Titre ajouté */
     .site-title{
       font-size:1.35rem;
       font-weight:600;
@@ -72,6 +74,7 @@
     .header-on-hero .site-title{ color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.35); }
     .site-header.scrolled .site-title{ color:#0f172a; text-shadow:none; }
 
+    /* Au scroll / fond clair */
     .site-header.scrolled{
       background: rgba(255,255,255,.86);
       backdrop-filter: saturate(180%) blur(8px);
@@ -90,6 +93,7 @@
   <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='img/favicon/favicon.ico') }}">
   <link rel="icon" href="/favicon.ico" sizes="any">
   <meta name="theme-color" content="#0b4654">
+  <meta name="google-site-verification" content="4z28-XXEkdcB_VOcaGoy1bhgA-zj7xr6wSf76ZwZ4tQ" />
 
   <!-- ✅ Canonical + hreflang -->
   <link rel="canonical" href="https://www.ohlalatoursbogota.com{{ request.path }}{% if get_locale()!='fr' %}?lang={{ get_locale() }}{% endif %}">
@@ -103,7 +107,7 @@
   <meta property="og:url" content="https://www.ohlalatoursbogota.com{{ request.path }}{% if get_locale()!='fr' %}?lang={{ get_locale() }}{% endif %}">
   <meta property="og:site_name" content="Oh La La Tours Bogotá">
   <meta property="og:title" content="{{ _('Réserver votre visite – Oh La La Tours Bogotá') }}">
-  <meta property="og:description" content="{{ _('Réservez une visite guidée : Candelaria, Monserrate, Zipaquirá, La Chorrera ou finca café.') }}">
+  <meta property="og:description" content="{{ _('Réservez une visite guidée : Candelaria, Monserrate, Zipaquirá, La Chorrera ou finca café. Paiement PayPal, guide francophone/anglais/espagnol.') }}">
   <meta property="og:image" content="{{ url_for('static', filename='images/bg_reservation.jpg', _external=True) }}">
   <meta property="og:image:alt" content="{{ _('Panorama de Bogotá, téléphérique de Monserrate et rues coloniales de la Candelaria...') }}">
 
@@ -120,8 +124,11 @@
 
 <header class="site-header header-on-hero">
   <div class="logo-container">
+    <!-- Logo clair -->
     <img src="{{ url_for('static', filename='img/logo-light.png') }}" alt="Oh La La Tours Bogotá" class="logo logo--light">
+    <!-- Logo foncé -->
     <img src="{{ url_for('static', filename='img/logo-dark.png') }}" alt="Oh La La Tours Bogotá" class="logo logo--dark">
+    <!-- ✅ Titre ajouté -->
     <span class="site-title">Oh La La Tours Bogotá</span>
   </div>
 
@@ -131,13 +138,14 @@
     <a href="{{ url_for('transport', lang=get_locale()) }}">{{ _("Service de Transport") }}</a>
     <a href="{{ url_for('reservation', lang=get_locale()) }}">{{ _("Réservation") }}</a>
     <div class="lang-switcher" aria-label="{{ _('Changer de langue') }}">
-      <a href="{{ lang_url('fr') }}" lang="fr">🇫🇷</a>
-      <a href="{{ lang_url('en') }}" lang="en">🇺🇸</a>
-      <a href="{{ lang_url('es') }}" lang="es">🇪🇸</a>
+      <a href="{{ lang_url('fr') }}" lang="fr" aria-label="Français">🇫🇷<span class="sr-only">Français</span></a>
+      <a href="{{ lang_url('en') }}" lang="en" aria-label="English">🇺🇸<span class="sr-only">English</span></a>
+      <a href="{{ lang_url('es') }}" lang="es" aria-label="Español">🇪🇸<span class="sr-only">Español</span></a>
     </div>
   </nav>
 </header>
 
+<!-- Bandeau -->
 <header class="hero background-half"
         style="background-image: url('{{ url_for('static', filename='images/bg_reservation.jpg') }}');">
   <h1 class="hero-title">
@@ -145,12 +153,14 @@
   </h1>
 </header>
 
+<!-- Fil d’Ariane -->
 <nav aria-label="{{ _('Fil d’Ariane') }}" style="max-width:1000px;margin:10px auto;padding:0 20px;font-size:.95rem;">
   <a href="{{ url_for('index', lang=get_locale()) }}">{{ _('Accueil') }}</a> ›
   <a href="{{ url_for('tours', lang=get_locale()) }}">{{ _('Nos tours') }}</a> ›
   <span aria-current="page">{{ _('Réservation') }}</span>
 </nav>
 
+<!-- Formulaire -->
 <main>
   <section class="reservation-container">
     <form class="reservation-form" method="POST" action="{{ url_for('reservation', lang=get_locale()) }}" novalidate>
@@ -159,26 +169,28 @@
       {% endif %}
 
       <label for="nom">{{ _("Nom") }}</label>
-      <input type="text" id="nom" name="nom" required autocomplete="name">
+      <input type="text" id="nom" name="nom" required autocomplete="name" inputmode="text">
 
       <label for="email">{{ _("Email") }}</label>
-      <input type="email" id="email" name="email" required autocomplete="email">
+      <input type="email" id="email" name="email" required autocomplete="email" inputmode="email">
 
       <label for="date">{{ _("Date souhaitée") }}</label>
       <input type="date" id="date" name="date" required>
 
       <label for="message">{{ _("Message") }}</label>
-      <textarea id="message" name="message" rows="4"></textarea>
+      <textarea id="message" name="message" rows="4" placeholder="{{ _('Infos utiles, horaires, etc.') }}"></textarea>
 
       <label for="tour">{{ _("Choisissez un tour") }}</label>
       <select name="tour" id="tour" required>
         <option value="">{{ _("-- Sélectionnez --") }}</option>
-        <option value="candelaria">{{ _("Visite historique de La Candelaria") }}</option>
-        <option value="monserrate">{{ _("Randonnée à Monserrate") }}</option>
-        <option value="zipaquira">{{ _("Excursion à la Cathédrale de sel de Zipaquirá") }}</option>
-        <option value="chorrera">{{ _("Cascade de La Chorrera") }}</option>
-        <option value="finca-cafe">{{ _("Visite d’une finca à café") }}</option>
+        <option value="candelaria" {{ 'selected' if tour=='candelaria' else '' }}>{{ _("Visite historique de La Candelaria") }}</option>
+        <option value="monserrate" {{ 'selected' if tour=='monserrate' else '' }}>{{ _("Randonnée à Monserrate") }}</option>
+        <option value="zipaquira"  {{ 'selected' if tour=='zipaquira'  else '' }}>{{ _("Excursion à la Cathédrale de sel de Zipaquirá") }}</option>
+        <option value="chorrera"   {{ 'selected' if tour=='chorrera'   else '' }}>{{ _("Cascade de La Chorrera") }}</option>
+        <option value="finca-cafe" {{ 'selected' if tour=='finca-cafe' else '' }}>{{ _("Visite d’une finca à café") }}</option>
       </select>
+
+      <!-- Boutons PayPal et scripts liés supprimés -->
 
       <button type="submit" id="form-submit">{{ _("Envoyer") }}</button>
     </form>
@@ -188,6 +200,7 @@
 <!-- Données structurées -->
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Service","name":"Réservation de visites guidées à Bogotá"}</script>
 
+<!-- ✅ Script toggle du header -->
 <script>
   (function(){
     const header = document.querySelector('.site-header');
