@@ -228,17 +228,14 @@
     } else {
       showDiag("✅ SDK PayPal chargé: " + Object.keys(window.paypal).join(', '));
     }
-    // Affiche les erreurs de promesses non catchées
     window.addEventListener('unhandledrejection', e => {
       showDiag("❌ Promise error: " + (e.reason && (e.reason.message || JSON.stringify(e.reason))));
     });
   })();
 </script>
 
-
-<!-- ✅ AJOUT : helpers de mapping titres + prix pour emails -->
+<!-- ✅ AJOUT : helpers de mapping titres + prix -->
 <script>
-  // Mappe un slug de tour vers un titre localisé (pour emails/notification)
   function tourTitleFromSlug(slug) {
     const m = {
       'candelaria': "{{ _('Visite historique de La Candelaria') }}",
@@ -251,12 +248,13 @@
   }
 </script>
 
-<!-- Intégration PayPal (front-only, identique à ta version) -->
+<!-- Intégration PayPal : version server-side orders -->
 <script>
   document.addEventListener('DOMContentLoaded', function () {
     const prices = { candelaria: 1, monserrate: 1, zipaquira: 1, chorrera: 1, 'finca-cafe': 50 };
     const form = document.querySelector('.reservation-form');
     const methodSelect = document.getElementById('payment-method');
+
     form.addEventListener('submit', function (e) {
       if (methodSelect.value === 'paypal') {
         e.preventDefault();
@@ -266,48 +264,77 @@
     });
 
     let paypalRendered = false;
+
     function renderPaypalButtons() {
       if (paypalRendered) return;
       const errBox = document.getElementById('paypal-error');
-      if (!window.paypal) {
+      const diag = document.getElementById('paypal-diagnostics');
+
+      function showError(msg, err) {
         errBox.style.display = 'block';
-        errBox.textContent = "{{ _('PayPal ne s’est pas chargé. Vérifiez votre Client ID et désactivez les bloqueurs.') }}";
+        errBox.textContent = (msg || 'PayPal error') + (err ? ' → ' + (err.message || (err.debug_id ? ('debug_id='+err.debug_id) : JSON.stringify(err))) : '');
+        if (diag) { diag.style.display = 'block'; diag.innerHTML += '<div>❌ ' + errBox.textContent + '</div>'; }
+        console.error('[PayPal]', msg, err);
+      }
+
+      if (!window.paypal || !window.paypal.Buttons) {
+        showError("SDK PayPal non disponible");
         return;
       }
 
-      paypal.Buttons({
+      const btn = paypal.Buttons({
         fundingSource: paypal.FUNDING.PAYPAL,
+        style: { layout: 'vertical', shape: 'rect' },
+
+        // 👉 createOrder via ton backend
         createOrder: function (data, actions) {
           const tourId = document.getElementById('tour').value || '';
-          const amount = (prices[tourId] || 40).toFixed(2);
-          return actions.order.create({
-            purchase_units: [{ amount: { currency_code: 'USD', value: amount }, description: `Tour: ${tourId}` }]
-          });
+          if (!tourId) {
+            showError("Aucun tour sélectionné");
+            throw new Error("Aucun tour sélectionné");
+          }
+          return fetch('/api/paypal/create-order', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ tour: tourId })
+          })
+          .then(res => res.json())
+          .then(j => {
+            if (!j || !j.id) {
+              showError("create-order a renvoyé une réponse invalide", j);
+              throw new Error('Réponse invalide');
+            }
+            return j.id;
+          })
+          .catch(err => { showError("create-order a échoué", err); throw err; });
         },
 
-        // ✅ AJOUT : onApprove enrichi (enregistre chez toi puis redirige)
+        // 👉 capture via ton backend (plus robuste que actions.order.capture)
         onApprove: function (data, actions) {
-          return actions.order.capture().then(async function (details) {
+          const orderID = data.orderID;
+          return fetch('/api/paypal/capture-order/' + encodeURIComponent(orderID), {
+            method: 'POST'
+          })
+          .then(res => res.json())
+          .then(async (details) => {
             try {
-              // Récup infos PayPal
-              const orderID   = data.orderID;
-              const capture   = (details && details.purchase_units && details.purchase_units[0] && details.purchase_units[0].payments && details.purchase_units[0].payments.captures && details.purchase_units[0].payments.captures[0]) || null;
+              const purchase = details && details.purchase_units && details.purchase_units[0];
+              const capture  = purchase && purchase.payments && purchase.payments.captures && purchase.payments.captures[0];
               const captureID = capture ? capture.id : null;
               const amountVal = capture ? capture.amount.value : null;
               const currency  = capture ? capture.amount.currency_code : 'USD';
-              const status    = capture ? capture.status : (details.status || 'COMPLETED');
+              const status    = details && details.status ? details.status : (capture ? capture.status : 'COMPLETED');
 
-              // Récup infos formulaire
               const nom       = document.getElementById('nom').value.trim();
               const email     = document.getElementById('email').value.trim();
               const date      = document.getElementById('date').value;
               const message   = document.getElementById('message').value.trim();
               const tourSlug  = document.getElementById('tour').value || '';
               const tourTitle = tourTitleFromSlug(tourSlug);
-              const pax       = 1; // ✅ ajuste si tu ajoutes un champ "participants"
+              const pax       = 1;
               const lang      = "{{ get_locale() }}";
 
-              // ✅ AJOUT : envoie au backend pour créer la réservation + envoyer emails
+              // Notif interne backend (création réservation + emails si tu ajoutes la logique)
               await fetch('/paypal/success', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -328,27 +355,40 @@
                     tour_title: tourTitle
                   }
                 })
-              }).catch(() => { /* on ignore l'erreur réseau ici, le webhook peut rattraper */ });
+              }).catch(() => { /* on ignore: webhook/retour suffisent */ });
 
             } finally {
-              // 🔁 On garde TON redirect existant en l'état (rien de supprimé)
-              window.location.href = '/paiement-reussi?orderID=' + data.orderID + '&lang={{ get_locale() }}';
+              // Redirection (inchangée)
+              window.location.href = '/paiement-reussi?orderID=' + orderID + '&lang={{ get_locale() }}';
             }
-          });
+          })
+          .catch(err => { showError("capture-order a échoué", err); throw err; });
         },
 
-        onCancel: function () { window.location.href = '/paiement-annule?lang={{ get_locale() }}'; },
-        onError: function (err) {
-          const errBox = document.getElementById('paypal-error');
-          errBox.style.display = 'block';
-          errBox.textContent = 'PayPal: ' + (err && err.message ? err.message : err);
-        }
-      }).render('#paypal-button-container');
+        onCancel: function () {
+          window.location.href = '/paiement-annule?lang={{ get_locale() }}';
+        },
 
+        onError: function (err) {
+          showError("onError()", err);
+        }
+      });
+
+      if (!btn.isEligible()) {
+        showError("Bouton PayPal non éligible pour ce navigateur / configuration.");
+        return;
+      }
+      btn.render('#paypal-button-container').catch(function (err) {
+        showError("render() a échoué", err);
+      });
+
+      // Bouton carte (si autorisé par PayPal)
       const cardBtn = paypal.Buttons({ fundingSource: paypal.FUNDING.CARD });
-      if (cardBtn.isEligible()) { cardBtn.render('#card-button-container'); }
+      if (cardBtn && cardBtn.isEligible()) { cardBtn.render('#card-button-container'); }
+
       paypalRendered = true;
     }
+
     renderPaypalButtons();
   });
 </script>

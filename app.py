@@ -41,8 +41,7 @@ def parse_date_str(date_str: str):
         if m_token.isdigit():
             m = int(m_token)
         else:
-            m = _MONTHS.get(m_token, _MONTHS.get(m_token.strip(".,"),
-                None))
+            m = _MONTHS.get(m_token, _MONTHS.get(m_token.strip(".,"), None))
         y = int(re.sub(r"\D+", "", parts[2]))
         if 0 < d <= 31 and 1 <= m <= 12 and 1900 <= y <= 2100:
             return datetime(y, m, d)
@@ -129,12 +128,9 @@ app.jinja_env.globals["lang_url"] = lang_url
 # ✅ AJOUT: normaliser les URLs — retirer ?lang=fr et tout lang invalide
 @app.before_request
 def _normalize_lang_fr():
-    # Ne toucher qu’aux requêtes idempotentes
     if request.method not in ("GET", "HEAD"):
         return None
-
     lang = request.args.get("lang")
-    # Retirer ?lang=fr (on veut / et /tours canoniques pour FR)
     if lang == "fr":
         parts = urlsplit(request.url)
         qs = [(k, v) for (k, v) in parse_qsl(parts.query, keep_blank_values=True) if k.lower() != "lang"]
@@ -142,8 +138,6 @@ def _normalize_lang_fr():
         clean_url = urlunsplit((parts.scheme, parts.netloc, parts.path, new_query, parts.fragment))
         if clean_url != request.url:
             return redirect(clean_url, code=301)
-
-    # Nettoyer un lang invalide (ex: ?lang=de)
     if lang and lang not in ("fr", "en", "es"):
         parts = urlsplit(request.url)
         qs = [(k, v) for (k, v) in parse_qsl(parts.query, keep_blank_values=True) if k.lower() != "lang"]
@@ -151,7 +145,6 @@ def _normalize_lang_fr():
         clean_url = urlunsplit((parts.scheme, parts.netloc, parts.path, new_query, parts.fragment))
         if clean_url != request.url:
             return redirect(clean_url, code=301)
-
     return None
 
 # ------------------------------------------------------------------
@@ -159,9 +152,7 @@ def _normalize_lang_fr():
 # ------------------------------------------------------------------
 raw_db = os.getenv("DATABASE_URL")
 if raw_db:
-    # Render/Heroku donnent parfois "postgres://"
     raw_db = raw_db.replace("postgres://", "postgresql://", 1)
-    # Forcer le driver psycopg v3
     if raw_db.startswith("postgresql://"):
         raw_db = "postgresql+psycopg://" + raw_db.split("://", 1)[1]
     DB_URL = raw_db
@@ -190,7 +181,6 @@ class CommentTranslation(db.Model):
     text = db.Column(db.Text, nullable=False)
     __table_args__ = (db.UniqueConstraint('comment_id', 'lang', name='uq_comment_lang'),)
 
-# Modèle pour les demandes de transfert (transport)
 class Transfer(db.Model):
     __tablename__ = "transfers"
     id = db.Column(db.Integer, primary_key=True)
@@ -222,13 +212,10 @@ if not TRANSLATE_SERVER_ENABLED:
     app.logger.info("Server-side translation DISABLED (use client-side Google Translate button).")
 
 def translate_text_auto(text, target_lang, source_lang=None, timeout=12):
-    """Retourne (translated_text, detected_source_lang) ou (None, None) si OFF/sans clé."""
     if not text or not target_lang:
         return None, None
     if not TRANSLATE_SERVER_ENABLED:
         return None, None
-
-    # DeepL si clé
     if DEEPL_API_KEY:
         try:
             resp = requests.post(
@@ -247,8 +234,6 @@ def translate_text_auto(text, target_lang, source_lang=None, timeout=12):
             return tr['text'], tr.get('detected_source_language', None)
         except Exception as e:
             logging.warning("deepl_error: %s", e)
-
-    # Google Cloud si clé
     if GOOGLE_TRANSLATE_API_KEY:
         try:
             resp = requests.post(
@@ -267,7 +252,6 @@ def translate_text_auto(text, target_lang, source_lang=None, timeout=12):
             return tr['translatedText'], tr.get('detectedSourceLanguage')
         except Exception as e:
             logging.warning("google_translate_error: %s", e)
-
     return None, None
 
 class CommentView:
@@ -287,7 +271,6 @@ class CommentView:
 # ------------------------------------------------------------------
 PAYPAL_MODE = os.getenv("PAYPAL_MODE", "sandbox")  # "live" ou "sandbox"
 PAYPAL_CLIENT_ID = os.getenv("PAYPAL_CLIENT_ID", "")
-# ✅ AJOUTS : secret + base API selon le mode
 PAYPAL_SECRET = os.getenv("PAYPAL_SECRET", "")
 PAYPAL_API_BASE = "https://api-m.paypal.com" if PAYPAL_MODE == "live" else "https://api-m.sandbox.paypal.com"
 
@@ -301,7 +284,7 @@ def inject_globals():
 # ==== ADMIN MINIMAL ====
 # ------------------------------------------------------------------
 ADMIN_USER = os.getenv("ADMIN_USER", "admin")
-ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD")  # à définir en prod
+ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD")
 
 def admin_required(fn):
     @wraps(fn)
@@ -361,7 +344,6 @@ def admin_root():
     return redirect(url_for("admin_home"))
 
 def _ensure_tables():
-    """Crée les tables manquantes (dont 'transfers') si besoin, sans casser l'app."""
     try:
         with app.app_context():
             insp = inspect(db.engine)
@@ -401,7 +383,6 @@ def _routes():
     lines = sorted(str(r) for r in app.url_map.iter_rules())
     return make_response("<pre>" + "\n".join(lines) + "</pre>", 200)
 
-# CSRF helpers
 def _csrf_get():
     tok = session.get("_csrf")
     if not tok:
@@ -412,7 +393,6 @@ def _csrf_get():
 def _csrf_check(tok: str) -> bool:
     return bool(tok) and tok == session.get("_csrf")
 
-# ---------------- ADMIN : Commentaires ----------------
 @app.get("/admin/comments")
 @admin_required
 def admin_comments():
@@ -472,7 +452,6 @@ def admin_delete_comment(comment_id: int):
         flash(_("Suppression impossible."), "error")
     return redirect(url_for("admin_comments"))
 
-# ---------------- ADMIN : Transferts ----------------
 @app.get("/admin/transfers")
 @admin_required
 def admin_transfers():
@@ -556,11 +535,9 @@ def admin_transfer_delete(transfer_id: int):
         flash(_("Suppression impossible."), "error")
     return redirect(url_for("admin_transfers"))
 
-# ---------------- ADMIN : Import des anciens avis de démo ----------------
 @app.route("/admin/import-legacy")
 @admin_required
 def admin_import_legacy():
-    """Importe en base une sélection d’avis 'démo' pour qu’ils s’affichent avec les vrais avis."""
     legacy = [
         {"name":"Nancy","country":"Mexique","date_str":"30 juillet 2019","rating":5,"message":"L’une des meilleures expériences à ne pas manquer. Hospitalité au top, parcours agréable, visite impressionnante de la cathédrale de sel."},
         {"name":"Ann","country":"États-Unis","date_str":"22 février 2020","rating":5,"message":"Sympathiques, réactifs à nos questions, et des sites fascinants que nous n’aurions jamais trouvés seuls."},
@@ -597,11 +574,9 @@ def admin_import_legacy():
 # ------------------------------------------------------------------
 @app.route("/")
 def index():
-    # 1) Charger les avis DB et trier (robuste si created_at manquant)
     comments_db = Comment.query.limit(1000).all()
     comments_db.sort(key=lambda c: (_sort_ts_model(c), c.id), reverse=True)
 
-    # 2) Fallback (langue d’origine) — affichage brut, pas d’API de traduction
     fallback_comments = [
         {"name":"Francis","country":"Canada","date_str":"12 mai 2025","rating":5,"message":"L’expérience est super. Alejandra prend son temps pour nous expliquer et répondre à nos questions."},
         {"name":"Katy","country":"Mexique","date_str":"21 mars 2023","rating":5,"message":"Recomendado. La comunicación con Alejandra fue excelente antes y durante; todo lo descrito se cumplió y siempre estuvo atenta a nuestras necesidades. Probablemente es un lugar que debes visitar si vienes a Bogotá: hermosas vistas y una catedral de sal impresionante."},
@@ -618,22 +593,18 @@ def index():
         {"name":"Yuliana","country":"Costa Rica","date_str":"18 juillet 2019","rating":5,"message":"Ale y Omar (su papá) son súper simpáticos y se esfuerzan para que te sientas como en casa."},
     ]
 
-    # 2b) Index des fallback avec clé normalisée "nom|pays"
     fb_map = {}
     for fb in fallback_comments:
         k = _norm(fb["name"]) + "|" + _canon_country(fb["country"])
         fb_map[k] = fb
 
-    # 3) Construire la liste finale à partir de la DB, en remplaçant le message si un fallback existe
     views = []
     seen = set()
     for c in comments_db:
         k = _norm(c.name or "") + "|" + _canon_country(c.country or "")
         fb = fb_map.get(k)
         if fb:
-            # Forcer le message d’origine (pas d’API de trad)
             msg = fb["message"]
-            # Compléter date si manquante
             if not c.date_str:
                 c.date_str = fb.get("date_str") or ""
             if not c.created_at:
@@ -643,7 +614,6 @@ def index():
         views.append(CommentView(c, msg, translated=False))
         seen.add(k)
 
-    # 4) Ajouter les fallback “absents” de la DB (ex: Francis) pour qu’ils apparaissent
     for fb in fallback_comments:
         k = _norm(fb["name"]) + "|" + _canon_country(fb["country"])
         if k in seen:
@@ -660,7 +630,6 @@ def index():
         views.append(CommentView(d, d.message, translated=False))
         seen.add(k)
 
-    # 5) Tri final (plus récents en premier)
     def _sort_key(v):
         dt = getattr(v, "created_at", None) or parse_date_str(getattr(v, "date_str", "")) or datetime.min
         return (dt, getattr(v, "id", 0))
@@ -680,7 +649,6 @@ def tours():
 def transport():
     return render_template("transport.html")
 
-# Form POST pour ajouter un commentaire
 @app.post("/comments")
 def submit_comment():
     name = (request.form.get("name") or "").strip()
@@ -715,7 +683,6 @@ def submit_comment():
     db.session.add(c)
     db.session.commit()
 
-    # Invalider éventuels caches de traduction (si réutilisés)
     try:
         CommentTranslation.query.filter_by(comment_id=c.id).delete()
         db.session.commit()
@@ -725,7 +692,6 @@ def submit_comment():
     flash(_("Merci pour votre adorable commentaire 💛"), "success")
     return redirect(url_for("index", lang=get_locale()))
 
-# Form POST pour créer un transfert (transport)
 @app.post("/transfer")
 def submit_transfer():
     f = request.form
@@ -772,19 +738,13 @@ def submit_transfer():
 # ------------------------------------------------------------------
 # Statique & SEO
 # ------------------------------------------------------------------
-# --- Sitemaps / Robots --------------------------------------------------------
-
-
-
 @app.route('/robots.txt')
 def robots_txt():
     resp = make_response(
         send_from_directory(app.static_folder, 'robots.txt', mimetype='text/plain')
     )
-    # IMPORTANT : on dit aux navigateurs/CDN de ne pas mettre en cache
     resp.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
     return resp
-from flask import Response  # (si ce n’est pas déjà importé)
 
 @app.get("/sitemap.xml")
 def sitemap_xml():
@@ -806,10 +766,8 @@ def not_found(e):
 def server_error(e):
     return render_template("500.html"), 500
 
-
 @app.route('/favicon.ico')
 def favicon():
-    # adapte le chemin si tu as mis les fichiers ailleurs
     return send_from_directory(
         os.path.join(app.static_folder, 'img', 'favicon'),
         'favicon.ico',
@@ -817,7 +775,7 @@ def favicon():
     )
 
 # ------------------------------------------------------------------
-# ✅ PAYPAL API — création & capture côté serveur (amélioré)
+# ✅ PAYPAL API — création & capture côté serveur (déjà en place)
 # ------------------------------------------------------------------
 import uuid
 
@@ -835,10 +793,6 @@ def _paypal_headers(request_id=None):
     return h
 
 def _server_amount_for_tour(tour_slug: str) -> tuple[str, str]:
-    """
-    Recalcule le prix côté serveur (sécurité).
-    Retourne (value, currency_code).
-    """
     prices = {
         "candelaria": ("1.00", "USD"),
         "monserrate": ("1.00", "USD"),
@@ -850,9 +804,6 @@ def _server_amount_for_tour(tour_slug: str) -> tuple[str, str]:
 
 @app.post("/api/paypal/create-order")
 def paypal_create_order():
-    """
-    Crée un order PayPal, avec montant recalculé côté serveur selon le tour.
-    """
     try:
         body = request.get_json(silent=True) or {}
         tour = (body.get("tour") or "tour").lower()
@@ -896,11 +847,7 @@ def paypal_create_order():
 
 @app.post("/api/paypal/capture-order/<order_id>")
 def paypal_capture_order(order_id):
-    """
-    Capture un order existant.
-    """
     try:
-        # Idempotency pour la capture aussi
         req_id = str(uuid.uuid4())
         r = requests.post(
             f"{PAYPAL_API_BASE}/v2/checkout/orders/{order_id}/capture",
@@ -922,10 +869,19 @@ def paypal_capture_order(order_id):
 
         app.logger.info("PayPal capture %s order_id=%s status=%s",
                         r.status_code, order_id, j.get("status"))
-        # 👉 Ici, vérifie j["status"] == "COMPLETED" et déclenche la réservation + emails
-        # send_reservation_emails(...)
         return j, 200
 
     except Exception as e:
         app.logger.exception("paypal_capture_order_failed: %s", e)
         return {"error": "server_error"}, 500
+
+# ------------------------------------------------------------------
+# ✅ Endpoint post-capture pour notifier ton backend (création réservation / emails plus tard)
+# ------------------------------------------------------------------
+@app.post("/paypal/success")
+def paypal_success():
+    data = request.get_json(silent=True) or {}
+    app.logger.info("paypal_success payload: %s", data)
+    # 👉 Ici plus tard: valider l'order via API, créer la réservation en DB et envoyer les emails.
+    return {"ok": True}, 200
+
