@@ -165,11 +165,23 @@
 
 <!-- Formulaire -->
 <main>
+
+  <!-- 🔔 Messages flash visibles en haut de la page -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="flash-messages" style="max-width:1000px;margin:16px auto;padding:12px 14px;border-radius:10px;background:#e6ffed;color:#065f46;border:1px solid #a7f3d0;">
+        {% for category, message in messages %}
+          <p style="margin:0">{{ message }}</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
   <section class="reservation-container">
     <form class="reservation-form" method="POST" action="{{ url_for('reservation', lang=get_locale()) }}" novalidate>
-      {% if tour %}
-        <input type="hidden" name="ui_lang" value="{{ get_locale() }}">
-      {% endif %}
+
+      <!-- ✅ Toujours envoyer la langue de l’UI -->
+      <input type="hidden" name="ui_lang" value="{{ get_locale() }}">
 
       <label for="nom">{{ _("Nom") }}</label>
       <input type="text" id="nom" name="nom" required autocomplete="name" inputmode="text">
@@ -183,8 +195,7 @@
       <input type="hidden" name="phone" id="phone_full">
 
       <label for="country">{{ _("Pays") }}</label>
-<input type="text" id="country" name="country" placeholder="{{ _('France, Canada, Colombie...') }}" autocomplete="country-name" required>
-
+      <input type="text" id="country" name="country" placeholder="{{ _('France, Canada, Colombie...') }}" autocomplete="country-name" required>
 
       <label for="date">{{ _("Date souhaitée") }}</label>
       <input type="date" id="date" name="date" required>
@@ -208,17 +219,6 @@
       </select>
 
       <button type="submit" id="form-submit">{{ _("Envoyer") }}</button>
-
-{% with messages = get_flashed_messages(with_categories=true) %}
-  {% if messages %}
-    <div class="flash-messages" style="max-width:800px;margin:20px auto;padding:10px;border-radius:8px;background:#e6ffed;color:#065f46;">
-      {% for category, message in messages %}
-        <p>{{ message }}</p>
-      {% endfor %}
-    </div>
-  {% endif %}
-{% endwith %}
-
     </form>
   </section>
 </main>
