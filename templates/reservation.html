@@ -215,6 +215,21 @@
 <script src="https://www.paypal.com/sdk/js?client-id=AXcr1vyT3Zx-9XCo6fQLC94tyH4qoqxNAu-V8vVRMtm4kphjbOupFByJl6cAyyppQmE-YiOU7IaLOzuj&currency=USD&intent=CAPTURE&components=buttons&enable-funding=card,credit,paylater&locale={% if get_locale()=='fr' %}fr_FR{% elif get_locale()=='en' %}en_US{% else %}es_ES{% endif %}">
 </script>
 
+<!-- ✅ AJOUT : helpers de mapping titres + prix pour emails -->
+<script>
+  // Mappe un slug de tour vers un titre localisé (pour emails/notification)
+  function tourTitleFromSlug(slug) {
+    const m = {
+      'candelaria': "{{ _('Visite historique de La Candelaria') }}",
+      'monserrate': "{{ _('Randonnée à Monserrate') }}",
+      'zipaquira':  "{{ _('Excursion à la Cathédrale de sel de Zipaquirá') }}",
+      'chorrera':   "{{ _('Cascade de La Chorrera') }}",
+      'finca-cafe': "{{ _('Visite d’une finca à café') }}"
+    };
+    return m[slug] || slug || '';
+  }
+</script>
+
 <!-- Intégration PayPal (front-only, identique à ta version) -->
 <script>
   document.addEventListener('DOMContentLoaded', function () {
@@ -248,13 +263,62 @@
             purchase_units: [{ amount: { currency_code: 'USD', value: amount }, description: `Tour: ${tourId}` }]
           });
         },
+
+        // ✅ AJOUT : onApprove enrichi (enregistre chez toi puis redirige)
         onApprove: function (data, actions) {
-          return actions.order.capture().then(function () {
-            window.location.href = '/paiement-reussi?orderID=' + data.orderID + '&lang={{ get_locale() }}';
+          return actions.order.capture().then(async function (details) {
+            try {
+              // Récup infos PayPal
+              const orderID   = data.orderID;
+              const capture   = (details && details.purchase_units && details.purchase_units[0] && details.purchase_units[0].payments && details.purchase_units[0].payments.captures && details.purchase_units[0].payments.captures[0]) || null;
+              const captureID = capture ? capture.id : null;
+              const amountVal = capture ? capture.amount.value : null;
+              const currency  = capture ? capture.amount.currency_code : 'USD';
+              const status    = capture ? capture.status : (details.status || 'COMPLETED');
+
+              // Récup infos formulaire
+              const nom       = document.getElementById('nom').value.trim();
+              const email     = document.getElementById('email').value.trim();
+              const date      = document.getElementById('date').value;
+              const message   = document.getElementById('message').value.trim();
+              const tourSlug  = document.getElementById('tour').value || '';
+              const tourTitle = tourTitleFromSlug(tourSlug);
+              const pax       = 1; // ✅ ajuste si tu ajoutes un champ "participants"
+              const lang      = "{{ get_locale() }}";
+
+              // ✅ AJOUT : envoie au backend pour créer la réservation + envoyer emails
+              await fetch('/paypal/success', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  order_id: orderID,
+                  capture_id: captureID,
+                  status: status,
+                  amount: amountVal,
+                  currency: currency,
+                  lang: lang,
+                  reservation: {
+                    fullname: nom,
+                    email: email,
+                    date: date,
+                    message: message,
+                    pax: pax,
+                    tour_slug: tourSlug,
+                    tour_title: tourTitle
+                  }
+                })
+              }).catch(() => { /* on ignore l'erreur réseau ici, le webhook peut rattraper */ });
+
+            } finally {
+              // 🔁 On garde TON redirect existant en l'état (rien de supprimé)
+              window.location.href = '/paiement-reussi?orderID=' + data.orderID + '&lang={{ get_locale() }}';
+            }
           });
         },
+
         onCancel: function () { window.location.href = '/paiement-annule?lang={{ get_locale() }}'; },
         onError: function (err) {
+          const errBox = document.getElementById('paypal-error');
           errBox.style.display = 'block';
           errBox.textContent = 'PayPal: ' + (err && err.message ? err.message : err);
         }
@@ -284,4 +348,3 @@
 
 </body>
 </html>
-
