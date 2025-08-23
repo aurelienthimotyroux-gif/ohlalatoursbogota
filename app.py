@@ -287,6 +287,9 @@ class CommentView:
 # ------------------------------------------------------------------
 PAYPAL_MODE = os.getenv("PAYPAL_MODE", "sandbox")  # "live" ou "sandbox"
 PAYPAL_CLIENT_ID = os.getenv("PAYPAL_CLIENT_ID", "")
+# ✅ AJOUTS : secret + base API selon le mode
+PAYPAL_SECRET = os.getenv("PAYPAL_SECRET", "")
+PAYPAL_API_BASE = "https://api-m.paypal.com" if PAYPAL_MODE == "live" else "https://api-m.sandbox.paypal.com"
 
 @app.context_processor
 def inject_globals():
@@ -813,5 +816,78 @@ def favicon():
         mimetype='image/vnd.microsoft.icon'
     )
 
+# ------------------------------------------------------------------
+# ✅ PAYPAL API — création & capture côté serveur
+# ------------------------------------------------------------------
+
+def _paypal_auth():
+    """Retourne le tuple auth (client_id, secret)."""
+    return (PAYPAL_CLIENT_ID, PAYPAL_SECRET)
+
+@app.post("/api/paypal/create-order")
+def paypal_create_order():
+    """
+    Crée un order PayPal en USD (ou selon ton front) et renvoie la réponse brute PayPal.
+    Le front récupère 'id' et l'utilise pour ouvrir Checkout.
+    """
+    try:
+        body = request.get_json(silent=True) or {}
+        amount = str(body.get("amount", "10.00"))
+        tour   = (body.get("tour") or "tour")
+
+        payload = {
+            "intent": "CAPTURE",
+            "purchase_units": [{
+                "amount": {"currency_code": "USD", "value": amount},
+                "description": f"Tour: {tour}"
+            }]
+        }
+        r = requests.post(
+            f"{PAYPAL_API_BASE}/v2/checkout/orders",
+            json=payload,
+            auth=_paypal_auth(),
+            timeout=20
+        )
+        # Log utile en cas d'échec (debug_id)
+        try:
+            j = r.json()
+            if r.status_code >= 400:
+                app.logger.error("PayPal create-order %s debug_id=%s body=%s",
+                                 r.status_code, j.get("debug_id"), j)
+            else:
+                app.logger.info("PayPal create-order %s id=%s", r.status_code, j.get("id"))
+        except Exception:
+            app.logger.warning("PayPal create-order non-JSON status=%s text=%s", r.status_code, r.text[:500])
+        return Response(r.text, status=r.status_code, content_type=r.headers.get("Content-Type","application/json"))
+    except Exception as e:
+        app.logger.exception("paypal_create_order_failed: %s", e)
+        return {"error": "server_error"}, 500
+
+@app.post("/api/paypal/capture-order/<order_id>")
+def paypal_capture_order(order_id):
+    """
+    Capture un order existant.
+    Renvoie la réponse brute PayPal (avec status, debug_id en cas d'erreur).
+    """
+    try:
+        r = requests.post(
+            f"{PAYPAL_API_BASE}/v2/checkout/orders/{order_id}/capture",
+            auth=_paypal_auth(),
+            timeout=20
+        )
+        try:
+            j = r.json()
+            if r.status_code >= 400:
+                app.logger.error("PayPal capture %s debug_id=%s body=%s",
+                                 r.status_code, j.get("debug_id"), j)
+            else:
+                app.logger.info("PayPal capture %s id=%s status=%s",
+                                r.status_code, j.get("id"), j.get("status"))
+        except Exception:
+            app.logger.warning("PayPal capture non-JSON status=%s text=%s", r.status_code, r.text[:500])
+        return Response(r.text, status=r.status_code, content_type=r.headers.get("Content-Type","application/json"))
+    except Exception as e:
+        app.logger.exception("paypal_capture_order_failed: %s", e)
+        return {"error": "server_error"}, 500
 
 
