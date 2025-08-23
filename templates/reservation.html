@@ -168,7 +168,7 @@
   <section class="reservation-container">
     <form class="reservation-form" method="POST" action="{{ url_for('reservation', lang=get_locale()) }}" novalidate>
       {% if tour %}
-        <input type="hidden" name="tour" value="{{ tour }}">
+        <input type="hidden" name="ui_lang" value="{{ get_locale() }}">
       {% endif %}
 
       <label for="nom">{{ _("Nom") }}</label>

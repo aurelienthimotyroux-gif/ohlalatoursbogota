@@ -8,29 +8,22 @@ from datetime import datetime
 from werkzeug.middleware.proxy_fix import ProxyFix
 from flask_sqlalchemy import SQLAlchemy
 from functools import wraps
-from sqlalchemy import inspect
+from sqlalchemy import inspect, text
 from urllib.parse import urlsplit, urlunsplit, parse_qsl, urlencode
 
 # ✉️ Email
 from flask_mail import Mail, Message
 
 # ------------------------------------------------------------------
-# Utils: parser "22 février 2020" / "30 julio 2019" / "17 Aug 2025"
+# Helpers (dates, normalisation)
 # ------------------------------------------------------------------
 _MONTHS = {
-    # français
     "janvier":1,"février":2,"fevrier":2,"mars":3,"avril":4,"mai":5,"juin":6,
     "juillet":7,"août":8,"aout":8,"septembre":9,"octobre":10,"novembre":11,"décembre":12,"decembre":12,
-    # espagnol
-    "enero":1,"febrero":2,"marzo":3,"abril":4,"mayo":5,"junio":6,"julio":7,
-    "agosto":8,"septiembre":9,"setiembre":9,"octubre":10,"noviembre":11,"diciembre":12,
-    # anglais
-    "january":1,"february":2,"march":3,"april":4,"may":5,"june":6,"july":7,
-    "august":8,"september":9,"october":10,"november":11,"december":12,
-    # abréviations
+    "enero":1,"febrero":2,"marzo":3,"abril":4,"mayo":5,"junio":6,"julio":7,"agosto":8,"septiembre":9,"setiembre":9,"octubre":10,"noviembre":11,"diciembre":12,
+    "january":1,"february":2,"march":3,"april":4,"may":5,"june":6,"july":7,"august":8,"september":9,"october":10,"november":11,"december":12,
     "jan":1,"feb":2,"mar":3,"apr":4,"may":5,"jun":6,"jul":7,"aug":8,"sep":9,"sept":9,"oct":10,"nov":11,"dec":12,
 }
-
 def parse_date_str(date_str: str):
     if not date_str:
         return None
@@ -52,24 +45,9 @@ def parse_date_str(date_str: str):
         return None
     return None
 
-def format_date_human(d: datetime, locale="fr"):
-    if not d: return ""
-    if locale == "fr":
-        months = ["janv.","févr.","mars","avr.","mai","juin","juil.","août","sept.","oct.","nov.","déc."]
-        return f"{d.day} {months[d.month-1]} {d.year}"
-    if locale == "es":
-        months = ["ene.","feb.","mar.","abr.","may.","jun.","jul.","ago.","sept.","oct.","nov.","dic."]
-        return f"{d.day} {months[d.month-1]} {d.year}"
-    months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
-    return f"{months[d.month-1]} {d.day}, {d.year}"
-
-# Tri robuste : created_at > date_str parsée > très ancien
 def _sort_ts_model(c):
     return c.created_at or parse_date_str(getattr(c, 'date_str', '')) or datetime.min
 
-# ------------------------------------------------------------------
-# Normalisation pour faire correspondre les avis (nom|pays) de manière tolérante
-# ------------------------------------------------------------------
 def _norm(s: str) -> str:
     if not s: return ""
     s = unicodedata.normalize("NFKD", s)
@@ -77,36 +55,13 @@ def _norm(s: str) -> str:
     s = re.sub(r"[^a-z0-9]+", " ", s.lower()).strip()
     return re.sub(r"\s+", " ", s)
 
-_COUNTRY_ALIASES = {
-    "etats unis": "usa",
-    "etatsunis": "usa",
-    "united states": "usa",
-    "u s a": "usa",
-    "u.s.a": "usa",
-    "usa": "usa",
-    "mexico": "mexique",
-    "mx": "mexique",
-    "costa rica": "costa rica",
-    "canada": "canada",
-    "france": "france",
-    "colombie": "colombie",
-    "colombia": "colombie",
-}
-
-def _canon_country(c: str) -> str:
-    n = _norm(c)
-    return _COUNTRY_ALIASES.get(n, n)
-
 # ------------------------------------------------------------------
-# App
+# App & Babel
 # ------------------------------------------------------------------
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY", "dev-secret")
-
-# Proxy headers (Render/ingress)
 app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1)
 
-# Babel (langues)
 app.config["BABEL_DEFAULT_LOCALE"] = "fr"
 app.config["BABEL_SUPPORTED_LOCALES"] = ["fr", "en", "es"]
 app.config["BABEL_TRANSLATION_DIRECTORIES"] = "translations"
@@ -117,7 +72,6 @@ def get_locale():
     lang = request.args.get("lang")
     return lang if lang in app.config["BABEL_SUPPORTED_LOCALES"] else app.config["BABEL_DEFAULT_LOCALE"]
 
-# Exposer helpers à Jinja
 app.jinja_env.globals["get_locale"] = get_locale
 
 def lang_url(lang_code: str):
@@ -125,23 +79,15 @@ def lang_url(lang_code: str):
     args["lang"] = lang_code
     endpoint = request.endpoint or "index"
     return url_for(endpoint, **args)
-
 app.jinja_env.globals["lang_url"] = lang_url
 
-# ✅ Normaliser les URLs — retirer ?lang=fr et tout lang invalide
+# ✅ Normalisation d’URL: retirer ?lang=fr / lang invalide
 @app.before_request
 def _normalize_lang_fr():
     if request.method not in ("GET", "HEAD"):
         return None
     lang = request.args.get("lang")
-    if lang == "fr":
-        parts = urlsplit(request.url)
-        qs = [(k, v) for (k, v) in parse_qsl(parts.query, keep_blank_values=True) if k.lower() != "lang"]
-        new_query = urlencode(qs, doseq=True)
-        clean_url = urlunsplit((parts.scheme, parts.netloc, parts.path, new_query, parts.fragment))
-        if clean_url != request.url:
-            return redirect(clean_url, code=301)
-    if lang and lang not in ("fr", "en", "es"):
+    if lang == "fr" or (lang and lang not in ("fr","en","es")):
         parts = urlsplit(request.url)
         qs = [(k, v) for (k, v) in parse_qsl(parts.query, keep_blank_values=True) if k.lower() != "lang"]
         new_query = urlencode(qs, doseq=True)
@@ -151,7 +97,7 @@ def _normalize_lang_fr():
     return None
 
 # ------------------------------------------------------------------
-# SQLAlchemy (models AVANT les routes)
+# Database
 # ------------------------------------------------------------------
 raw_db = os.getenv("DATABASE_URL")
 if raw_db:
@@ -167,7 +113,7 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 
 class Comment(db.Model):
-    __tablename__ = "comments"
+    __tablename__="comments"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), default="")
     country = db.Column(db.String(120), default="")
@@ -177,15 +123,15 @@ class Comment(db.Model):
     message = db.Column(db.Text, nullable=False)
 
 class CommentTranslation(db.Model):
-    __tablename__ = "comment_translation"
+    __tablename__="comment_translation"
     id = db.Column(db.Integer, primary_key=True)
     comment_id = db.Column(db.Integer, db.ForeignKey('comments.id', ondelete='CASCADE'), nullable=False)
-    lang = db.Column(db.String(5), nullable=False)  # 'fr', 'en', 'es'
+    lang = db.Column(db.String(5), nullable=False)
     text = db.Column(db.Text, nullable=False)
-    __table_args__ = (db.UniqueConstraint('comment_id', 'lang', name='uq_comment_lang'),)
+    __table_args__ = (db.UniqueConstraint('comment_id','lang',name='uq_comment_lang'),)
 
 class Transfer(db.Model):
-    __tablename__ = "transfers"
+    __tablename__="transfers"
     id = db.Column(db.Integer, primary_key=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     name = db.Column(db.String(160), default="")
@@ -201,105 +147,55 @@ class Transfer(db.Model):
     notes = db.Column(db.Text, default="")
     raw = db.Column(db.Text, default="")
 
-# ✅ Nouveau : modèle Reservation
+# ✅ Réservation avec téléphone + pays + nombre de personnes
 class Reservation(db.Model):
-    __tablename__ = "reservations"
+    __tablename__="reservations"
     id = db.Column(db.Integer, primary_key=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     fullname = db.Column(db.String(160), default="")
     email = db.Column(db.String(160), default="")
+    phone = db.Column(db.String(40), default="")
+    country = db.Column(db.String(120), default="")
     date_str = db.Column(db.String(80), default="")
+    persons = db.Column(db.Integer, default=1)
     tour_slug = db.Column(db.String(80), default="")
     message = db.Column(db.Text, default="")
     language = db.Column(db.String(8), default="")
 
 with app.app_context():
     db.create_all()
+    # auto-migrate douce : ajoute colonnes manquantes sans casser
+    insp = inspect(db.engine)
+    try:
+        cols = [c["name"] for c in insp.get_columns("reservations")]
+        with db.engine.begin() as con:
+            if "phone" not in cols:
+                con.execute(text("ALTER TABLE reservations ADD COLUMN phone VARCHAR(40)"))
+            if "persons" not in cols:
+                con.execute(text("ALTER TABLE reservations ADD COLUMN persons INTEGER DEFAULT 1"))
+            if "country" not in cols:
+                con.execute(text("ALTER TABLE reservations ADD COLUMN country VARCHAR(120)"))
+    except Exception as e:
+        app.logger.warning("auto_migrate_reservations_failed: %s", e)
 
 # ------------------------------------------------------------------
-# Traduction côté serveur (désactivée par défaut)
-# ------------------------------------------------------------------
-TRANSLATE_SERVER_ENABLED = os.getenv("TRANSLATE_SERVER_ENABLED", "0") == "1"
-DEEPL_API_KEY = os.getenv("DEEPL_API_KEY")
-GOOGLE_TRANSLATE_API_KEY = os.getenv("GOOGLE_TRANSLATE_API_KEY")
-
-if not TRANSLATE_SERVER_ENABLED:
-    app.logger.info("Server-side translation DISABLED (use client-side Google Translate button).")
-
-def translate_text_auto(text, target_lang, source_lang=None, timeout=12):
-    if not text or not target_lang:
-        return None, None
-    if not TRANSLATE_SERVER_ENABLED:
-        return None, None
-    if DEEPL_API_KEY:
-        try:
-            resp = requests.post(
-                'https://api-free.deepl.com/v2/translate',
-                data={
-                    'auth_key': DEEPL_API_KEY,
-                    'text': text,
-                    'target_lang': target_lang.upper(),
-                    **({'source_lang': source_lang.upper()} if source_lang else {})
-                },
-                timeout=timeout
-            )
-            resp.raise_for_status()
-            j = resp.json()
-            tr = j['translations'][0]
-            return tr['text'], tr.get('detected_source_language', None)
-        except Exception as e:
-            logging.warning("deepl_error: %s", e)
-    if GOOGLE_TRANSLATE_API_KEY:
-        try:
-            resp = requests.post(
-                'https://translation.googleapis.com/language/translate/v2',
-                params={'key': GOOGLE_TRANSLATE_API_KEY},
-                json={
-                    'q': text,
-                    'target': target_lang.lower(),
-                    **({'source': source_lang.lower()} if source_lang else {})
-                },
-                timeout=timeout
-            )
-            resp.raise_for_status()
-            j = resp.json()
-            tr = j['data']['translations'][0]
-            return tr['translatedText'], tr.get('detectedSourceLanguage')
-        except Exception as e:
-            logging.warning("google_translate_error: %s", e)
-    return None, None
-
-class CommentView:
-    def __init__(self, c, display_message, translated=False, source_lang=None):
-        self.id = c.id
-        self.name = getattr(c, 'name', '')
-        self.country = getattr(c, 'country', '')
-        self.date_str = getattr(c, 'date_str', '')
-        self.rating = getattr(c, 'rating', 5.0)
-        self.created_at = getattr(c, 'created_at', None)
-        self.message = display_message
-        self.translated = translated
-        self.source_lang = source_lang
-
-# ------------------------------------------------------------------
-# ✉️ Mail — configuration via variables d’environnement
+# Email (Flask-Mail) — config via env vars
 # ------------------------------------------------------------------
 app.config["MAIL_SERVER"] = os.getenv("MAIL_SERVER", "smtp.gmail.com")
 app.config["MAIL_PORT"] = int(os.getenv("MAIL_PORT", "587"))
-app.config["MAIL_USE_TLS"] = os.getenv("MAIL_USE_TLS", "1") in ("1", "true", "True")
-app.config["MAIL_USE_SSL"] = os.getenv("MAIL_USE_SSL", "0") in ("1", "true", "True")
+app.config["MAIL_USE_TLS"] = os.getenv("MAIL_USE_TLS", "1") in ("1","true","True")
+app.config["MAIL_USE_SSL"] = os.getenv("MAIL_USE_SSL", "0") in ("1","true","True")
 app.config["MAIL_USERNAME"] = os.getenv("MAIL_USERNAME", "")
 app.config["MAIL_PASSWORD"] = os.getenv("MAIL_PASSWORD", "")
 app.config["MAIL_DEFAULT_SENDER"] = os.getenv("MAIL_DEFAULT_SENDER", app.config["MAIL_USERNAME"])
-
 ADMIN_NOTIFY_EMAIL = os.getenv("ADMIN_NOTIFY_EMAIL", app.config["MAIL_DEFAULT_SENDER"] or app.config["MAIL_USERNAME"] or "")
 
 mail = Mail(app)
 
 # ------------------------------------------------------------------
-# ==== ADMIN MINIMAL ====
+# Admin minimal
 # ------------------------------------------------------------------
-ADMIN_USER = os.getenv("ADMIN_USER", "admin")
+ADMIN_USER = os.getenv("ADMIN_USER","admin")
 ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD")
 
 def admin_required(fn):
@@ -312,8 +208,7 @@ def admin_required(fn):
 
 def _inline_html(title, body):
     return f"""<!doctype html>
-<html lang="fr"><meta charset="utf-8">
-<title>{title}</title>
+<html lang="fr"><meta charset="utf-8"><title>{title}</title>
 <style>
 body{{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:#0f172a;color:#e5e7eb;margin:0;padding:32px}}
 .card{{background:#111827;border:1px solid #1f2937;border-radius:12px;padding:20px;max-width:1060px;margin:auto}}
@@ -363,10 +258,19 @@ def _ensure_tables():
     try:
         with app.app_context():
             insp = inspect(db.engine)
-            needed = ["comments", "comment_translation", "transfers", "reservations"]
+            needed = ["comments","comment_translation","transfers","reservations"]
             for t in needed:
                 if not insp.has_table(t):
                     db.create_all()
+            # assure colonnes
+            cols = [c["name"] for c in insp.get_columns("reservations")]
+            with db.engine.begin() as con:
+                if "phone" not in cols:
+                    con.execute(text("ALTER TABLE reservations ADD COLUMN phone VARCHAR(40)"))
+                if "persons" not in cols:
+                    con.execute(text("ALTER TABLE reservations ADD COLUMN persons INTEGER DEFAULT 1"))
+                if "country" not in cols:
+                    con.execute(text("ALTER TABLE reservations ADD COLUMN country VARCHAR(120)"))
     except Exception as e:
         app.logger.warning("ensure_tables_failed: %s", e)
 
@@ -374,18 +278,14 @@ def _ensure_tables():
 @admin_required
 def admin_home():
     _ensure_tables()
-    comments_count     = Comment.query.count()
-    translations_count = CommentTranslation.query.count()
-    transfers_count    = Transfer.query.count()
-    reservations_count = Reservation.query.count()
     body = f"""
       <h1>Panneau d’administration</h1>
       <p class="small">Base: <code>{DB_URL}</code></p>
       <table>
-        <tr><th>Commentaires</th><td><span class="badge">{comments_count}</span> – <a class="btn" href="{url_for('admin_comments')}">Gérer les commentaires</a></td></tr>
-        <tr><th>Traductions en cache</th><td><span class="badge">{translations_count}</span></td></tr>
-        <tr><th>Transferts</th><td><span class="badge">{transfers_count}</span> – <a class="btn" href="{url_for('admin_transfers')}">Voir la liste</a></td></tr>
-        <tr><th>Réservations</th><td><span class="badge">{reservations_count}</span> – <a class="btn" href="{url_for('admin_reservations')}">Voir la liste</a></td></tr>
+        <tr><th>Commentaires</th><td><span class="badge">{Comment.query.count()}</span> – <a class="btn" href="{url_for('admin_comments')}">Gérer les commentaires</a></td></tr>
+        <tr><th>Traductions en cache</th><td><span class="badge">{CommentTranslation.query.count()}</span></td></tr>
+        <tr><th>Transferts</th><td><span class="badge">{Transfer.query.count()}</span> – <a class="btn" href="{url_for('admin_transfers')}">Voir la liste</a></td></tr>
+        <tr><th>Réservations</th><td><span class="badge">{Reservation.query.count()}</span> – <a class="btn" href="{url_for('admin_reservations')}">Voir la liste</a></td></tr>
       </table>
       <p style="margin-top:16px">
         <a class="btn" href="{url_for('admin_import_legacy')}">Importer les anciens avis</a>
@@ -536,22 +436,6 @@ def admin_transfers():
     """
     return _inline_html("Transferts — Admin", body)
 
-@app.post("/admin/transfers/<int:transfer_id>/delete")
-@admin_required
-def admin_transfer_delete(transfer_id: int):
-    if not _csrf_check(request.form.get("csrf")):
-        flash(_("Session expirée, réessaie."), "error")
-        return redirect(url_for("admin_transfers"))
-    try:
-        Transfer.query.filter_by(id=transfer_id).delete(synchronize_session=False)
-        db.session.commit()
-        flash(_("Transfert supprimé ✅"), "success")
-    except Exception as e:
-        db.session.rollback()
-        app.logger.warning("delete_transfer_failed: %s", e)
-        flash(_("Suppression impossible."), "error")
-    return redirect(url_for("admin_transfers"))
-
 # ✅ Admin — liste des réservations
 @app.get("/admin/reservations")
 @admin_required
@@ -574,7 +458,10 @@ def admin_reservations():
           <td>{r.created_at:%Y-%m-%d %H:%M}</td>
           <td>{(r.fullname or '').replace('<','&lt;')}</td>
           <td>{(r.email or '').replace('<','&lt;')}</td>
+          <td>{(r.phone or '').replace('<','&lt;')}</td>
+          <td>{(r.country or '').replace('<','&lt;')}</td>
           <td>{(r.date_str or '').replace('<','&lt;')}</td>
+          <td>{r.persons}</td>
           <td>{(r.tour_slug or '').replace('<','&lt;')}</td>
           <td style="max-width:420px">{(r.message or '').replace('<','&lt;')}</td>
           <td>{(r.language or '').replace('<','&lt;')}</td>
@@ -593,7 +480,8 @@ def admin_reservations():
       <table>
         <thead>
           <tr>
-            <th>#</th><th>Créé</th><th>Nom</th><th>Email</th><th>Date</th><th>Tour</th><th>Message</th><th>Langue</th><th>Action</th>
+            <th>#</th><th>Créé</th><th>Nom</th><th>Email</th><th>Téléphone</th><th>Pays</th>
+            <th>Date</th><th>PAX</th><th>Tour</th><th>Message</th><th>Langue</th><th>Action</th>
           </tr>
         </thead>
         <tbody>{"".join(rows)}</tbody>
@@ -617,118 +505,99 @@ def admin_reservation_delete(reservation_id: int):
         flash(_("Suppression impossible."), "error")
     return redirect(url_for("admin_reservations"))
 
-@app.route("/admin/import-legacy")
+@app.post("/admin/transfers/<int:transfer_id>/delete")
 @admin_required
-def admin_import_legacy():
-    legacy = [
-        {"name":"Nancy","country":"Mexique","date_str":"30 juillet 2019","rating":5,"message":"L’une des meilleures expériences à ne pas manquer. Hospitalité au top, parcours agréable, visite impressionnante de la cathédrale de sel."},
-        {"name":"Ann","country":"États-Unis","date_str":"22 février 2020","rating":5,"message":"Sympathiques, réactifs à nos questions, et des sites fascinants que nous n’aurions jamais trouvés seuls."},
-        {"name":"Yuliana","country":"Costa Rica","date_str":"18 juillet 2019","rating":5,"message":"Ale et Omar (son papa) sont super sympas et très impliqués pour que vous vous sentiez comme chez vous."},
-        {"name":"Luna","country":"Costa Rica","date_str":"25 juillet 2019","rating":5,"message":"Voyage bien planifié. À l’heure pour le pickup à l’hôtel. Pendant le trajet, Alejandra et Omar sont très sympathiques et patients."},
-        {"name":"Fabiola","country":"Mexique","date_str":"11 août 2022","rating":5,"message":"Du début à la fin, une expérience très agréable. Alejandra et son père Omar ont été très attentifs et gentils."},
-        {"name":"Jorge","country":"Mexique","date_str":"11 août 2022","rating":5,"message":"Hautement recommandé. Alejandra et son père ont été très sympathiques et à notre écoute à tout moment."},
-        {"name":"Kristina","country":"Mexique","date_str":"27 août 2022","rating":5,"message":"Nous recommandons cette expérience. Nous avons passé un excellent moment. Alejandra et son père sont polis et sympathiques."},
-        {"name":"Sam","country":"États-Unis","date_str":"14 août 2022","rating":5,"message":"Alejandra et son père Omar ont été des hôtes parfaits, très attentifs à ma manière de vouloir profiter de la visite."},
-        {"name":"Oscar","country":"Costa Rica","date_str":"8 janvier 2023","rating":4.5,"message":"Merci beaucoup pour votre gentillesse et votre disponibilité. Super recommandé."},
-        {"name":"Marvin","country":"Mexique","date_str":"15 septembre 2022","rating":5,"message":"Alejandra et son père sont extraordinaires et nous ont offert une très belle journée à Zipaquirá."},
-    ]
-    inserted = 0
-    for r in legacy:
-        exists = Comment.query.filter_by(name=r["name"], date_str=r["date_str"]).first()
-        if exists:
-            continue
-        created = parse_date_str(r["date_str"]) or datetime.utcnow()
-        db.session.add(Comment(
-            name=r["name"],
-            country=r["country"],
-            rating=float(r["rating"]),
-            date_str=r["date_str"],
-            created_at=created,
-            message=r["message"]
-        ))
-        inserted += 1
-    db.session.commit()
-    flash(_(f"{inserted} avis importés."), "success")
-    return redirect(url_for("admin_comments"))
+def admin_transfer_delete(transfer_id: int):
+    if not _csrf_check(request.form.get("csrf")):
+        flash(_("Session expirée, réessaie."), "error")
+        return redirect(url_for("admin_transfers"))
+    try:
+        Transfer.query.filter_by(id=transfer_id).delete(synchronize_session=False)
+        db.session.commit()
+        flash(_("Transfert supprimé ✅"), "success")
+    except Exception as e:
+        db.session.rollback()
+        app.logger.warning("delete_transfer_failed: %s", e)
+        flash(_("Suppression impossible."), "error")
+    return redirect(url_for("admin_transfers"))
 
 # ------------------------------------------------------------------
-# Routes publiques
+# Données de démo + pages publiques
 # ------------------------------------------------------------------
 @app.route("/")
 def index():
     comments_db = Comment.query.limit(1000).all()
     comments_db.sort(key=lambda c: (_sort_ts_model(c), c.id), reverse=True)
+    return render_template("index.html", comments=[c for c in comments_db])
 
-    fallback_comments = [
-        {"name":"Francis","country":"Canada","date_str":"12 mai 2025","rating":5,"message":"L’expérience est super. Alejandra prend son temps pour nous expliquer et répondre à nos questions."},
-        {"name":"Katy","country":"Mexique","date_str":"21 mars 2023","rating":5,"message":"Recomendado. La comunicación con Alejandra fue excelente antes y durante; todo lo descrito se cumplió y siempre estuvo atenta a nuestras necesidades. Probablemente es un lugar que debes visitar si vienes a Bogotá: hermosas vistas y una catedral de sal impresionante."},
-        {"name":"Liliana","country":"États-Unis","date_str":"4 mars 2023","rating":4.5,"message":"Incredible experience! Alejandra and her father (Omar) took care of my husband's special needs, and everything was done at 100%. The Salt Cathedral, the traditional food at Brasas del Llano: a 5-star cultural experience. We recommend Alejandra if you want a tour with a friend. Thank you so much, see you next time!"},
-        {"name":"Oscar","country":"Costa Rica","date_str":"8 janvier 2023","rating":4.5,"message":"Muchas gracias por su amabilidad y disponibilidad. Súper recomendado."},
-        {"name":"Marvin","country":"Mexique","date_str":"15 septembre 2022","rating":5,"message":"Alejandra y su papá nos ofrecieron un día muy bonito en Zipaquirá. Nos vamos con excelentes recuerdos. ¡Gracias!"},
-        {"name":"Kristina","country":"Mexique","date_str":"27 août 2022","rating":5,"message":"Recomendamos esta experiencia. Lo pasamos excelente. Alejandra y su papá son amables y atentos."},
-        {"name":"Sam","country":"États-Unis","date_str":"14 août 2022","rating":5,"message":"Alejandra and her father Omar were perfect hosts, very attentive to the way I wanted to enjoy the visit."},
-        {"name":"Jorge","country":"Mexique","date_str":"11 août 2022","rating":5,"message":"Altamente recomendado. Alejandra y su papá fueron muy amables y estuvieron atentos a nosotros en todo momento. ¡Experiencia 100% recomendada!"},
-        {"name":"Fabiola","country":"Mexique","date_str":"11 août 2022","rating":5,"message":"De principio a fin, una experiencia muy agradable. Alejandra y su papá Omar fueron muy atentos y amables. El desayuno y el almuerzo deliciosos. Nos dejaron disfrutar de la catedral a nuestro ritmo: ¡lo apreciamos!"},
-        {"name":"Ann","country":"États-Unis","date_str":"22 février 2020","rating":5,"message":"Alejandra and her father were friendly, responsive to our questions, and took us to fascinating places we would never have found on our own. A very enjoyable experience."},
-        {"name":"Nancy","country":"Mexique","date_str":"30 juillet 2019","rating":5,"message":"Una de las mejores experiencias que no te puedes perder. Hospitalidad excelente, recorrido agradable, visita impresionante a la catedral de sal."},
-        {"name":"Luna","country":"Costa Rica","date_str":"25 juillet 2019","rating":5,"message":"Viaje bien planificado. Puntuales para recogernos en el hotel. Durante el trayecto, Alejandra y Omar fueron muy amables y pacientes."},
-        {"name":"Yuliana","country":"Costa Rica","date_str":"18 juillet 2019","rating":5,"message":"Ale y Omar (su papá) son súper simpáticos y se esfuerzan para que te sientas como en casa."},
+# ------------------------------------------------------------------
+# Déduction de langue (fallback si ui_lang absent)
+# ------------------------------------------------------------------
+def _infer_lang_from_request(req, country_text: str = "", email_text: str = "", phone_text: str = "") -> str:
+    """
+    Renvoie 'fr' / 'en' / 'es' en se basant sur:
+    1) ?lang=..., sinon
+    2) header Accept-Language, sinon
+    3) heuristiques sur le pays/adresse mail/phone, sinon 'fr'
+    """
+    qlang = (req.args.get("lang") or "").lower()
+    if qlang in ("fr", "en", "es"):
+        return qlang
+
+    al = (req.headers.get("Accept-Language") or "").lower()
+    for code in ("fr", "en", "es"):
+        if code in al:
+            return code
+
+    txt = " ".join([(country_text or ""), (email_text or ""), (phone_text or "")]).lower()
+
+    en_tokens = [
+        "uk","u.k","united kingdom","england","angleterre","royaume-uni",
+        "scotland","wales","ireland","irlande",
+        "usa","united states","etats-unis","états-unis","us",
+        "canada","australia","australie","new zealand","nouvelle-zélande"
     ]
+    if any(t in txt for t in en_tokens):
+        return "en"
 
-    fb_map = {}
-    for fb in fallback_comments:
-        k = _norm(fb["name"]) + "|" + _canon_country(fb["country"])
-        fb_map[k] = fb
+    es_tokens = [
+        "espagne","españa","spain","colombie","colombia","mexique","méxique","mexico",
+        "argentine","argentina","pérou","peru","chili","chile","équateur","equateur","ecuador",
+        "bolivie","bolivia","uruguay","paraguay","costa rica","panama","guatemala","honduras",
+        "el salvador","nicaragua","republica dominicana","république dominicaine","dominican republic"
+    ]
+    if any(t in txt for t in es_tokens):
+        return "es"
 
-    views = []
-    seen = set()
-    for c in comments_db:
-        k = _norm(c.name or "") + "|" + _canon_country(c.country or "")
-        fb = fb_map.get(k)
-        if fb:
-            msg = fb["message"]
-            if not c.date_str:
-                c.date_str = fb.get("date_str") or ""
-            if not c.created_at:
-                c.created_at = parse_date_str(c.date_str) or parse_date_str(fb.get("date_str") or "")
-        else:
-            msg = c.message
-        views.append(CommentView(c, msg, translated=False))
-        seen.add(k)
+    return "fr"
 
-    for fb in fallback_comments:
-        k = _norm(fb["name"]) + "|" + _canon_country(fb["country"])
-        if k in seen:
-            continue
-        class Dummy: pass
-        d = Dummy()
-        d.id = 0
-        d.name = fb["name"]
-        d.country = fb["country"]
-        d.date_str = fb.get("date_str") or ""
-        d.rating = float(fb.get("rating", 5))
-        d.created_at = parse_date_str(d.date_str)
-        d.message = fb["message"]
-        views.append(CommentView(d, d.message, translated=False))
-        seen.add(k)
-
-    def _sort_key(v):
-        dt = getattr(v, "created_at", None) or parse_date_str(getattr(v, "date_str", "")) or datetime.min
-        return (dt, getattr(v, "id", 0))
-    views.sort(key=_sort_key, reverse=True)
-
-    return render_template("index.html", comments=views)
-
-# ✅ Réservation GET/POST + emails
+# ✅ Réservation GET/POST + mails langue auto
 @app.route("/reservation", methods=["GET","POST"])
 def reservation():
     if request.method == "POST":
         fullname = (request.form.get("nom") or "").strip()
         email    = (request.form.get("email") or "").strip()
+        phone    = (request.form.get("phone") or "").strip()
+        country  = (request.form.get("country") or "").strip()
         date_str = (request.form.get("date") or "").strip()
+        persons  = request.form.get("persons") or "1"
         tour     = (request.form.get("tour") or "").strip().lower()
         message  = (request.form.get("message") or "").strip()
-        lang     = get_locale()
+
+        # langue UI envoyée par le formulaire (champ hidden ui_lang)
+        ui_lang  = (request.form.get("ui_lang") or "").lower()
+        if ui_lang in ("fr","en","es"):
+            lang = ui_lang
+        else:
+            lang = _infer_lang_from_request(request, country_text=country, email_text=email, phone_text=phone)
+
+        # Validation PAX (1..6)
+        try:
+            persons = int(persons)
+            if persons < 1: persons = 1
+            if persons > 6: persons = 6
+        except Exception:
+            persons = 1
 
         if not fullname or not email or not date_str or not tour:
             flash(_("Merci de remplir nom, email, date et tour."), "error")
@@ -739,7 +608,10 @@ def reservation():
             r = Reservation(
                 fullname=fullname[:160],
                 email=email[:160],
+                phone=phone[:40],
+                country=country[:120],
                 date_str=date_str[:80],
+                persons=persons,
                 tour_slug=tour[:80],
                 message=message,
                 language=lang[:8]
@@ -752,45 +624,85 @@ def reservation():
             flash(_("Petit souci technique, réessaie dans quelques secondes."), "error")
             return redirect(url_for("reservation", lang=get_locale()))
 
-        # Envoyer emails (si config SMTP présente)
+        # Emails (langue auto fr/en/es) — sujet et corps synchronisés
         try:
             if app.config["MAIL_USERNAME"] and (app.config["MAIL_PASSWORD"] or app.config["MAIL_USE_SSL"] or app.config["MAIL_USE_TLS"]):
-                # Client
-                subject_cli = {
+                subjects = {
                     "fr": "Confirmation de réservation — Oh La La Tours Bogotá",
                     "en": "Booking confirmation — Oh La La Tours Bogotá",
                     "es": "Confirmación de reserva — Oh La La Tours Bogotá",
-                }.get(lang, "Confirmation de réservation — Oh La La Tours Bogotá")
-                body_cli = f"""Bonjour {fullname},
+                }
+                bodies = {
+                    "fr": f"""Bonjour {fullname},
 
 Nous avons bien reçu votre réservation.
 • Tour : {tour}
 • Date : {date_str}
+• Nombre de personnes : {persons}
+• Téléphone : {phone or '—'}
+• Pays : {country or '—'}
 • Message : {message or '—'}
 
 Nous revenons vers vous très rapidement pour l’organisation.
 
 Oh La La Tours Bogotá
-"""
-                msg_client = Message(subject=subject_cli, recipients=[email], body=body_cli)
-                mail.send(msg_client)
+""",
+                    "en": f"""Hello {fullname},
 
-                # Interne
+We’ve received your booking request.
+• Tour: {tour}
+• Date: {date_str}
+• Number of people: {persons}
+• Phone: {phone or '—'}
+• Country: {country or '—'}
+• Message: {message or '—'}
+
+We’ll get back to you shortly to arrange the details.
+
+Oh La La Tours Bogotá
+""",
+                    "es": f"""Hola {fullname},
+
+Hemos recibido tu reserva.
+• Tour: {tour}
+• Fecha: {date_str}
+• Número de personas: {persons}
+• Teléfono: {phone or '—'}
+• País: {country or '—'}
+• Mensaje: {message or '—'}
+
+En breve nos pondremos en contacto para organizar los detalles.
+
+Oh La La Tours Bogotá
+"""
+                }
+
+                subject_cli = subjects.get(lang, subjects["fr"])
+                body_cli    = bodies.get(lang, bodies["fr"])
+                app.logger.info("reservation_email_lang=%s", lang)
+
+                # Client
+                mail.send(Message(subject=subject_cli, recipients=[email], body=body_cli))
+
+                # Interne (FR par défaut)
                 notify_to = ADMIN_NOTIFY_EMAIL or app.config["MAIL_DEFAULT_SENDER"] or app.config["MAIL_USERNAME"]
                 if notify_to:
-                    subject_admin = f"[Réservation] {fullname} — {tour} — {date_str}"
+                    subject_admin = f"[Réservation] {fullname} — {tour} — {date_str} — {persons}p"
                     body_admin = f"""Nouvelle réservation
 
 Nom: {fullname}
 Email: {email}
+Téléphone: {phone or '—'}
+Pays: {country or '—'}
 Date: {date_str}
+Personnes: {persons}
 Tour: {tour}
 Langue: {lang}
+
 Message:
 {message or '—'}
 """
-                    msg_admin = Message(subject=subject_admin, recipients=[notify_to], body=body_admin)
-                    mail.send(msg_admin)
+                    mail.send(Message(subject=subject_admin, recipients=[notify_to], body=body_admin))
             else:
                 app.logger.warning("Mail non configuré: aucune confirmation envoyée. Configure MAIL_* env vars.")
         except Exception as e:
@@ -800,6 +712,9 @@ Message:
         return redirect(url_for("reservation", lang=get_locale()))
     return render_template("reservation.html")
 
+# ------------------------------------------------------------------
+# Divers
+# ------------------------------------------------------------------
 @app.route("/tours")
 def tours():
     return render_template("tours.html")
@@ -815,101 +730,43 @@ def submit_comment():
     country = (request.form.get("country") or "").strip()
     rating = request.form.get("rating") or "5"
     date_str = request.form.get("date") or ""
-
     if not message:
         flash(_("Merci d'écrire un petit message 😇"), "error")
         return redirect(url_for("index", lang=get_locale()))
-
-    created_at = None
-    if date_str:
-        d = parse_date_str(date_str)
-        if d:
-            created_at = d
-
     try:
         rating_f = float(rating)
     except Exception:
         rating_f = 5.0
-
     c = Comment(
         name=name[:120],
         country=country[:120],
         rating=rating_f,
         date_str=date_str[:120],
-        created_at=created_at or datetime.utcnow(),
+        created_at=parse_date_str(date_str) or datetime.utcnow(),
         message=message
     )
     db.session.add(c)
     db.session.commit()
-
     try:
         CommentTranslation.query.filter_by(comment_id=c.id).delete()
         db.session.commit()
     except Exception:
         db.session.rollback()
-
     flash(_("Merci pour votre adorable commentaire 💛"), "success")
     return redirect(url_for("index", lang=get_locale()))
-
-@app.post("/transfer")
-def submit_transfer():
-    f = request.form
-
-    def g(*keys, default=""):
-        for k in keys:
-            v = f.get(k)
-            if v:
-                return v
-        return default
-
-    try:
-        pax = int(g("passengers","pax","persons","people","personnes", default="1"))
-    except Exception:
-        pax = 1
-
-    try:
-        _ensure_tables()
-        t = Transfer(
-            name=g("name","nom","full_name"),
-            email=g("email","mail"),
-            whatsapp=g("whatsapp","phone","telephone","tel"),
-            language=get_locale(),
-            pickup=g("pickup","from","depart","departure","pickup_address"),
-            dropoff=g("dropoff","to","destination","arrivee","dropoff_address"),
-            flight=g("flight","flight_number","vol"),
-            date_str=g("date","jour","fecha"),
-            time_str=g("time","pickup_time","heure","hora"),
-            passengers=pax,
-            notes=g("notes","message","comment"),
-            raw=str({k:v for k,v in f.items()}),
-        )
-        db.session.add(t)
-        db.session.commit()
-        flash(_("Merci ! Nous confirmons votre transfert très vite par WhatsApp / e-mail."), "success")
-    except Exception as e:
-        app.logger.error("submit_transfer_failed: %s", e)
-        db.session.rollback()
-        _ensure_tables()
-        flash(_("Petit souci technique, réessaie dans quelques secondes."), "error")
-
-    return redirect(request.referrer or url_for("transport", lang=get_locale()))
 
 # ------------------------------------------------------------------
 # Statique & SEO
 # ------------------------------------------------------------------
 @app.route('/robots.txt')
 def robots_txt():
-    resp = make_response(
-        send_from_directory(app.static_folder, 'robots.txt', mimetype='text/plain')
-    )
+    resp = make_response(send_from_directory(app.static_folder, 'robots.txt', mimetype='text/plain'))
     resp.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
     return resp
 
 @app.get("/sitemap.xml")
 def sitemap_xml():
-    resp = make_response(
-        send_from_directory(app.static_folder, "sitemap.xml", mimetype="application/xml")
-    )
+    resp = make_response(send_from_directory(app.static_folder, "sitemap.xml", mimetype="application/xml"))
     resp.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, max-age=0"
     return resp
 
@@ -934,4 +791,5 @@ def favicon():
     )
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.getenv("PORT", "10000")), debug=bool(os.getenv("DEBUG", "0") == "1"))
+    app.run(host="0.0.0.0", port=int(os.getenv("PORT","10000")), debug=bool(os.getenv("DEBUG","0")=="1"))
+
