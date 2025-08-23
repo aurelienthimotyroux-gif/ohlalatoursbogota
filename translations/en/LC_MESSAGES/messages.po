@@ -496,8 +496,8 @@ msgstr "Why choose the transport service?"
 msgid "Qu'est-ce que le service de transport ?"
 msgstr "What is the transport service?"
 
-msgid "Randonnée à Monserrate"
-msgstr "Hike to Monserrate"
+msgid "Découverte du Monserrate"
+msgstr "Discovery of Monserrate"
 
 msgid "Recommandé. La communication avec Alejandra était excellente avant et pendant, tout ce qui était décrit était respecté et toujours à l'écoute de nos besoins. C’est probablement un lieu que vous devez visiter si vous venez à Bogotá : belles vues et cathédrale de sel à couper le souffle."
 msgstr "Recommended. Communication with Alejandra was excellent... beautiful views of Bogotá and a stunning salt cathedral."
