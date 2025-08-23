@@ -211,8 +211,8 @@
   </section>
 </main>
 
-<!-- PayPal SDK -->
-<script src="https://www.paypal.com/sdk/js?client-id=AXcr1vyT3Zx-9XCo6fQLC94tyH4qoqxNAu-V8vVRMtm4kphjbOupFByJl6cAyyppQmE-YiOU7IaLOzuj&currency=USD&intent=capture&components=buttons&enable-funding=card,credit,paylater&locale={% if get_locale()=='fr' %}fr_FR{% elif get_locale()=='en' %}en_US{% else %}es_ES{% endif %}"></script>
+<!-- PAYPAL -->
+<script src="https://www.paypal.com/sdk/js?client-id=AXcr1vyT3Zx-9XCo6fQLC94tyH4qoqxNAu-V8vVRMtm4kphjbOupFByJl6cAyyppQmE-YiOU7IaLOzuj&currency=USD&intent=CAPTURE&components=buttons&enable-funding=card,credit,paylater&locale={% if get_locale()=='fr' %}fr_FR{% elif get_locale()=='en' %}en_US{% else %}es_ES{% endif %}"></script>
 
 <!-- Intégration PayPal -->
 <script>
@@ -244,7 +244,7 @@
           const tourId = document.getElementById('tour').value || '';
           const amount = (prices[tourId] || 40).toFixed(2);
           return actions.order.create({
-            purchase_units: [{ amount: { currency_code: 'EUR', value: amount }, description: `Tour: ${tourId}` }]
+            purchase_units: [{ amount: { currency_code: 'USD', value: amount }, description: `Tour: ${tourId}` }]
           });
         },
         onApprove: function (data, actions) {
