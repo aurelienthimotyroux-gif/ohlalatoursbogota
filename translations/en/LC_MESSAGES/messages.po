@@ -726,3 +726,34 @@ msgstr "Private hotel ⇄ airport transfer in Bogotá. Fixed price COP 60,000 fo
 msgid "Découvrez une aventure inoubliable au cœur des montagnes andines et contemplez La Chorrera, la plus haute cascade du pays. Nous emprunterons des sentiers bordés d’une végétation luxuriante, en observant la richesse de la faune et de la flore locales. Tout au long de la randonnée, nous profiterons de paysages spectaculaires jusqu’à atteindre la chute vertigineuse de plus de 590 mètres, un spectacle naturel à couper le souffle."
 msgstr "Discover an unforgettable adventure in the heart of the Andean mountains and marvel at La Chorrera, the tallest waterfall in the country. We will follow trails lined with lush vegetation, observing the richness of local wildlife and flora. Throughout the hike, we will enjoy spectacular scenery until we reach the breathtaking drop of over 590 meters — a natural spectacle that will take your breath away."
 
+msgid "Téléphone (WhatsApp de préférence)"
+msgstr "Phone (preferably WhatsApp)"
+
+msgid "Ex. +33 6 12 34 56 78"
+msgstr "Ex. +1 202 555 0147"
+
+msgid "Pays"
+msgstr "Country"
+
+msgid "France, Canada, Colombie..."
+msgstr "France, Canada, Colombia..."
+
+msgid "Nombre de personnes"
+msgstr "Number of people"
+
+msgid "Maximum 6 personnes"
+msgstr "Maximum 6 people"
+
+msgid "(max)"
+msgstr "(max)"
+
+msgid "Merci ! Votre réservation a bien été prise en compte. Un email de confirmation vous a été envoyé."
+msgstr "Thank you! Your booking has been received. A confirmation email has been sent to you."
+
+msgid "Merci de remplir nom, email, date et tour."
+msgstr "Please fill in name, email, date and tour."
+
+msgid "Petit souci technique, réessaie dans quelques secondes."
+msgstr "A small technical issue occurred, please try again in a few seconds."
+
+

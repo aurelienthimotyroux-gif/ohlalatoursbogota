@@ -179,15 +179,20 @@
 
       <!-- 📞 Téléphone avec indicatif pays -->
       <label for="phone_input">{{ _("Téléphone (WhatsApp de préférence)") }}</label>
-      <input type="tel" id="phone_input" inputmode="tel" autocomplete="tel" placeholder="+33 6 12 34 56 78" />
+      <input type="tel" id="phone_input" inputmode="tel" autocomplete="tel" placeholder="{{ _('Ex. +33 6 12 34 56 78') }}" />
       <input type="hidden" name="phone" id="phone_full">
+
+      <label for="country">{{ _("Pays") }}</label>
+<input type="text" id="country" name="country" placeholder="{{ _('France, Canada, Colombie...') }}" autocomplete="country-name" required>
+
 
       <label for="date">{{ _("Date souhaitée") }}</label>
       <input type="date" id="date" name="date" required>
 
       <!-- 👥 Nombre de personnes -->
-      <label for="persons">{{ _("Nombre de personnes") }}</label>
-      <input type="number" id="persons" name="persons" min="1" max="6" value="1" required>
+      <label for="persons">{{ _("Nombre de personnes") }} <small aria-hidden="true">({{ _("max") }} 6)</small></label>
+      <input type="number" id="persons" name="persons" min="1" max="6" value="1" required aria-describedby="persons-hint">
+      <div id="persons-hint" class="sr-only">{{ _("Maximum 6 personnes") }}</div>
 
       <label for="message">{{ _("Message") }}</label>
       <textarea id="message" name="message" rows="4" placeholder="{{ _('Infos utiles, horaires, etc.') }}"></textarea>
@@ -232,7 +237,7 @@
     const lang = "{{ get_locale() }}";
     let initial = 'fr';
     if (lang === 'en') initial = 'us';
-    if (lang === 'es') initial = 'co'; // Colombie par défaut sur ES
+    if (lang === 'es') initial = 'co'; // Colombie sur ES
 
     const iti = window.intlTelInput(input, {
       initialCountry: initial,

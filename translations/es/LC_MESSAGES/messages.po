@@ -995,3 +995,34 @@ msgstr "Traslado privado hotel ⇄ aeropuerto en Bogotá. Precio fijo 60.000 COP
 msgid "Découvrez une aventure inoubliable au cœur des montagnes andines et contemplez La Chorrera, la plus haute cascade du pays. Nous emprunterons des sentiers bordés d’une végétation luxuriante, en observant la richesse de la faune et de la flore locales. Tout au long de la randonnée, nous profiterons de paysages spectaculaires jusqu’à atteindre la chute vertigineuse de plus de 590 mètres, un spectacle naturel à couper le souffle."
 msgstr "Emprende una aventura inolvidable en el corazón de las montañas andinas y contempla La Chorrera, la cascada más alta del país. Recorreremos senderos bordeados de vegetación exuberante, observando la riqueza de la fauna y la flora locales. A lo largo de la caminata, disfrutaremos de paisajes espectaculares hasta llegar al salto vertiginoso de más de 590 metros, un espectáculo natural que te dejará sin aliento."
 
+msgid "Téléphone (WhatsApp de préférence)"
+msgstr "Teléfono (preferiblemente WhatsApp)"
+
+msgid "Ex. +33 6 12 34 56 78"
+msgstr "Ej. +57 310 123 4567"
+
+msgid "Pays"
+msgstr "País"
+
+msgid "France, Canada, Colombie..."
+msgstr "Francia, Canadá, Colombia..."
+
+msgid "Nombre de personnes"
+msgstr "Número de personas"
+
+msgid "Maximum 6 personnes"
+msgstr "Máximo 6 personas"
+
+msgid "(max)"
+msgstr "(máx)"
+
+msgid "Merci ! Votre réservation a bien été prise en compte. Un email de confirmation vous a été envoyé."
+msgstr "¡Gracias! Hemos recibido tu reserva. Se te ha enviado un correo de confirmación."
+
+msgid "Merci de remplir nom, email, date et tour."
+msgstr "Por favor completa nombre, correo electrónico, fecha y tour."
+
+msgid "Petit souci technique, réessaie dans quelques secondes."
+msgstr "Ha ocurrido un problema técnico, por favor inténtalo de nuevo en unos segundos."
+
+
