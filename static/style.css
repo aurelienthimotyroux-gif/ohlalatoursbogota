@@ -436,4 +436,41 @@ form button:hover { background-color: #0056b3; }
   text-shadow: none;
 }
 
+/* === Carrousel sans Swiper CSS : styles des flèches === */
+.tour-swiper .swiper-button-next,
+.tour-swiper .swiper-button-prev{
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 9999px;
+  background: rgba(0,0,0,.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  pointer-events: auto;
+  cursor: pointer;
+  user-select: none;
+}
+.tour-swiper .swiper-button-next{ right: 10px; }
+.tour-swiper .swiper-button-prev{ left: 10px; }
+
+.tour-swiper .swiper-button-next::before,
+.tour-swiper .swiper-button-prev::before{
+  content: '›';
+  font-size: 28px;
+  color: #fff;
+  line-height: 1;
+}
+.tour-swiper .swiper-button-prev::before{ content: '‹'; }
+
+.tour-swiper .swiper-button-next:active,
+.tour-swiper .swiper-button-prev:active{
+  transform: translateY(-50%) scale(0.98);
+}
+
+/* s’assurer que rien ne bloque les clics au-dessus */
+.tour-swiper{ position: relative; isolation: isolate; }
 
