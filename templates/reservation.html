@@ -215,6 +215,27 @@
 <script src="https://www.paypal.com/sdk/js?client-id=AXcr1vyT3Zx-9XCo6fQLC94tyH4qoqxNAu-V8vVRMtm4kphjbOupFByJl6cAyyppQmE-YiOU7IaLOzuj&currency=USD&intent=CAPTURE&components=buttons&enable-funding=card,credit,paylater&locale={% if get_locale()=='fr' %}fr_FR{% elif get_locale()=='en' %}en_US{% else %}es_ES{% endif %}">
 </script>
 
+<!-- ✅ DIAG PayPal -->
+<div id="paypal-diagnostics" style="font:14px/1.4 system-ui; margin:12px 0; display:none; border:1px dashed #999; padding:8px; background:#fafafa"></div>
+<script>
+  (function(){
+    const box = document.getElementById('paypal-diagnostics');
+    function showDiag(msg){
+      try { box.style.display = 'block'; box.innerHTML += '<div>'+msg+'</div>'; } catch(e){}
+    }
+    if (!window.paypal) {
+      showDiag("⚠️ SDK PayPal non chargé. Vérifie Client ID, bloqueurs, CMP.");
+    } else {
+      showDiag("✅ SDK PayPal chargé: " + Object.keys(window.paypal).join(', '));
+    }
+    // Affiche les erreurs de promesses non catchées
+    window.addEventListener('unhandledrejection', e => {
+      showDiag("❌ Promise error: " + (e.reason && (e.reason.message || JSON.stringify(e.reason))));
+    });
+  })();
+</script>
+
+
 <!-- ✅ AJOUT : helpers de mapping titres + prix pour emails -->
 <script>
   // Mappe un slug de tour vers un titre localisé (pour emails/notification)
