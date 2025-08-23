@@ -709,8 +709,8 @@ Message:
             app.logger.error("reservation_mail_error: %s", e)
 
         flash(_("Merci ! Votre réservation a bien été prise en compte. Un email de confirmation vous a été envoyé."), "success")
-        return redirect(url_for("reservation", lang=get_locale()))
-    return render_template("reservation.html")
+return render_template("reservation.html", tour=tour)
+
 
 # ------------------------------------------------------------------
 # Divers
