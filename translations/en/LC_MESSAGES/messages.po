@@ -56,7 +56,7 @@ msgstr "Through my small-group tours, we’ll explore the city’s history, cult
 msgid "Plus qu’une simple visite, je vous propose une immersion vivante et chaleureuse, une expérience à ressentir et à emporter avec vous."
 msgstr "More than a simple visit, I offer a warm, lively immersion—an experience to feel and take with you."
 
-msgid "Je propose des visites guidées à Bogotá avec un guide francophone, des tours privés vers la Candelaria, Monserrate et Zipaquirá, ainsi qu’un service de transport (taxi/van) et transferts aéroport."
+msgid "Je propose des visites guidées à Bogotá, des tours privés vers la Candelaria, Monserrate et Zipaquirá, ainsi qu’un service de transport (taxi/van) et transferts aéroport."
 msgstr "I offer guided tours in Bogotá with a French-speaking guide, private tours to La Candelaria, Monserrate and Zipaquirá, plus transport service (taxi/van) and airport transfers."
 
 msgid "Voir les types de visites"

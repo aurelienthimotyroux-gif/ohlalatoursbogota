@@ -261,8 +261,8 @@ msgstr "Soy Alejandra, guía local apasionada, y te invito a descubrir una Bogot
 msgid "À travers mes visites en petits groupes, nous explorerons son histoire, sa culture et ses saveurs : balades dans les quartiers historiques, expériences culinaires, escapades en pleine nature et excursions uniques aux alentours, comme la célèbre Cathédrale de sel de Zipaquirá."
 msgstr "A través de mis recorridos en pequeños grupos, exploraremos su historia, su cultura y sus sabores: paseos por barrios históricos, experiencias culinarias, escapadas a la naturaleza y excursiones únicas en los alrededores, como la famosa Catedral de Sal de Zipaquirá."
 
-msgid "Plus qu’une simple visite, je vous propose une immersion vivante et chaleureuse, une expérience à ressentir et à emporter avec vous."
-msgstr "Más que una simple visita, te propongo una inmersión viva y acogedora, una experiencia para sentir y llevar contigo."
+msgid "Je propose des visites guidées à Bogotá, des tours privés vers la Candelaria, Monserrate et Zipaquirá, ainsi qu’un service de transport (taxi/van) et transferts aéroport."
+msgstr "Ofrezco visitas guiadas en Bogotá, tours privados a la Candelaria, Monserrate y Zipaquirá, así como un servicio de transporte (taxi/van) y traslados al aeropuerto.."
 
 #: templates/index.html:96
 msgid "Voir les types de visites"
