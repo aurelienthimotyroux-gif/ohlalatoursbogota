@@ -6,8 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <!-- ✅ Meta SEO -->
-  <meta name="description" content="{{ _('Réservez votre visite guidée à Bogotá : Candelaria, Monserrate, Zipaquirá, La Chorrera et finca café. Guide francophone/anglais/espagnol. Paiement PayPal sécurisé.') }}">
-  <meta name="keywords" content="réservation tour Bogotá, réserver visite guidée Bogotá, tours privés Bogotá, Candelaria, Monserrate, Zipaquirá, La Chorrera, Hacienda Coloma, guide francophone Bogotá, paiement PayPal Bogotá">
+  <meta name="description" content="{{ _('Réservez votre visite guidée à Bogotá : Candelaria, Monserrate, Zipaquirá, La Chorrera et finca café. Guide francophone/anglais/espagnol.') }}">
+  <meta name="keywords" content="réservation tour Bogotá, réserver visite guidée Bogotá, tours privés Bogotá, Candelaria, Monserrate, Zipaquirá, La Chorrera, Hacienda Coloma, guide francophone Bogotá">
 
   <!-- ✅ CMP / consentmanager (doit être avant GA) -->
   <script type="text/javascript" data-cmp-ab="0"
@@ -190,8 +190,6 @@
         <option value="finca-cafe" {{ 'selected' if tour=='finca-cafe' else '' }}>{{ _("Visite d’une finca à café") }}</option>
       </select>
 
-      <!-- Boutons PayPal et scripts liés supprimés -->
-
       <button type="submit" id="form-submit">{{ _("Envoyer") }}</button>
     </form>
   </section>
@@ -213,4 +211,5 @@
 
 </body>
 </html>
+
 

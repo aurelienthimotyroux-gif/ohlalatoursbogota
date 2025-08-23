@@ -11,6 +11,9 @@ from functools import wraps
 from sqlalchemy import inspect
 from urllib.parse import urlsplit, urlunsplit, parse_qsl, urlencode
 
+# ✉️ Email
+from flask_mail import Mail, Message
+
 # ------------------------------------------------------------------
 # Utils: parser "22 février 2020" / "30 julio 2019" / "17 Aug 2025"
 # ------------------------------------------------------------------
@@ -198,6 +201,18 @@ class Transfer(db.Model):
     notes = db.Column(db.Text, default="")
     raw = db.Column(db.Text, default="")
 
+# ✅ Nouveau : modèle Reservation
+class Reservation(db.Model):
+    __tablename__ = "reservations"
+    id = db.Column(db.Integer, primary_key=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    fullname = db.Column(db.String(160), default="")
+    email = db.Column(db.String(160), default="")
+    date_str = db.Column(db.String(80), default="")
+    tour_slug = db.Column(db.String(80), default="")
+    message = db.Column(db.Text, default="")
+    language = db.Column(db.String(8), default="")
+
 with app.app_context():
     db.create_all()
 
@@ -267,6 +282,21 @@ class CommentView:
         self.source_lang = source_lang
 
 # ------------------------------------------------------------------
+# ✉️ Mail — configuration via variables d’environnement
+# ------------------------------------------------------------------
+app.config["MAIL_SERVER"] = os.getenv("MAIL_SERVER", "smtp.gmail.com")
+app.config["MAIL_PORT"] = int(os.getenv("MAIL_PORT", "587"))
+app.config["MAIL_USE_TLS"] = os.getenv("MAIL_USE_TLS", "1") in ("1", "true", "True")
+app.config["MAIL_USE_SSL"] = os.getenv("MAIL_USE_SSL", "0") in ("1", "true", "True")
+app.config["MAIL_USERNAME"] = os.getenv("MAIL_USERNAME", "")
+app.config["MAIL_PASSWORD"] = os.getenv("MAIL_PASSWORD", "")
+app.config["MAIL_DEFAULT_SENDER"] = os.getenv("MAIL_DEFAULT_SENDER", app.config["MAIL_USERNAME"])
+
+ADMIN_NOTIFY_EMAIL = os.getenv("ADMIN_NOTIFY_EMAIL", app.config["MAIL_DEFAULT_SENDER"] or app.config["MAIL_USERNAME"] or "")
+
+mail = Mail(app)
+
+# ------------------------------------------------------------------
 # ==== ADMIN MINIMAL ====
 # ------------------------------------------------------------------
 ADMIN_USER = os.getenv("ADMIN_USER", "admin")
@@ -333,10 +363,10 @@ def _ensure_tables():
     try:
         with app.app_context():
             insp = inspect(db.engine)
-            if not (insp.has_table("comments") and insp.has_table("comment_translation")):
-                db.create_all()
-            if not insp.has_table("transfers"):
-                db.create_all()
+            needed = ["comments", "comment_translation", "transfers", "reservations"]
+            for t in needed:
+                if not insp.has_table(t):
+                    db.create_all()
     except Exception as e:
         app.logger.warning("ensure_tables_failed: %s", e)
 
@@ -347,6 +377,7 @@ def admin_home():
     comments_count     = Comment.query.count()
     translations_count = CommentTranslation.query.count()
     transfers_count    = Transfer.query.count()
+    reservations_count = Reservation.query.count()
     body = f"""
       <h1>Panneau d’administration</h1>
       <p class="small">Base: <code>{DB_URL}</code></p>
@@ -354,6 +385,7 @@ def admin_home():
         <tr><th>Commentaires</th><td><span class="badge">{comments_count}</span> – <a class="btn" href="{url_for('admin_comments')}">Gérer les commentaires</a></td></tr>
         <tr><th>Traductions en cache</th><td><span class="badge">{translations_count}</span></td></tr>
         <tr><th>Transferts</th><td><span class="badge">{transfers_count}</span> – <a class="btn" href="{url_for('admin_transfers')}">Voir la liste</a></td></tr>
+        <tr><th>Réservations</th><td><span class="badge">{reservations_count}</span> – <a class="btn" href="{url_for('admin_reservations')}">Voir la liste</a></td></tr>
       </table>
       <p style="margin-top:16px">
         <a class="btn" href="{url_for('admin_import_legacy')}">Importer les anciens avis</a>
@@ -520,6 +552,71 @@ def admin_transfer_delete(transfer_id: int):
         flash(_("Suppression impossible."), "error")
     return redirect(url_for("admin_transfers"))
 
+# ✅ Admin — liste des réservations
+@app.get("/admin/reservations")
+@admin_required
+def admin_reservations():
+    _ensure_tables()
+    items = Reservation.query.order_by(Reservation.created_at.desc()).all()
+    csrf = _csrf_get()
+    if not items:
+        body = f"""
+          <h1>Réservations</h1>
+          <p><a href="{url_for('admin_home')}">← Retour admin</a></p>
+          <p>Aucune réservation.</p>
+        """
+        return _inline_html("Réservations — Admin", body)
+    rows = []
+    for r in items:
+        rows.append(f"""
+        <tr>
+          <td>{r.id}</td>
+          <td>{r.created_at:%Y-%m-%d %H:%M}</td>
+          <td>{(r.fullname or '').replace('<','&lt;')}</td>
+          <td>{(r.email or '').replace('<','&lt;')}</td>
+          <td>{(r.date_str or '').replace('<','&lt;')}</td>
+          <td>{(r.tour_slug or '').replace('<','&lt;')}</td>
+          <td style="max-width:420px">{(r.message or '').replace('<','&lt;')}</td>
+          <td>{(r.language or '').replace('<','&lt;')}</td>
+          <td>
+            <form method="post" action="{url_for('admin_reservation_delete', reservation_id=r.id)}"
+                  onsubmit="return confirm('Supprimer cette réservation ?');">
+              <input type="hidden" name="csrf" value="{csrf}">
+              <button class="btn" type="submit" style="background:#dc2626">Supprimer</button>
+            </form>
+          </td>
+        </tr>
+        """)
+    body = f"""
+      <h1>Réservations</h1>
+      <p><a href="{url_for('admin_home')}">← Retour admin</a></p>
+      <table>
+        <thead>
+          <tr>
+            <th>#</th><th>Créé</th><th>Nom</th><th>Email</th><th>Date</th><th>Tour</th><th>Message</th><th>Langue</th><th>Action</th>
+          </tr>
+        </thead>
+        <tbody>{"".join(rows)}</tbody>
+      </table>
+    """
+    return _inline_html("Réservations — Admin", body)
+
+@app.post("/admin/reservations/<int:reservation_id>/delete")
+@admin_required
+def admin_reservation_delete(reservation_id: int):
+    if not _csrf_check(request.form.get("csrf")):
+        flash(_("Session expirée, réessaie."), "error")
+        return redirect(url_for("admin_reservations"))
+    try:
+        Reservation.query.filter_by(id=reservation_id).delete(synchronize_session=False)
+        db.session.commit()
+        flash(_("Réservation supprimée ✅"), "success")
+    except Exception as e:
+        db.session.rollback()
+        app.logger.warning("delete_reservation_failed: %s", e)
+        flash(_("Suppression impossible."), "error")
+    return redirect(url_for("admin_reservations"))
+
 @app.route("/admin/import-legacy")
 @admin_required
 def admin_import_legacy():
@@ -622,8 +719,85 @@ def index():
 
     return render_template("index.html", comments=views)
 
-@app.route("/reservation")
+# ✅ Réservation GET/POST + emails
+@app.route("/reservation", methods=["GET","POST"])
 def reservation():
+    if request.method == "POST":
+        fullname = (request.form.get("nom") or "").strip()
+        email    = (request.form.get("email") or "").strip()
+        date_str = (request.form.get("date") or "").strip()
+        tour     = (request.form.get("tour") or "").strip().lower()
+        message  = (request.form.get("message") or "").strip()
+        lang     = get_locale()
+
+        if not fullname or not email or not date_str or not tour:
+            flash(_("Merci de remplir nom, email, date et tour."), "error")
+            return redirect(url_for("reservation", lang=get_locale()))
+
+        # Enregistrer en DB
+        try:
+            r = Reservation(
+                fullname=fullname[:160],
+                email=email[:160],
+                date_str=date_str[:80],
+                tour_slug=tour[:80],
+                message=message,
+                language=lang[:8]
+            )
+            db.session.add(r)
+            db.session.commit()
+        except Exception as e:
+            app.logger.error("reservation_db_error: %s", e)
+            db.session.rollback()
+            flash(_("Petit souci technique, réessaie dans quelques secondes."), "error")
+            return redirect(url_for("reservation", lang=get_locale()))
+
+        # Envoyer emails (si config SMTP présente)
+        try:
+            if app.config["MAIL_USERNAME"] and (app.config["MAIL_PASSWORD"] or app.config["MAIL_USE_SSL"] or app.config["MAIL_USE_TLS"]):
+                # Client
+                subject_cli = {
+                    "fr": "Confirmation de réservation — Oh La La Tours Bogotá",
+                    "en": "Booking confirmation — Oh La La Tours Bogotá",
+                    "es": "Confirmación de reserva — Oh La La Tours Bogotá",
+                }.get(lang, "Confirmation de réservation — Oh La La Tours Bogotá")
+                body_cli = f"""Bonjour {fullname},
+
+Nous avons bien reçu votre réservation.
+• Tour : {tour}
+• Date : {date_str}
+• Message : {message or '—'}
+
+Nous revenons vers vous très rapidement pour l’organisation.
+
+Oh La La Tours Bogotá
+"""
+                msg_client = Message(subject=subject_cli, recipients=[email], body=body_cli)
+                mail.send(msg_client)
+
+                # Interne
+                notify_to = ADMIN_NOTIFY_EMAIL or app.config["MAIL_DEFAULT_SENDER"] or app.config["MAIL_USERNAME"]
+                if notify_to:
+                    subject_admin = f"[Réservation] {fullname} — {tour} — {date_str}"
+                    body_admin = f"""Nouvelle réservation
+
+Nom: {fullname}
+Email: {email}
+Date: {date_str}
+Tour: {tour}
+Langue: {lang}
+Message:
+{message or '—'}
+"""
+                    msg_admin = Message(subject=subject_admin, recipients=[notify_to], body=body_admin)
+                    mail.send(msg_admin)
+            else:
+                app.logger.warning("Mail non configuré: aucune confirmation envoyée. Configure MAIL_* env vars.")
+        except Exception as e:
+            app.logger.error("reservation_mail_error: %s", e)
+
+        flash(_("Merci ! Votre réservation a bien été prise en compte. Un email de confirmation vous a été envoyé."), "success")
+        return redirect(url_for("reservation", lang=get_locale()))
     return render_template("reservation.html")
 
 @app.route("/tours")
@@ -759,3 +933,5 @@ def favicon():
         mimetype='image/vnd.microsoft.icon'
     )
 
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=int(os.getenv("PORT", "10000")), debug=bool(os.getenv("DEBUG", "0") == "1"))
