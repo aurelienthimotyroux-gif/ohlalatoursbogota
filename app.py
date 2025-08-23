@@ -817,48 +817,79 @@ def favicon():
     )
 
 # ------------------------------------------------------------------
-# ✅ PAYPAL API — création & capture côté serveur
+# ✅ PAYPAL API — création & capture côté serveur (amélioré)
 # ------------------------------------------------------------------
+import uuid
 
 def _paypal_auth():
-    """Retourne le tuple auth (client_id, secret)."""
     return (PAYPAL_CLIENT_ID, PAYPAL_SECRET)
+
+def _paypal_headers(request_id=None):
+    h = {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "Prefer": "return=representation",
+    }
+    if request_id:
+        h["PayPal-Request-Id"] = request_id  # idempotency
+    return h
+
+def _server_amount_for_tour(tour_slug: str) -> tuple[str, str]:
+    """
+    Recalcule le prix côté serveur (sécurité).
+    Retourne (value, currency_code).
+    """
+    prices = {
+        "candelaria": ("1.00", "USD"),
+        "monserrate": ("1.00", "USD"),
+        "zipaquira":  ("1.00", "USD"),
+        "chorrera":   ("1.00", "USD"),
+        "finca-cafe": ("1.00", "USD"),
+    }
+    return prices.get((tour_slug or "").lower(), ("40.00", "USD"))
 
 @app.post("/api/paypal/create-order")
 def paypal_create_order():
     """
-    Crée un order PayPal en USD (ou selon ton front) et renvoie la réponse brute PayPal.
-    Le front récupère 'id' et l'utilise pour ouvrir Checkout.
+    Crée un order PayPal, avec montant recalculé côté serveur selon le tour.
     """
     try:
         body = request.get_json(silent=True) or {}
-        amount = str(body.get("amount", "10.00"))
-        tour   = (body.get("tour") or "tour")
+        tour = (body.get("tour") or "tour").lower()
 
+        value, currency = _server_amount_for_tour(tour)
         payload = {
             "intent": "CAPTURE",
             "purchase_units": [{
-                "amount": {"currency_code": "USD", "value": amount},
+                "amount": {"currency_code": currency, "value": value},
                 "description": f"Tour: {tour}"
             }]
         }
+
+        req_id = str(uuid.uuid4())
         r = requests.post(
             f"{PAYPAL_API_BASE}/v2/checkout/orders",
             json=payload,
             auth=_paypal_auth(),
+            headers=_paypal_headers(request_id=req_id),
             timeout=20
         )
-        # Log utile en cas d'échec (debug_id)
+
+        j = {}
         try:
             j = r.json()
-            if r.status_code >= 400:
-                app.logger.error("PayPal create-order %s debug_id=%s body=%s",
-                                 r.status_code, j.get("debug_id"), j)
-            else:
-                app.logger.info("PayPal create-order %s id=%s", r.status_code, j.get("id"))
         except Exception:
-            app.logger.warning("PayPal create-order non-JSON status=%s text=%s", r.status_code, r.text[:500])
-        return Response(r.text, status=r.status_code, content_type=r.headers.get("Content-Type","application/json"))
+            app.logger.warning("PayPal create non-JSON status=%s text=%s", r.status_code, r.text[:300])
+
+        if r.status_code >= 400:
+            app.logger.error("PayPal create %s debug_id=%s body=%s",
+                             r.status_code, j.get("debug_id"), j)
+            return j, r.status_code
+
+        app.logger.info("PayPal create %s id=%s status=%s",
+                        r.status_code, j.get("id"), j.get("status"))
+        return j, 200
+
     except Exception as e:
         app.logger.exception("paypal_create_order_failed: %s", e)
         return {"error": "server_error"}, 500
@@ -867,27 +898,34 @@ def paypal_create_order():
 def paypal_capture_order(order_id):
     """
     Capture un order existant.
-    Renvoie la réponse brute PayPal (avec status, debug_id en cas d'erreur).
     """
     try:
+        # Idempotency pour la capture aussi
+        req_id = str(uuid.uuid4())
         r = requests.post(
             f"{PAYPAL_API_BASE}/v2/checkout/orders/{order_id}/capture",
             auth=_paypal_auth(),
+            headers=_paypal_headers(request_id=req_id),
             timeout=20
         )
+
+        j = {}
         try:
             j = r.json()
-            if r.status_code >= 400:
-                app.logger.error("PayPal capture %s debug_id=%s body=%s",
-                                 r.status_code, j.get("debug_id"), j)
-            else:
-                app.logger.info("PayPal capture %s id=%s status=%s",
-                                r.status_code, j.get("id"), j.get("status"))
         except Exception:
-            app.logger.warning("PayPal capture non-JSON status=%s text=%s", r.status_code, r.text[:500])
-        return Response(r.text, status=r.status_code, content_type=r.headers.get("Content-Type","application/json"))
+            app.logger.warning("PayPal capture non-JSON status=%s text=%s", r.status_code, r.text[:300])
+
+        if r.status_code >= 400:
+            app.logger.error("PayPal capture %s debug_id=%s body=%s",
+                             r.status_code, j.get("debug_id"), j)
+            return j, r.status_code
+
+        app.logger.info("PayPal capture %s order_id=%s status=%s",
+                        r.status_code, order_id, j.get("status"))
+        # 👉 Ici, vérifie j["status"] == "COMPLETED" et déclenche la réservation + emails
+        # send_reservation_emails(...)
+        return j, 200
+
     except Exception as e:
         app.logger.exception("paypal_capture_order_failed: %s", e)
         return {"error": "server_error"}, 500
-
-
