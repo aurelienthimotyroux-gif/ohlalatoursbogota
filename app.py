@@ -601,7 +601,7 @@ def reservation():
 
         if not fullname or not email or not date_str or not tour:
             flash(_("Merci de remplir nom, email, date et tour."), "error")
-            return redirect(url_for("reservation", lang=get_locale()))
+            return render_template("reservation.html", tour=tour)
 
         # Enregistrer en DB
         try:
@@ -622,9 +622,9 @@ def reservation():
             app.logger.error("reservation_db_error: %s", e)
             db.session.rollback()
             flash(_("Petit souci technique, réessaie dans quelques secondes."), "error")
-            return redirect(url_for("reservation", lang=get_locale()))
+            return render_template("reservation.html", tour=tour)
 
-        # Emails (langue auto fr/en/es) — sujet et corps synchronisés
+        # Emails (langue auto fr/en/es)
         try:
             if app.config["MAIL_USERNAME"] and (app.config["MAIL_PASSWORD"] or app.config["MAIL_USE_SSL"] or app.config["MAIL_USE_TLS"]):
                 subjects = {
@@ -708,8 +708,12 @@ Message:
         except Exception as e:
             app.logger.error("reservation_mail_error: %s", e)
 
+        # ✅ On reste sur la page de réservation, avec le message flash affiché dans reservation.html
         flash(_("Merci ! Votre réservation a bien été prise en compte. Un email de confirmation vous a été envoyé."), "success")
-return render_template("reservation.html", tour=tour)
+        return render_template("reservation.html", tour=tour)
+
+    # GET → afficher le formulaire
+    return render_template("reservation.html")
 
 
 # ------------------------------------------------------------------
