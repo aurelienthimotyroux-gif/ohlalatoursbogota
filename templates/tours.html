@@ -236,67 +236,73 @@
 </head>
 <body>
 
-  <!-- ✅ Nouveau header fixe (logo + nav + drapeaux) -->
-  <header class="site-header header-on-hero">
-    <a href="{{ url_for('index', lang=get_locale()) }}" class="brand" aria-label="Oh La La Tours Bogotá — Accueil">
-      <!-- Logo clair (sur la hero/photo) -->
-      <img class="logo logo--light"
-           src="{{ url_for('static', filename='img/logo-light.png') }}"
-           alt="Oh La La Tours Bogotá">
-      <!-- Logo foncé (au scroll / fond clair) -->
-      <img class="logo logo--dark"
-           src="{{ url_for('static', filename='img/logo-dark.png') }}"
-           alt="Oh La La Tours Bogotá">
-      <span class="site-title">Oh La La Tours Bogotá</span>
-    </a>
+ <!-- ✅ Header fixe (logo + nav) -->
+<header class="site-header header-on-hero">
+  <a href="{{ url_for('index', lang=get_locale()) }}" class="brand" aria-label="Oh La La Tours Bogotá — Accueil">
+    <!-- Logo clair (sur la hero/photo) -->
+    <img class="logo logo--light"
+         src="{{ url_for('static', filename='img/logo-light.png') }}"
+         alt="Oh La La Tours Bogotá">
+    <!-- Logo foncé (au scroll / fond clair) -->
+    <img class="logo logo--dark"
+         src="{{ url_for('static', filename='img/logo-dark.png') }}"
+         alt="Oh La La Tours Bogotá">
+    <span class="site-title">Oh La La Tours Bogotá</span>
+  </a>
 
-    <nav class="main-nav" aria-label="{{ _('Navigation principale') }}">
-      <a href="{{ url_for('index', lang=get_locale()) }}">{{ _("Accueil") }}</a>
-      <a href="{{ url_for('tours', lang=get_locale()) }}">{{ _("Nos tours") }}</a>
-      <a href="{{ url_for('transport', lang=get_locale()) }}">{{ _("Service de Transport") }}</a>
-      <a href="{{ url_for('reservation', lang=get_locale()) }}">{{ _("Réservation") }}</a>
+  <nav class="main-nav" aria-label="{{ _('Navigation principale') }}">
+    <a href="{{ url_for('index', lang=get_locale()) }}">{{ _("Accueil") }}</a>
+    <a href="{{ url_for('tours', lang=get_locale()) }}">{{ _("Nos tours") }}</a>
+    <a href="{{ url_for('transport', lang=get_locale()) }}">{{ _("Service de Transport") }}</a>
+    <a href="{{ url_for('reservation', lang=get_locale()) }}">{{ _("Réservation") }}</a>
 
-      <div class="lang-switcher" aria-label="{{ _('Changer de langue') }}">
-        <a href="{{ lang_url('fr') }}" lang="fr" aria-label="Français">🇫🇷<span class="sr-only">Français</span></a>
-        <a href="{{ lang_url('en') }}" lang="en" aria-label="English">🇺🇸<span class="sr-only">English</span></a>
-        <a href="{{ lang_url('es') }}" lang="es" aria-label="Español">🇪🇸<span class="sr-only">Español</span></a>
-      </div>
-    </nav>
+    <!-- (Drapeaux visibles sur desktop ; cachés en mobile via CSS) -->
+    <div class="lang-switcher" aria-label="{{ _('Changer de langue') }}">
+      <a href="{{ lang_url('fr') }}" lang="fr" aria-label="Français">🇫🇷<span class="sr-only">Français</span></a>
+      <a href="{{ lang_url('en') }}" lang="en" aria-label="English">🇺🇸<span class="sr-only">English</span></a>
+      <a href="{{ lang_url('es') }}" lang="es" aria-label="Español">🇪🇸<span class="sr-only">Español</span></a>
+    </div>
+  </nav>
 
-    <!-- ✅ Burger (AJOUT) -->
-    <button class="burger" aria-label="Ouvrir le menu" aria-controls="mobileMenu" aria-expanded="false">
-      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-        <path d="M3 6h18M3 12h18M3 18h18"/>
+  <!-- ✅ Burger -->
+  <button class="burger" aria-label="Ouvrir le menu" aria-controls="mobileMenu" aria-expanded="false">
+    <svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true">
+      <path d="M3 6h18M3 12h18M3 18h18"
+            stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/>
+    </svg>
+  </button>
+</header>
+
+<!-- ✅ Overlay -->
+<div id="mobileOverlay" class="mobile-overlay"></div>
+
+<!-- ✅ Menu mobile -->
+<aside id="mobileMenu" class="mobile-menu" role="dialog" aria-modal="true" aria-label="Menu" aria-hidden="true">
+  <header>
+    <strong>Oh La La Tours Bogotá</strong>
+    <button id="mobileClose" class="mobile-close" aria-label="Fermer">
+      <svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true">
+        <path d="M6 6l12 12M18 6L6 18"
+              stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/>
       </svg>
     </button>
   </header>
 
-  <!-- ✅ Overlay + panneau mobile (AJOUT) -->
-  <div id="mobileOverlay" class="mobile-overlay"></div>
+  <nav>
+    <a href="{{ url_for('index',     lang=get_locale()) }}">{{ _("Accueil") }}</a>
+    <a href="{{ url_for('tours',     lang=get_locale()) }}">{{ _("Nos tours") }}</a>
+    <a href="{{ url_for('transport', lang=get_locale()) }}">{{ _("Service de Transport") }}</a>
+    <a href="{{ url_for('reservation', lang=get_locale()) }}">{{ _("Réservation") }}</a>
+  </nav>
 
-  <aside id="mobileMenu" class="mobile-menu" role="dialog" aria-modal="true" aria-label="Menu">
-    <header>
-      <strong>Oh La La Tours Bogotá</strong>
-      <button id="mobileClose" aria-label="Fermer">
-        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true">
-          <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/>
-        </svg>
-      </button>
-    </header>
+  <!-- Langues uniquement dans le menu mobile -->
+  <div class="langs" aria-label="{{ _('Changer de langue') }}">
+    <a href="{{ lang_url('fr') }}" lang="fr" aria-label="Français">🇫🇷</a>
+    <a href="{{ lang_url('en') }}" lang="en" aria-label="English">🇺🇸</a>
+    <a href="{{ lang_url('es') }}" lang="es" aria-label="Español">🇪🇸</a>
+  </div>
+</aside>
 
-    <nav>
-      <a href="{{ url_for('index',     lang=get_locale()) }}">{{ _("Accueil") }}</a>
-      <a href="{{ url_for('tours',     lang=get_locale()) }}">{{ _("Nos tours") }}</a>
-      <a href="{{ url_for('transport', lang=get_locale()) }}">{{ _("Service de Transport") }}</a>
-      <a href="{{ url_for('reservation', lang=get_locale()) }}">{{ _("Réservation") }}</a>
-    </nav>
-
-    <div class="langs" aria-label="{{ _('Changer de langue') }}">
-      <a href="{{ lang_url('fr') }}" lang="fr" aria-label="Français">🇫🇷</a>
-      <a href="{{ lang_url('en') }}" lang="en" aria-label="English">🇺🇸</a>
-      <a href="{{ lang_url('es') }}" lang="es" aria-label="Español">🇪🇸</a>
-    </div>
-  </aside>
 
   <!-- Bandeau image + titre -->
   <header class="hero background-half"
