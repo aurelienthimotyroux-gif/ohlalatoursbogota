@@ -489,3 +489,53 @@ header.site-header .burger{ z-index: 130; position: relative; }
   margin-left: 12px;
 }
 
+/* ===== Header collant unifié ===== */
+.site-header{
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;                       /* stable: assez haut mais pas absurde */
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 18px;
+  transition: background .25s ease, box-shadow .25s ease, color .2s ease;
+}
+
+/* état après défilement */
+.site-header.scrolled{
+  background: rgba(255,255,255,.86);
+  backdrop-filter: saturate(180%) blur(8px);
+  box-shadow: 0 2px 10px rgba(0,0,0,.08);
+}
+
+/* espace sous le header fixe (évite que la hero passe dessous) */
+.header-spacer{ height: 64px; }
+@media (max-width:768px){ .header-spacer{ height: 56px; } }
+
+/* visibilités burger / nav cohérentes */
+@media (max-width:900px){
+  .site-header .burger{ display:inline-flex !important; }
+  .site-header .main-nav{ display:none !important; }
+}
+@media (min-width:901px){
+  .site-header .burger{ display:none !important; }
+}
+
+/* lisibilité liens & drapeaux sur la hero */
+.header-on-hero .main-nav a{ color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.35); }
+.site-header.scrolled .main-nav a{ color:#1a1a1a; text-shadow:none; }
+
+/* drapeaux: visibles sur desktop; pour mobile, utiliser ceux du menu latéral */
+.site-header .lang-switcher{ display:flex; gap:8px; margin-left:12px; }
+@media (max-width:900px){ .site-header .lang-switcher{ display:none; } }
+
+/* logos: ne garde qu’une convention (.logo--light / .logo--dark) */
+.logo{ height:40px; width:auto; display:block; }
+.logo--dark{ display:none; }
+.site-header.scrolled .logo--light{ display:none; }
+.site-header.scrolled .logo--dark{ display:block; }
+.header-on-hero .site-title{ color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.35); }
+.site-header.scrolled .site-title{ color:#0f172a; text-shadow:none; }
+
+/* l’overlay de la hero ne bloque jamais les clics */
+.hero::after{ pointer-events:none !important; }
+
+
