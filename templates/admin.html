@@ -79,7 +79,10 @@
           <td>{{ c.country or "—" }}</td>
           <td class="note">{{ "%.1f"|format(c.rating) }} / 5</td>
           <td>{{ c.date_str }}</td>
-          <td class="msg">{{ c.message }}</td>
+
+          {# >>> SEULE MODIFICATION : on impose la langue d'origine du message #}
+          <td class="msg" lang="{{ c.lang or '' }}" data-lang="{{ c.lang or '' }}">{{ c.message }}</td>
+
           <td>
             <form id="del-{{ c.id }}" method="post" action="{{ url_for('delete_comment') }}">
               <input type="hidden" name="id" value="{{ c.id }}">
@@ -96,3 +99,4 @@
 </div>
 </body>
 </html>
+
