@@ -482,4 +482,10 @@ header.site-header .burger{ z-index: 130; position: relative; }
   .logo { height: 36px; }
 }
 
+/* Desktop: afficher les drapeaux */
+.site-header .lang-switcher {
+  display: flex;
+  gap: 8px;
+  margin-left: 12px;
+}
 
