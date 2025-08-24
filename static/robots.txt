@@ -1,4 +1,13 @@
 User-agent: *
+# On autorise toutes les pages importantes
 Allow: /
 
+# On bloque les pages techniques inutiles pour Google
+Disallow: /paiement-annule
+Disallow: /paiement-erreur
+Disallow: /paiement-refuse
+Disallow: /paiement-reussi
+Disallow: /webhook
+
+# Sitemap
 Sitemap: https://www.ohlalatoursbogota.com/sitemap.xml
