@@ -24,7 +24,7 @@
           data-cmp-cdn="cdn.consentmanager.net"
           data-cmp-codesrc="16"></script>
 
-  <!-- Google Consent Mode -->
+  <!-- Google Consent Mode (valeurs par défaut = refus) -->
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){ dataLayer.push(arguments); }
@@ -37,21 +37,21 @@
     });
   </script>
 
-  <!-- Google tag -->
+  <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-92M6CENDXH"></script>
   <script>
     gtag('js', new Date());
     gtag('config', 'G-92M6CENDXH', { anonymize_ip: true });
   </script>
 
-  <!-- Canonical + hreflang -->
+  <!-- ✅ Canonical + hreflang -->
   <link rel="canonical" href="https://www.ohlalatoursbogota.com/transport">
   <link rel="alternate" hreflang="fr" href="{{ url_for('transport', _external=True) }}">
   <link rel="alternate" hreflang="en" href="{{ url_for('transport', lang='en', _external=True) }}">
   <link rel="alternate" hreflang="es" href="{{ url_for('transport', lang='es', _external=True) }}">
   <link rel="alternate" hreflang="x-default" href="{{ url_for('transport', _external=True) }}">
 
-  <!-- Open Graph -->
+  <!-- ✅ Open Graph -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://www.ohlalatoursbogota.com/transport">
   <meta property="og:site_name" content="Oh La La Tours Bogotá">
@@ -65,14 +65,16 @@
   {% else %}
     <meta property="og:locale" content="es_CO">
   {% endif %}
+  <meta property="og:locale:alternate" content="en_US">
+  <meta property="og:locale:alternate" content="es_CO">
 
-  <!-- Twitter Card -->
+  <!-- ✅ Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="{% if get_locale()=='fr' %}Service de transport privé à Bogotá{% elif get_locale()=='en' %}Private transport service in Bogotá{% else %}Servicio de transporte privado en Bogotá{% endif %}">
   <meta name="twitter:description" content="{% if get_locale()=='fr' %}Aéroport ⇄ hôtel, chauffeur privé, voiture ou van. Prix fixe 60 000 COP.{% elif get_locale()=='en' %}Airport ⇄ hotel, private driver, car or van. Fixed price 60,000 COP.{% else %}Aeropuerto ⇄ hotel, conductor privado, coche o van. Precio fijo 60 000 COP.{% endif %}">
   <meta name="twitter:image" content="{{ url_for('static', filename='images/bg_transport.webp', _external=True) }}">
 
-  <!-- JSON-LD -->
+  <!-- ✅ JSON-LD Transport Service -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -80,115 +82,301 @@
     "name": "Oh La La Tours Bogotá - Transport Privé",
     "url": "https://www.ohlalatoursbogota.com/transport",
     "image": "{{ url_for('static', filename='images/bg_transport.webp', _external=True) }}",
-    "areaServed": {"@type": "City","name": "Bogotá"},
+    "areaServed": { "@type": "City", "name": "Bogotá" },
     "offers": {
       "@type": "Offer",
       "price": "60000",
       "priceCurrency": "COP",
       "description": "Transfert privé aéroport ⇄ hôtel (1–4 personnes)"
     },
-    "provider": {"@type": "Organization","name": "Oh La La Tours Bogotá"}
+    "provider": { "@type": "Organization", "name": "Oh La La Tours Bogotá", "url": "https://www.ohlalatoursbogota.com" }
   }
   </script>
 
-  <!-- Alt multilingue -->
+  <!-- 🟦 ALT multilingue pour l'image -->
   {% if get_locale() == 'fr' %}
-    {% set TRANSPORT_IMG_ALT = "Van de transport prive a Bogota transfert aeroport El Dorado BOG vers hotel ou hebergement service securise ponctuel et confortable chauffeur professionnel courtois vehicule propre et climatise" %}
+    {% set TRANSPORT_IMG_ALT = "Van de transport prive a Bogota transfert aeroport El Dorado BOG vers hotel ou hebergement service securise ponctuel et confortable chauffeur professionnel courtois vehicule propre et climatise ideal pour voyageurs d affaires touristes familles et petits groupes disponible jour et nuit navette fiable prise en charge a la reception ou au terminal assistance pour bagages" %}
   {% elif get_locale() == 'en' %}
-    {% set TRANSPORT_IMG_ALT = "Private transport van in Bogota airport transfer from El Dorado BOG to hotel or accommodation safe punctual comfortable professional driver clean vehicle air conditioned" %}
+    {% set TRANSPORT_IMG_ALT = "Private transport van in Bogota airport transfer from El Dorado BOG to hotel or accommodation safe punctual and comfortable service professional and courteous driver clean air conditioned vehicle ideal for business travelers tourists families and small groups available day and night reliable shuttle pickup at reception or airport terminal with luggage assistance" %}
   {% else %}
-    {% set TRANSPORT_IMG_ALT = "Van de transporte privado en Bogota traslado aeropuerto El Dorado BOG a hotel o alojamiento servicio seguro puntual y comodo conductor profesional vehiculo limpio y climatizado" %}
+    {% set TRANSPORT_IMG_ALT = "Van de transporte privado en Bogota traslado aeropuerto El Dorado BOG a hotel o alojamiento servicio seguro puntual y comodo conductor profesional y atento vehiculo limpio y con aire acondicionado ideal para viajeros de negocios turistas familias y grupos pequenos disponible de dia y de noche traslado confiable recogida en recepcion o terminal del aeropuerto con asistencia para equipaje" %}
   {% endif %}
   <meta property="og:image:alt" content="{{ TRANSPORT_IMG_ALT }}">
 
+  <!-- ✅ Favicon + CSS -->
+  <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+  <!-- ✅ Styles header fixe + logo (comme Reservation) -->
+  <style>
+    .site-header{
+      position:fixed; top:0; left:0; right:0; z-index:70;
+      display:flex; align-items:center; justify-content:space-between;
+      padding:10px 16px; gap:16px;
+      background:transparent; transition:background .25s ease, box-shadow .25s ease;
+    }
+    .brand{display:inline-flex; align-items:center; gap:10px}
+    .logo{height:40px; width:auto; display:block}
+    @media (max-width:640px){ .logo{height:32px} }
+
+    .main-nav{display:flex; align-items:center; gap:18px; font-weight:600; margin-left:auto;}
+    .main-nav a{text-decoration:none}
+    .lang-switcher{display:flex; gap:8px; margin-left:8px}
+    .lang-switcher a{font-size:20px; line-height:1; padding:4px 6px; border-radius:6px}
+
+    .site-title{ font-size:1.2rem; font-weight:600; margin-left:8px; line-height:1.2; }
+
+    /* Au-dessus du visuel hero : blanc */
+    .header-on-hero .main-nav a{color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.35)}
+    .header-on-hero .site-title{color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.35)}
+    .logo--dark{display:none}
+
+    /* Au scroll / fond clair */
+    .site-header.scrolled{
+      background: rgba(255,255,255,.86);
+      backdrop-filter: saturate(180%) blur(8px);
+      box-shadow: 0 2px 10px rgba(0,0,0,.08);
+    }
+    .site-header.scrolled .logo--light{display:none}
+    .site-header.scrolled .logo--dark{display:block}
+    .site-header.scrolled .main-nav a{color:#0f172a; text-shadow:none}
+    .site-header.scrolled .site-title{color:#0f172a; text-shadow:none}
+
+    /* Mobile */
+    @media (max-width:768px){
+      .site-title{ display:none; }
+      .logo{ height:36px; }
+      .main-nav{ gap:12px; font-size:14px; }
+    }
+  </style>
+
+  <!-- ✅ Styles locaux transport -->
+  <style>
+    .transport-description { display:flex; flex-wrap:wrap; gap:24px; align-items:center; padding:20px; }
+    .transport-text { flex:1 1 400px; }
+    .transport-img { flex:1 1 350px; }
+    .transport-img img { max-width:100%; height:auto; border-radius:12px; display:block; }
+
+    .tour-includes { position:relative; margin:14px 0 12px; padding-left:14px; }
+    .tour-includes::before { content:""; position:absolute; left:0; top:4px; bottom:4px; width:4px; border-radius:4px; background:linear-gradient(180deg, #f59e0b, #f97316); }
+    .includes-title { margin:0 0 8px; font-size:14px; letter-spacing:.4px; text-transform:uppercase; opacity:.8; }
+    .includes-list { list-style:none; margin:0; padding:0; display:grid; gap:8px 14px; grid-template-columns:1fr; }
+    .includes-list li { position:relative; padding-left:26px; line-height:1.6; }
+    .includes-list li::before { content:"✓"; position:absolute; left:0; top:0; font-weight:700; transform:translateY(1px); opacity:.9; }
+
+    .tour-chips { list-style:none; padding:0; margin:12px 0 16px; display:flex; flex-wrap:wrap; gap:16px; }
+    .tour-chips .chip { background:none; border:none; padding:0; font-size:16px; line-height:1.6; }
+
+    .btn-primary { appearance:none; border:1px solid rgba(0,0,0,.2); background:#2563eb; color:#fff; padding:12px 18px; border-radius:12px; font-weight:700; cursor:pointer; }
+
+    .chip-note{ font-size:.95em; opacity:.85; }
+
+    @media (max-width: 900px){
+      .transport-description { flex-direction: column; }
+      .transport-text, .transport-img { flex: 1 1 auto; }
+    }
+  </style>
+
+  <!-- ✅ Burger menu CSS -->
+  <style>
+    .burger{display:none;background:none;border:0;width:38px;height:38px;
+            align-items:center;justify-content:center;border-radius:8px;color:#fff}
+    .burger svg{width:26px;height:26px}
+    .site-header.scrolled .burger{color:#0f172a}
+
+    @media (max-width:900px){
+      .main-nav{display:none}
+      .burger{display:inline-flex}
+    }
+
+    .mobile-menu{position:fixed;top:0;right:0;bottom:0;width:min(86vw,360px);
+      background:#fff;box-shadow:-10px 0 30px rgba(0,0,0,.15);
+      transform:translateX(100%);transition:transform .25s ease;z-index:120}
+    .mobile-menu.open{transform:translateX(0)}
+    .mobile-menu header{display:flex;align-items:center;justify-content:space-between;
+      padding:12px 16px;border-bottom:1px solid #eee}
+    .mobile-menu header button{background:none;border:0;width:36px;height:36px}
+    .mobile-menu nav a{display:block;padding:14px 16px;border-bottom:1px solid #f1f1f1;
+      color:#0f172a;text-decoration:none}
+    .mobile-menu .langs{display:flex;gap:10px;padding:14px 16px;font-size:22px}
+
+    .mobile-overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);
+      backdrop-filter:blur(2px);opacity:0;pointer-events:none;transition:opacity .2s;
+      z-index:110}
+    .mobile-overlay.show{opacity:1;pointer-events:auto}
+  </style>
+
+  <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='img/favicon/apple-touch-icon.png') }}">
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='img/favicon/favicon-32x32.png') }}">
+  <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='img/favicon/favicon-16x16.png') }}">
+  <link rel="manifest" href="{{ url_for('static', filename='img/favicon/site.webmanifest') }}">
+  <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='img/favicon/favicon.ico') }}">
+  <meta name="theme-color" content="#0b4654">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <meta name="google-site-verification" content="4z28-XXEkdcB_VOcaGoy1bhgA-zj7xr6wSf76ZwZ4tQ" />
 </head>
 <body>
 
-  <!-- ✅ HEADER FIXE -->
+  <!-- ✅ HEADER FIXE (corrigé, rien d’autre en haut à gauche) -->
   <header class="site-header header-on-hero">
-    <a href="{{ url_for('index', lang=get_locale()) }}" class="brand">
+    <a href="{{ url_for('index', lang=get_locale()) }}" class="brand" aria-label="Oh La La Tours Bogotá - Accueil">
       <img src="{{ url_for('static', filename='img/logo-light.png') }}" class="logo logo--light" alt="Oh La La Tours Bogotá logo clair">
       <img src="{{ url_for('static', filename='img/logo-dark.png') }}" class="logo logo--dark" alt="Oh La La Tours Bogotá logo sombre">
       <span class="site-title">Oh La La Tours Bogotá</span>
     </a>
-    <nav class="main-nav">
+
+    <nav class="main-nav" aria-label="{{ _('Navigation principale') }}">
       <a href="{{ url_for('index', lang=get_locale()) }}">{{ _("Accueil") }}</a>
       <a href="{{ url_for('tours', lang=get_locale()) }}">{{ _("Nos tours") }}</a>
       <a href="{{ url_for('transport', lang=get_locale()) }}">{{ _("Service de Transport") }}</a>
       <a href="{{ url_for('reservation', lang=get_locale()) }}">{{ _("Réservation") }}</a>
-      <div class="lang-switcher">
-        <a href="{{ lang_url('fr') }}">🇫🇷</a>
-        <a href="{{ lang_url('en') }}">🇺🇸</a>
-        <a href="{{ lang_url('es') }}">🇪🇸</a>
+
+      <div class="lang-switcher" aria-label="{{ _('Changer de langue') }}">
+        <a href="{{ lang_url('fr') }}" lang="fr" aria-label="Français">🇫🇷<span class="sr-only">Français</span></a>
+        <a href="{{ lang_url('en') }}" lang="en" aria-label="English">🇺🇸<span class="sr-only">English</span></a>
+        <a href="{{ lang_url('es') }}" lang="es" aria-label="Español">🇪🇸<span class="sr-only">Español</span></a>
       </div>
     </nav>
-    <button class="burger" aria-label="Menu">
-      <svg viewBox="0 0 24 24" width="28" height="28"><path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2"/></svg>
+
+    <!-- ✅ Burger -->
+    <button class="burger" aria-label="Ouvrir le menu" aria-controls="mobileMenu" aria-expanded="false">
+      <svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true">
+        <path d="M3 6h18M3 12h18M3 18h18"
+              stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/>
+      </svg>
     </button>
   </header>
 
+  <!-- ✅ Overlay + panneau mobile -->
   <div id="mobileOverlay" class="mobile-overlay"></div>
-  <aside id="mobileMenu" class="mobile-menu">
-    <header><strong>Oh La La Tours Bogotá</strong>
-      <button id="mobileClose">✕</button>
+
+  <aside id="mobileMenu" class="mobile-menu" role="dialog" aria-modal="true" aria-label="Menu">
+    <header>
+      <strong>Oh La La Tours Bogotá</strong>
+      <button id="mobileClose" aria-label="Fermer">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true">
+          <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/>
+        </svg>
+      </button>
     </header>
+
     <nav>
-      <a href="{{ url_for('index', lang=get_locale()) }}">{{ _("Accueil") }}</a>
-      <a href="{{ url_for('tours', lang=get_locale()) }}">{{ _("Nos tours") }}</a>
+      <a href="{{ url_for('index',     lang=get_locale()) }}">{{ _("Accueil") }}</a>
+      <a href="{{ url_for('tours',     lang=get_locale()) }}">{{ _("Nos tours") }}</a>
       <a href="{{ url_for('transport', lang=get_locale()) }}">{{ _("Service de Transport") }}</a>
       <a href="{{ url_for('reservation', lang=get_locale()) }}">{{ _("Réservation") }}</a>
     </nav>
-    <div class="langs">
-      <a href="{{ lang_url('fr') }}">🇫🇷</a><a href="{{ lang_url('en') }}">🇺🇸</a><a href="{{ lang_url('es') }}">🇪🇸</a>
+
+    <div class="langs" aria-label="{{ _('Changer de langue') }}">
+      <a href="{{ lang_url('fr') }}" lang="fr" aria-label="Français">🇫🇷</a>
+      <a href="{{ lang_url('en') }}" lang="en" aria-label="English">🇺🇸</a>
+      <a href="{{ lang_url('es') }}" lang="es" aria-label="Español">🇪🇸</a>
     </div>
   </aside>
 
-  <!-- HERO -->
-  <header class="hero" style="background-image:url('{{ url_for('static', filename='images/bg_transport.webp') }}')">
+  <!-- Bandeau image + titre -->
+  <header class="hero background-half"
+          style="background-image: url('{{ url_for('static', filename='images/bg_transport.webp') }}');">
     <h1 class="hero-title">{{ _("Service de Transport — Hôtel ⇄ Aéroport Bogotá") }}</h1>
   </header>
 
-  <!-- CONTENU -->
   <main>
-    <section id="transport">
+    <section id="transport" class="container">
       <div class="transport-description">
         <div class="transport-text">
           <h2>{{ _("Transfert privé, ponctuel et sécurisé") }}</h2>
-          <p>{{ _("Profitez d’un trajet confortable entre votre hébergement et l’aéroport El Dorado (BOG). Chauffeur professionnel et courtois, prise en charge à l’heure et service porte-à-porte.") }}</p>
+          <p>
+            {{ _("Profitez d’un trajet confortable entre votre hébergement et l’aéroport El Dorado (BOG). Chauffeur professionnel et courtois, prise en charge à l’heure et service porte-à-porte.") }}
+          </p>
+
           <div class="tour-includes">
-            <h3>{{ _("Ce qui est inclus :") }}</h3>
-            <ul>
-              <li>{{ _("Chauffeur professionnel") }}</li>
-              <li>{{ _("Prise en charge à votre hôtel") }}</li>
-              <li>{{ _("Trajet direct vers l’aéroport") }}</li>
+            <h3 class="includes-title">{{ _("Ce qui est inclus :") }}</h3>
+            <ul class="includes-list">
+              <li>{{ _("Chauffeur professionnel, véhicule propre et assuré") }}</li>
+              <li>{{ _("Prise en charge à votre hôtel/appartement") }}</li>
+              <li>{{ _("Trajet direct vers l’aéroport (ou inversement)") }}</li>
               <li>{{ _("Assistance pour les bagages") }}</li>
-              <li>{{ _("Prix fixe : 60 000 COP") }}</li>
+              <li>{{ _("Prix fixe") }}: {{ _("16USD") }} ({{ _("1 à 4 personnes") }})</li>
             </ul>
           </div>
+
+          <ul class="tour-chips" aria-label="{{ _('Informations pratiques') }}">
+            <li class="chip">
+              <strong>{{ _("Durée") }}:</strong>&nbsp;{{ _("~40–60 min") }}
+              <span class="chip-note">— {{ _("Le temps peut fortement varier selon le trafic : pensez à réserver avec une marge d’avance.") }}</span>
+            </li>
+            <li class="chip"><strong>{{ _("Tarif") }}:</strong>&nbsp;{{ _("60 000 COP (1 à 4 personnes)") }}</li>
+          </ul>
+
+          <h3>{{ _("Comment réserver ?") }}</h3>
+          <p>
+            {{ _("Réservez facilement par WhatsApp ou e-mail. Indiquez la date, l’heure de prise en charge, le numéro de vol et le nombre de passagers.") }}
+          </p>
+          <p>
+            <a class="btn-primary" href="https://wa.me/573000000000" target="_blank" rel="noopener">
+              {{ _("Réserver sur WhatsApp") }}
+            </a>
+            &nbsp;
+            <a class="btn-primary" href="mailto:contact@ohlalatoursbogota.com">
+              {{ _("Réserver par e-mail") }}
+            </a>
+          </p>
+
+          <p style="margin-top:10px;">
+            <small>{{ _("Besoin d’un siège enfant, d’un van ou d’horaires très matinaux ? Dites-le nous lors de la réservation.") }}</small>
+          </p>
         </div>
+
         <div class="transport-img">
-          <img src="{{ url_for('static', filename='images/transport_service.jpeg') }}" alt="{{ TRANSPORT_IMG_ALT }}">
+          <img src="{{ url_for('static', filename='images/transport_service.jpeg') }}"
+               alt="{{ TRANSPORT_IMG_ALT }}">
         </div>
       </div>
+
     </section>
   </main>
 
-  <!-- Scripts header scroll + burger -->
+  <!-- ✅ Script header scroll -->
   <script>
-    (function(){const h=document.querySelector('.site-header');if(!h)return;
-      function sc(){h.classList.toggle('scrolled',window.scrollY>60);}sc();
-      window.addEventListener('scroll',sc,{passive:true});
-    })();
     (function(){
-      const b=document.querySelector('.burger'),m=document.getElementById('mobileMenu'),
-            c=document.getElementById('mobileClose'),o=document.getElementById('mobileOverlay');
-      if(!b||!m||!o)return;
-      const open=()=>{m.classList.add('open');o.classList.add('show');};
-      const close=()=>{m.classList.remove('open');o.classList.remove('show');};
-      b.addEventListener('click',open);c.addEventListener('click',close);o.addEventListener('click',close);
+      const header = document.querySelector('.site-header');
+      if(!header) return;
+      function onScroll(){ header.classList.toggle('scrolled', window.scrollY > 60); }
+      onScroll();
+      window.addEventListener('scroll', onScroll, {passive:true});
+    })();
+  </script>
+
+  <!-- ✅ Burger JS -->
+  <script>
+    (function(){
+      const burger  = document.querySelector('.burger');
+      const menu    = document.getElementById('mobileMenu');
+      const closeBt = document.getElementById('mobileClose');
+      const overlay = document.getElementById('mobileOverlay');
+      if(!burger || !menu || !overlay) return;
+
+      const open = () => {
+        menu.classList.add('open');
+        overlay.classList.add('show');
+        burger.setAttribute('aria-expanded','true');
+        document.body.style.overflow='hidden';
+      };
+      const close = () => {
+        menu.classList.remove('open');
+        overlay.classList.remove('show');
+        burger.setAttribute('aria-expanded','false');
+        document.body.style.overflow='';
+      };
+
+      burger.addEventListener('click', open, {passive:true});
+      if (closeBt) closeBt.addEventListener('click', close, {passive:true});
+      overlay.addEventListener('click', close, {passive:true});
+      window.addEventListener('keydown', (e)=>{ if(e.key==='Escape') close(); });
+
+      /* ✅ Fermeture auto quand on clique un lien dans le menu */
+      menu.addEventListener('click', (e)=>{ if(e.target.closest('a')) close(); });
     })();
   </script>
 </body>
 </html>
-
