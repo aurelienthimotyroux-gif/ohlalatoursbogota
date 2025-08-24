@@ -13,7 +13,7 @@ from urllib.parse import urlsplit, urlunsplit, parse_qsl, urlencode
 
 # ✉️ Email
 from flask_mail import Mail, Message
-from decimal import Decimal, ROUND_HALF_UP  # 🟡 AJOUT PayPal: calcul monétaire
+from decimal import Decimal, ROUND_HALF_UP  # 🟡 PayPal: calcul monétaire
 
 # ------------------------------------------------------------------
 # Helpers (dates, normalisation)
@@ -162,6 +162,8 @@ class Reservation(db.Model):
     tour_slug = db.Column(db.String(80), default="")
     message = db.Column(db.Text, default="")
     language = db.Column(db.String(8), default="")
+    # 🟡 Nouveau : associer le paiement
+    paypal_capture_id = db.Column(db.String(80), default="")
 
 with app.app_context():
     db.create_all()
@@ -176,6 +178,9 @@ with app.app_context():
                 con.execute(text("ALTER TABLE reservations ADD COLUMN persons INTEGER DEFAULT 1"))
             if "country" not in cols:
                 con.execute(text("ALTER TABLE reservations ADD COLUMN country VARCHAR(120)"))
+            # 🟡 Ajout auto si manquant
+            if "paypal_capture_id" not in cols:
+                con.execute(text("ALTER TABLE reservations ADD COLUMN paypal_capture_id VARCHAR(80)"))
     except Exception as e:
         app.logger.warning("auto_migrate_reservations_failed: %s", e)
 
@@ -272,6 +277,8 @@ def _ensure_tables():
                     con.execute(text("ALTER TABLE reservations ADD COLUMN persons INTEGER DEFAULT 1"))
                 if "country" not in cols:
                     con.execute(text("ALTER TABLE reservations ADD COLUMN country VARCHAR(120)"))
+                if "paypal_capture_id" not in cols:
+                    con.execute(text("ALTER TABLE reservations ADD COLUMN paypal_capture_id VARCHAR(80)"))
     except Exception as e:
         app.logger.warning("ensure_tables_failed: %s", e)
 
@@ -466,6 +473,7 @@ def admin_reservations():
           <td>{(r.tour_slug or '').replace('<','&lt;')}</td>
           <td style="max-width:420px">{(r.message or '').replace('<','&lt;')}</td>
           <td>{(r.language or '').replace('<','&lt;')}</td>
+          <td>{(r.paypal_capture_id or '—').replace('<','&lt;')}</td>
           <td>
             <form method="post" action="{url_for('admin_reservation_delete', reservation_id=r.id)}"
                   onsubmit="return confirm('Supprimer cette réservation ?');">
@@ -482,7 +490,7 @@ def admin_reservations():
         <thead>
           <tr>
             <th>#</th><th>Créé</th><th>Nom</th><th>Email</th><th>Téléphone</th><th>Pays</th>
-            <th>Date</th><th>PAX</th><th>Tour</th><th>Message</th><th>Langue</th><th>Action</th>
+            <th>Date</th><th>PAX</th><th>Tour</th><th>Message</th><th>Langue</th><th>PayPal</th><th>Action</th>
           </tr>
         </thead>
         <tbody>{"".join(rows)}</tbody>
@@ -584,6 +592,8 @@ def reservation():
         persons  = request.form.get("persons") or "1"
         tour     = (request.form.get("tour") or "").strip().lower()
         message  = (request.form.get("message") or "").strip()
+        # 🟡 ID de capture transmis par le front après paiement
+        capture_id = (request.form.get("paypal_capture_id") or "").strip()
 
         # langue UI envoyée par le formulaire (champ hidden ui_lang)
         ui_lang  = (request.form.get("ui_lang") or "").lower()
@@ -604,6 +614,11 @@ def reservation():
             flash(_("Merci de remplir nom, email, date et tour."), "error")
             return render_template("reservation.html", tour=tour)
 
+        # 🟡 Vérifier le paiement AVANT d'enregistrer
+        if not verify_paypal_capture(capture_id):
+            flash(_("Le paiement PayPal n'a pas été confirmé. Merci d'effectuer le paiement avant d'envoyer la réservation."), "error")
+            return render_template("reservation.html", tour=tour)
+
         # Enregistrer en DB
         try:
             r = Reservation(
@@ -615,7 +630,8 @@ def reservation():
                 persons=persons,
                 tour_slug=tour[:80],
                 message=message,
-                language=lang[:8]
+                language=lang[:8],
+                paypal_capture_id=capture_id[:80]  # 🟡 on garde la trace
             )
             db.session.add(r)
             db.session.commit()
@@ -643,6 +659,7 @@ Nous avons bien reçu votre réservation.
 • Téléphone : {phone or '—'}
 • Pays : {country or '—'}
 • Message : {message or '—'}
+• Paiement PayPal (capture) : {capture_id or '—'}
 
 Nous revenons vers vous très rapidement pour l’organisation.
 
@@ -657,6 +674,7 @@ We’ve received your booking request.
 • Phone: {phone or '—'}
 • Country: {country or '—'}
 • Message: {message or '—'}
+• PayPal payment (capture): {capture_id or '—'}
 
 We’ll get back to you shortly to arrange the details.
 
@@ -671,6 +689,7 @@ Hemos recibido tu reserva.
 • Teléfono: {phone or '—'}
 • País: {country or '—'}
 • Mensaje: {message or '—'}
+• Pago PayPal (captura): {capture_id or '—'}
 
 En breve nos pondremos en contacto para organizar los detalles.
 
@@ -699,6 +718,7 @@ Date: {date_str}
 Personnes: {persons}
 Tour: {tour}
 Langue: {lang}
+Paiement PayPal (capture): {capture_id or '—'}
 
 Message:
 {message or '—'}
@@ -716,49 +736,6 @@ Message:
     # GET → afficher le formulaire
     return render_template("reservation.html")
 
-
-# ------------------------------------------------------------------
-# Divers
-# ------------------------------------------------------------------
-@app.route("/tours")
-def tours():
-    return render_template("tours.html")
-
-@app.route("/transport")
-def transport():
-    return render_template("transport.html")
-
-@app.post("/comments")
-def submit_comment():
-    name = (request.form.get("name") or "").strip()
-    message = (request.form.get("message") or "").strip()
-    country = (request.form.get("country") or "").strip()
-    rating = request.form.get("rating") or "5"
-    date_str = request.form.get("date") or ""
-    if not message:
-        flash(_("Merci d'écrire un petit message 😇"), "error")
-        return redirect(url_for("index", lang=get_locale()))
-    try:
-        rating_f = float(rating)
-    except Exception:
-        rating_f = 5.0
-    c = Comment(
-        name=name[:120],
-        country=country[:120],
-        rating=rating_f,
-        date_str=date_str[:120],
-        created_at=parse_date_str(date_str) or datetime.utcnow(),
-        message=message
-    )
-    db.session.add(c)
-    db.session.commit()
-    try:
-        CommentTranslation.query.filter_by(comment_id=c.id).delete()
-        db.session.commit()
-    except Exception:
-        db.session.rollback()
-    flash(_("Merci pour votre adorable commentaire 💛"), "success")
-    return redirect(url_for("index", lang=get_locale()))
 
 # ------------------------------------------------------------------
 # Statique & SEO
@@ -798,7 +775,6 @@ def favicon():
 # ------------------------------------------------------------------
 # 🟡 PAYPAL — unified (keep only ONE copy of these)
 # ------------------------------------------------------------------
-from decimal import Decimal, ROUND_HALF_UP
 import time, requests
 
 # Config
@@ -988,5 +964,8 @@ def verify_paypal_capture(capture_id: str) -> bool:
         return False
     return (r.json().get("status") == "COMPLETED")
 # ------------------------------------------------------------------
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=int(os.getenv("PORT","10000")), debug=bool(os.getenv("DEBUG","0")=="1"))
 
 
