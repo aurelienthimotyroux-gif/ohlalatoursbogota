@@ -155,7 +155,7 @@ class Reservation(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     fullname = db.Column(db.String(160), default="")
     email = db.Column(db.String(160), default="")
-    phone = db.Column(db.String(40), default="")
+    phone = db.Column(db.String(40)", default="")
     country = db.Column(db.String(120), default="")
     date_str = db.Column(db.String(80), default="")
     persons = db.Column(db.Integer, default=1)
@@ -736,6 +736,41 @@ Message:
     # GET → afficher le formulaire
     return render_template("reservation.html")
 
+# ------------------------------------------------------------------
+# 🟡 RÉINSÉRÉ SANS MODIF: POST /comments (endpoint submit_comment)
+# ------------------------------------------------------------------
+@app.post("/comments")
+def submit_comment():
+    name = (request.form.get("name") or "").strip()
+    message = (request.form.get("message") or "").strip()
+    country = (request.form.get("country") or "").strip()
+    rating = request.form.get("rating") or "5"
+    date_str = request.form.get("date") or ""
+    if not message:
+        flash(_("Merci d'écrire un petit message 😇"), "error")
+        return redirect(url_for("index", lang=get_locale()))
+    try:
+        rating_f = float(rating)
+    except Exception:
+        rating_f = 5.0
+    c = Comment(
+        name=name[:120],
+        country=country[:120],
+        rating=rating_f,
+        date_str=date_str[:120],
+        created_at=parse_date_str(date_str) or datetime.utcnow(),
+        message=message
+    )
+    db.session.add(c)
+    db.session.commit()
+    try:
+        CommentTranslation.query.filter_by(comment_id=c.id).delete()
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+    flash(_("Merci pour votre adorable commentaire 💛"), "success")
+    return redirect(url_for("index", lang=get_locale()))
+# ------------------------------------------------------------------
 
 # ------------------------------------------------------------------
 # Statique & SEO
@@ -1001,8 +1036,5 @@ if "transport" not in app.view_functions:
         return render_template("transport.html")
 # -------------------------------------------------------------------
 
-
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.getenv("PORT","10000")), debug=bool(os.getenv("DEBUG","0")=="1"))
-
-
