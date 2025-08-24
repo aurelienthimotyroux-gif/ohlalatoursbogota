@@ -796,15 +796,20 @@ def favicon():
     )
 
 # ------------------------------------------------------------------
-# 🟡 PAYPAL — AJOUT (rien supprimé ailleurs)
+# 🟡 PAYPAL — unified (keep only ONE copy of these)
 # ------------------------------------------------------------------
-PAYPAL_MODE = os.getenv("PAYPAL_MODE", "sandbox")  # 'sandbox' ou 'live'
+from decimal import Decimal, ROUND_HALF_UP
+import time, requests
+
+# Config
+PAYPAL_MODE = os.getenv("PAYPAL_MODE", "sandbox").lower()  # 'sandbox' or 'live'
 PAYPAL_CLIENT_ID = os.getenv("PAYPAL_CLIENT_ID", "")
-PAYPAL_CLIENT_SECRET = os.getenv("PAYPAL_CLIENT_SECRET", "")
+# accept either PAYPAL_CLIENT_SECRET or PAYPAL_SECRET (fallback)
+PAYPAL_CLIENT_SECRET = os.getenv("PAYPAL_CLIENT_SECRET") or os.getenv("PAYPAL_SECRET", "")
 PAYPAL_CURRENCY = os.getenv("PAYPAL_CURRENCY", "USD").upper()
 PAYPAL_API_BASE = "https://api-m.sandbox.paypal.com" if PAYPAL_MODE == "sandbox" else "https://api-m.paypal.com"
 
-# Tarifs par personne en COP (ceux que tu m’as donnés). Ajoute/ajuste si besoin.
+# Price table (per person, in COP). Add the missing tours when you have prices.
 PRICE_COP_PER_PERSON = {
     "zipaquira": 6000,
     "monserrate": 6000,
@@ -813,19 +818,20 @@ PRICE_COP_PER_PERSON = {
     # "chorrera": 6000,
 }
 
-# Taux interne: 1 unité devise = X COP (ex: 1 USD ≈ 3800 COP)
+# FX: 1 UNIT currency = X COP (internal rate for conversion)
 COP_PER_UNIT = Decimal(os.getenv("COP_PER_UNIT", "3800"))
+
+HTTP_TIMEOUT = 60  # give PayPal enough time
 
 def _money2(q: Decimal) -> str:
     return str(q.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP))
 
 def compute_price(tour: str, persons: int):
     """
-    Calcule total en devise d'encaissement (PAYPAL_CURRENCY) à partir du tour + pax.
-    Retourne (amount_str, description).
+    Returns (amount_str_in_PAYPAL_CURRENCY, description)
     """
-    tour_key = (tour or "").strip().lower()
-    if tour_key not in PRICE_COP_PER_PERSON:
+    key = (tour or "").strip().lower()
+    if key not in PRICE_COP_PER_PERSON:
         raise ValueError("Tour non tarifé")
     try:
         n = int(persons)
@@ -833,13 +839,13 @@ def compute_price(tour: str, persons: int):
         n = 1
     n = max(1, min(n, 6))
 
-    total_cop = Decimal(PRICE_COP_PER_PERSON[tour_key]) * Decimal(n)
+    total_cop = Decimal(PRICE_COP_PER_PERSON[key]) * Decimal(n)
     if PAYPAL_CURRENCY == "COP":
         total_unit = total_cop
     else:
         total_unit = (total_cop / COP_PER_UNIT)
     amount = _money2(total_unit)
-    desc = f"Reservation {tour_key} x{n}"
+    desc = f"Reservation {key} x{n}"
     return amount, desc
 
 def paypal_access_token() -> str:
@@ -848,21 +854,28 @@ def paypal_access_token() -> str:
         headers={"Accept": "application/json", "Accept-Language": "en_US"},
         data={"grant_type": "client_credentials"},
         auth=(PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET),
-        timeout=20
+        timeout=HTTP_TIMEOUT
     )
     r.raise_for_status()
     return r.json()["access_token"]
 
+# ---- Routes (one copy only) ----
+
 @app.get("/paypal-config")
 def paypal_config():
-    return {"client_id": PAYPAL_CLIENT_ID, "currency": PAYPAL_CURRENCY}
+    return {
+        "client_id": PAYPAL_CLIENT_ID,
+        "currency": PAYPAL_CURRENCY,
+        "mode": PAYPAL_MODE,
+        "client_id_last6": PAYPAL_CLIENT_ID[-6:] if PAYPAL_CLIENT_ID else None,
+        "api_base": PAYPAL_API_BASE,
+    }
 
 @app.post("/create-paypal-order")
 def create_paypal_order():
     data = request.get_json(silent=True) or {}
     tour = (data.get("tour") or "").strip()
     persons = data.get("persons") or 1
-
     try:
         amount, description = compute_price(tour, persons)
     except ValueError as e:
@@ -883,7 +896,7 @@ def create_paypal_order():
     r = requests.post(
         f"{PAYPAL_API_BASE}/v2/checkout/orders",
         headers={"Content-Type": "application/json", "Authorization": f"Bearer {token}"},
-        json=payload, timeout=20
+        json=payload, timeout=HTTP_TIMEOUT
     )
     if r.status_code >= 400:
         try: err = r.json()
@@ -894,85 +907,34 @@ def create_paypal_order():
     order = r.json()
     return {"id": order["id"]}
 
-@app.post("/capture-paypal-order/<order_id>")
-def capture_paypal_order(order_id):
-    token = paypal_access_token()
-    r = requests.post(
-        f"{PAYPAL_API_BASE}/v2/checkout/orders/{order_id}/capture",
-        headers={"Content-Type": "application/json", "Authorization": f"Bearer {token}"},
-        timeout=20
-    )
-    if r.status_code >= 400:
-        try: err = r.json()
-        except: err = {"error": r.text}
-        app.logger.error("paypal_capture_error: %s", err)
-        return {"error": err}, 400
-
-    data = r.json()
-    # La réponse de PayPal pour /capture d’un order retourne un objet "id"/"status"
-    # et des "purchase_units" avec "payments" -> "captures"[]. On renvoie un résumé.
-    capture_id = data.get("id")
-    status = data.get("status", "COMPLETED")
-    return {"id": capture_id, "status": status, "raw": data}
-
-def verify_paypal_capture(capture_id: str) -> bool:
-    """
-    (Optionnel) Vérifie une capture via l’API PayPal.
-    Utilise-le si tu veux bloquer /reservation sans paiement.
-    """
-    if not capture_id:
-        return False
-    token = paypal_access_token()
-    r = requests.get(
-        f"{PAYPAL_API_BASE}/v2/payments/captures/{capture_id}",
-        headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"},
-        timeout=20
-    )
-    if r.status_code >= 400:
-        app.logger.error("paypal_verify_error: %s", r.text)
-        return False
-    data = r.json()
-    return data.get("status") == "COMPLETED"
-
-# ===== DEBUG PAYPAL =====
-@app.get("/paypal-config")
-def paypal_config():  # si tu l'as déjà, remplace par cette version verbosée
-    return {
-        "client_id": PAYPAL_CLIENT_ID,
-        "currency": PAYPAL_CURRENCY,
-        "mode": PAYPAL_MODE,
-        "client_id_last6": PAYPAL_CLIENT_ID[-6:] if PAYPAL_CLIENT_ID else None,
-        "api_base": PAYPAL_API_BASE,
-    }
-
 @app.get("/paypal-order/<order_id>")
 def paypal_order(order_id):
     token = paypal_access_token()
     r = requests.get(
         f"{PAYPAL_API_BASE}/v2/checkout/orders/{order_id}",
         headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"},
-        timeout=60
+        timeout=HTTP_TIMEOUT
     )
     data = r.json()
-    # petite synthèse utile
     try:
         payee_mid = data["purchase_units"][0]["payee"].get("merchant_id")
         status = data.get("status")
     except Exception:
-        payee_mid = None
-        status = None
-    return {"summary": {"status": status, "payee_merchant_id": payee_mid,
+        payee_mid, status = None, None
+    return {"summary": {"status": status,
+                        "payee_merchant_id": payee_mid,
                         "server_client_id_last6": PAYPAL_CLIENT_ID[-6:] if PAYPAL_CLIENT_ID else None},
             "raw": data}, r.status_code
 
 @app.post("/capture-paypal-order/<order_id>")
 def capture_paypal_order(order_id):
     token = paypal_access_token()
-    # (A) on lit l’ordre avant capture pour afficher à qui il appartient
+
+    # (A) Read order before capture (useful for debugging merchant mismatch)
     r0 = requests.get(
         f"{PAYPAL_API_BASE}/v2/checkout/orders/{order_id}",
         headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"},
-        timeout=60
+        timeout=HTTP_TIMEOUT
     )
     info = {}
     try:
@@ -982,16 +944,15 @@ def capture_paypal_order(order_id):
     except Exception:
         pass
 
-    # (B) capture
+    # (B) Capture
     r = requests.post(
         f"{PAYPAL_API_BASE}/v2/checkout/orders/{order_id}/capture",
         headers={"Content-Type": "application/json", "Authorization": f"Bearer {token}"},
-        timeout=60
+        timeout=HTTP_TIMEOUT
     )
     if r.status_code >= 400:
         try: err = r.json()
         except: err = {"error": r.text}
-        # on logge + on renvoie un message HUMAIN-LECTIBLE
         app.logger.error("paypal_capture_error: %s", err)
         return {
             "error": "CAPTURE_FAILED",
@@ -1011,17 +972,21 @@ def capture_paypal_order(order_id):
         capture_id = data["purchase_units"][0]["payments"]["captures"][0]["id"]
     except Exception:
         pass
-    return {
-        "id": capture_id or data.get("id"),
-        "status": status,
-        "pre": info,
-        "raw": data
-    }
-# ===== /DEBUG PAYPAL =====
+    return {"id": capture_id or data.get("id"), "status": status, "pre": info, "raw": data}
 
-
+def verify_paypal_capture(capture_id: str) -> bool:
+    if not capture_id:
+        return False
+    token = paypal_access_token()
+    r = requests.get(
+        f"{PAYPAL_API_BASE}/v2/payments/captures/{capture_id}",
+        headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"},
+        timeout=HTTP_TIMEOUT
+    )
+    if r.status_code >= 400:
+        app.logger.error("paypal_verify_error: %s", r.text)
+        return False
+    return (r.json().get("status") == "COMPLETED")
 # ------------------------------------------------------------------
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.getenv("PORT","10000")), debug=bool(os.getenv("DEBUG","0")=="1"))
 
