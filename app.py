@@ -303,6 +303,17 @@ def admin_home():
     """
     return _inline_html("Admin", body)
 
+# ✅ Endpoint AJOUTÉ : évite le BuildError sur admin_import_legacy
+@app.get("/admin/import-legacy", endpoint="admin_import_legacy")
+@admin_required
+def admin_import_legacy():
+    body = f"""
+      <h1>Import des anciens avis</h1>
+      <p class="small">Fonction à venir. Ce bouton existe maintenant pour éviter le 500.</p>
+      <p><a href="{url_for('admin_home')}">← Retour admin</a></p>
+    """
+    return _inline_html("Import anciens avis — Admin", body)
+
 @app.route("/_routes")
 def _routes():
     lines = sorted(str(r) for r in app.url_map.iter_rules())
@@ -436,7 +447,7 @@ def admin_transfers():
         <thead>
           <tr>
             <th>#</th><th>Créé</th><th>Nom</th><th>WhatsApp</th><th>Email</th>
-            <th>Date/Heure</th><th>Trajet</th><th>PAX</th><th>Détails</th><th>Action</th>
+            <th>Date/Heure</th><th>Trajet</th><th>Trajet</th><th>PAX</th><th>Détails</th><th>Action</th>
           </tr>
         </thead>
         <tbody>{"".join(rows)}</tbody>
@@ -1038,3 +1049,4 @@ if "transport" not in app.view_functions:
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.getenv("PORT","10000")), debug=bool(os.getenv("DEBUG","0")=="1"))
+
