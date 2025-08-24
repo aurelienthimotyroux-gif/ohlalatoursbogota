@@ -368,118 +368,116 @@
     <!-- Grille unique : on met BDD + fallback dedans, puis JS trie par date -->
     <div class="testimonials-grid" id="all-testimonials">
 
-      {# ---- 1) Commentaires BDD (inchangés) ---- #}
-      {% for comment in comments or [] %}
-        {% set is_long = (comment.message|length > 200) %}
-        <div class="testimonial-card" data-name="{{ comment.name }}" data-country="{{ comment.country or '' }}" data-ts="">
-          <div class="t-head">
-            <div class="t-name">
-              {{ comment.name }}{% if comment.country %} · {{ comment.country }}{% endif %}
-            </div>
-            <div class="t-meta">{{ comment.date_str }}</div>
-          </div>
+{# ---- 1) Commentaires BDD (inchangés, mais on marque la langue) ---- #}
+{% set _country_lang = {
+  'france':'fr','canada':'fr','québec':'fr',
+  'mexique':'es','mexico':'es','costa rica':'es','colombie':'es','spain':'es','espagne':'es',
+  'états-unis':'en','united states':'en','usa':'en','uk':'en','royaume-uni':'en'
+} %}
+{% for comment in comments or [] %}
+  {# essaie d’utiliser comment.lang si dispo, sinon devine via le pays, sinon UI lang #}
+  {% set _c = (comment.country or '')|lower %}
+  {% set _lang_guess = _country_lang.get(_c, (get_locale()[:2] if get_locale() else 'fr')) %}
+  {% set _lang = comment.lang or _lang_guess %}
 
-          <div class="t-stars" aria-label="{{ comment.rating }} / 5">
-            {% for i in range(1, 6) %}
-              {% if comment.rating >= i %}
-                <svg><use href="#icon-star-full"></use></svg>
-              {% elif comment.rating >= i - 0.5 %}
-                <svg><use href="#icon-star-half"></use></svg>
-              {% else %}
-                <svg><use href="#icon-star-empty"></use></svg>
-              {% endif %}
-            {% endfor %}
-            <span class="sr-only">{{ comment.rating }} / 5</span>
-          </div>
+  {% set is_long = (comment.message|length > 200) %}
+  <div class="testimonial-card" data-name="{{ comment.name }}" data-country="{{ comment.country or '' }}" data-ts="">
+    <div class="t-head">
+      <div class="t-name">
+        {{ comment.name }}{% if comment.country %} · {{ comment.country }}{% endif %}
+      </div>
+      <div class="t-meta">{{ comment.date_str }}</div>
+    </div>
 
-          <p class="t-text{{ ' clamp' if is_long else '' }}"
-             id="comment-{{ loop.index }}"
-             data-full="{{ comment.message|e }}">
-            {{ (comment.message[:200] ~ '...') if is_long else comment.message }}
-          </p>
-          <button class="t-toggle"
-                  onclick="toggleText('{{ loop.index }}')"
-                  style="{{ '' if is_long else 'display:none;' }}">
-            {{ _("Lire plus") }}
-          </button>
-        </div>
+    <div class="t-stars" aria-label="{{ comment.rating }} / 5">
+      {% for i in range(1, 6) %}
+        {% if comment.rating >= i %}
+          <svg><use href="#icon-star-full"></use></svg>
+        {% elif comment.rating >= i - 0.5 %}
+          <svg><use href="#icon-star-half"></use></svg>
+        {% else %}
+          <svg><use href="#icon-star-empty"></use></svg>
+        {% endif %}
       {% endfor %}
+      <span class="sr-only">{{ comment.rating }} / 5</span>
+    </div>
 
-      {# ---- 2) Fallback : 13 avis fournis (avec date ISO pour tri) ---- #}
-      {% set fallback_comments = [
+    <p class="t-text{{ ' clamp' if is_long else '' }}"
+       id="comment-{{ loop.index }}"
+       data-full="{{ comment.message|e }}"
+       lang="{{ _lang }}">
+      {{ (comment.message[:200] ~ '...') if is_long else comment.message }}
+    </p>
+    <button class="t-toggle"
+            onclick="toggleText('{{ loop.index }}')"
+            style="{{ '' if is_long else 'display:none;' }}">
+      {{ _("Lire plus") }}
+    </button>
+  </div>
+{% endfor %}
+
+{# ---- 2) Fallback : 13 avis fournis (avec date ISO pour tri) ---- #}
+{% set fallback_comments = [
   {"name":"Francis","country":"Canada","date_str":"12 mai 2025","date_iso":"2025-05-12","rating":5,"lang":"fr","message":"L’expérience est super. Alejandra prend son temps pour nous expliquer et répondre à nos questions."},
-
   {"name":"Katy","country":"Mexique","date_str":"21 mars 2023","date_iso":"2023-03-21","rating":5,"lang":"es","message":"Recomendado. La comunicación con Alejandra fue excelente antes y durante; todo lo descrito se cumplió y siempre estuvo atenta a nuestras necesidades. Probablemente es un lugar que debes visitar si vienes a Bogotá: vistas preciosas y una catedral de sal impresionante."},
-
   {"name":"Liliana","country":"États-Unis","date_str":"4 mars 2023","date_iso":"2023-03-04","rating":4.5,"lang":"en","message":"Amazing experience! Alejandra and her father (Omar) took care of my husband’s special needs, and everything was handled 100%. The Salt Cathedral and the traditional food at Brasas del Llano made it a 5-star cultural experience."},
-
   {"name":"Marvin","country":"Mexique","date_str":"15 septembre 2022","date_iso":"2022-09-15","rating":5,"lang":"es","message":"Alejandra y su padre son extraordinarios y nos brindaron un día hermoso en Zipaquirá. Nos vamos con recuerdos excelentes. ¡Gracias!"},
-
   {"name":"Oscar","country":"Costa Rica","date_str":"8 janvier 2023","date_iso":"2023-01-08","rating":4.5,"lang":"es","message":"Muchas gracias por su amabilidad y disponibilidad. Súper recomendado."},
-
   {"name":"Sam","country":"États-Unis","date_str":"14 août 2022","date_iso":"2022-08-14","rating":5,"lang":"en","message":"Alejandra and her father Omar were perfect hosts, very attentive to the way I wanted to enjoy the tour."},
-
   {"name":"Kristina","country":"Mexique","date_str":"27 août 2022","date_iso":"2022-08-27","rating":5,"lang":"es","message":"Recomendamos esta experiencia. La pasamos excelente. Alejandra y su padre son educados y muy amables."},
-
   {"name":"Jorge","country":"Mexique","date_str":"11 août 2022","date_iso":"2022-08-11","rating":5,"lang":"es","message":"Altamente recomendado. Alejandra y su padre fueron muy amables y atentos con nosotros en todo momento."},
-
   {"name":"Fabiola","country":"Mexique","date_str":"11 août 2022","date_iso":"2022-08-11","rating":5,"lang":"es","message":"De principio a fin, una experiencia muy agradable. Alejandra y su papá Omar fueron muy atentos y gentiles."},
-
   {"name":"Luna","country":"Costa Rica","date_str":"25 juillet 2019","date_iso":"2019-07-25","rating":5,"lang":"es","message":"Viaje bien planificado. Puntuales para el pickup en el hotel. Durante el trayecto, Alejandra y Omar fueron muy amables y pacientes."},
-
   {"name":"Yuliana","country":"Costa Rica","date_str":"18 juillet 2019","date_iso":"2019-07-18","rating":5,"lang":"es","message":"Ale y Omar (su papá) son súper simpáticos y se involucran mucho para que te sientas como en casa."},
-
   {"name":"Ann","country":"États-Unis","date_str":"22 février 2020","date_iso":"2020-02-22","rating":5,"lang":"en","message":"Friendly, responsive to our questions, and they showed us fascinating places we would never have found on our own."},
-
   {"name":"Nancy","country":"Mexique","date_str":"30 juillet 2019","date_iso":"2019-07-30","rating":5,"lang":"es","message":"Una de las mejores experiencias que no te puedes perder. Hospitalidad de primera, recorrido agradable y una visita impresionante a la catedral de sal."}
 ] %}
 
-      {% set db_pairs = namespace(seen={}) %}
-      {% for c in comments or [] %}
-        {% set kp = (c.name ~ '|' ~ (c.country or '')) %}
-        {% set _ = db_pairs.seen.update({kp: 1}) %}
-      {% endfor %}
+{% set db_pairs = namespace(seen={}) %}
+{% for c in comments or [] %}
+  {% set kp = (c.name ~ '|' ~ (c.country or '')) %}
+  {% set _ = db_pairs.seen.update({kp: 1}) %}
+{% endfor %}
 
-      {% for fb in fallback_comments %}
-        {% set kp = fb.name ~ '|' ~ fb.country %}
-        {% if not (kp in db_pairs.seen) %}
-          {% set is_long = (fb.message|length > 200) %}
-          <div class="testimonial-card"
-               data-name="{{ fb.name }}" data-country="{{ fb.country }}" data-ts="{{ fb.date_iso }}">
-            <div class="t-head">
-              <div class="t-name">{{ fb.name }} · {{ fb.country }}</div>
-              <div class="t-meta">{{ fb.date_str }}</div>
-            </div>
+{% for fb in fallback_comments %}
+  {% set kp = fb.name ~ '|' ~ fb.country %}
+  {% if not (kp in db_pairs.seen) %}
+    {% set is_long = (fb.message|length > 200) %}
+    <div class="testimonial-card"
+         data-name="{{ fb.name }}" data-country="{{ fb.country }}" data-ts="{{ fb.date_iso }}">
+      <div class="t-head">
+        <div class="t-name">{{ fb.name }} · {{ fb.country }}</div>
+        <div class="t-meta">{{ fb.date_str }}</div>
+      </div>
 
-            <div class="t-stars" aria-label="{{ fb.rating }} / 5">
-              {% for i in range(1, 6) %}
-                {% if fb.rating >= i %}
-                  <svg><use href="#icon-star-full"></use></svg>
-                {% elif fb.rating >= i - 0.5 %}
-                  <svg><use href="#icon-star-half"></use></svg>
-                {% else %}
-                  <svg><use href="#icon-star-empty"></use></svg>
-                {% endif %}
-              {% endfor %}
-              <span class="sr-only">{{ fb.rating }} / 5</span>
-            </div>
+      <div class="t-stars" aria-label="{{ fb.rating }} / 5">
+        {% for i in range(1, 6) %}
+          {% if fb.rating >= i %}
+            <svg><use href="#icon-star-full"></use></svg>
+          {% elif fb.rating >= i - 0.5 %}
+            <svg><use href="#icon-star-half"></use></svg>
+          {% else %}
+            <svg><use href="#icon-star-empty"></use></svg>
+          {% endif %}
+        {% endfor %}
+        <span class="sr-only">{{ fb.rating }} / 5</span>
+      </div>
 
-            <p class="t-text{{ ' clamp' if is_long else '' }}"
-               id="fallback-{{ loop.index }}"
-               data-full="{{ fb.message|e }}">
-              {{ (fb.message[:200] ~ '...') if is_long else fb.message }}
-            </p>
-            <button class="t-toggle"
-                    onclick="toggleText('fallback-{{ loop.index }}')"
-                    style="{{ '' if is_long else 'display:none;' }}">
-              {{ _("Lire plus") }}
-            </button>
-          </div>
-        {% endif %}
-      {% endfor %}
+      <p class="t-text{{ ' clamp' if is_long else '' }}"
+         id="fallback-{{ loop.index }}"
+         data-full="{{ fb.message|e }}"
+         lang="{{ fb.lang }}">
+        {{ (fb.message[:200] ~ '...') if is_long else fb.message }}
+      </p>
+      <button class="t-toggle"
+              onclick="toggleText('fallback-{{ loop.index }}')"
+              style="{{ '' if is_long else 'display:none;' }}">
+        {{ _("Lire plus") }}
+      </button>
     </div>
-  </div>
-</section>
+  {% endif %}
+{% endfor %}
+
 
 <!-- Sticky bar mobile -->
 <div class="sticky-cta">
