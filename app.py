@@ -155,7 +155,7 @@ class Reservation(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     fullname = db.Column(db.String(160), default="")
     email = db.Column(db.String(160), default="")
-    phone = db.Column(db.String(40)", default="")
+    phone = db.Column(db.String(40), default="")
     country = db.Column(db.String(120), default="")
     date_str = db.Column(db.String(80), default="")
     persons = db.Column(db.Integer, default=1)
