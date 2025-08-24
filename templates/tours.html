@@ -7,7 +7,7 @@
 
   <!-- SEO -->
   <meta name="description" content="{{ _('Tours privés à Bogotá : Candelaria, Monserrate, Zipaquirá, La Chorrera et finca café (Hacienda Coloma). Guide francophone, anglais et espagnol. Transport/van et transferts aéroport disponibles.') }}">
-  <meta name="keywords" content="tours privés Bogota, visite guidée Bogota, guide francophone Bogota, excursion Zipaquira, randonnée Monserrate, Candelaria, Hacienda Coloma, cascade La Chorrera, transport privé Bogota, van, transfert aéroport Bogota, colombie, capital, amérique du sud, Fusagasugá, Fusagasuga, rhum coloma, café, tour bogota, tours bogota, bogota tours, bogotá tours, bogota private tours, private tour bogota, private tours bogota, guide français bogota, guide francophone bogota, visite la candelaria, candelaria tour bogota, monserrate tour, zipaquira salt cathedral tour, catedral de sal zipaquira, la chorrera waterfall, cascada la chorrera, coffee farm tour, hacienda coloma coffee tour, street art bogota, graffiti tour bogota, museo del oro, gold museum bogota, usaquén, usaquen, sabana de bogotá, savane de bogota, transport aéroport bogota, airport transfer bogota, airport shuttle bogota, chauffeur privé bogota, van privé bogota, excursion depuis bogota, day trip from bogota, hiking bogota, randonnée bogota, tours en français bogota, tours en anglais bogota, tours en español bogotá, local guide bogota, tour guide bogota, colombia travel bogota, best tours bogota, small group tours bogota, private driver bogota, pickup aeropuerto bogota">
+  <meta name="keywords" content="tours privés Bogota, visite guidée Bogota, guide francophone Bogota, excursion Zipaquira, randonnée Monserrate, Candelaria, Hacienda Coloma, cascade La Chorrera, transport privé Bogota, van, transfert aéroport Bogota, colombie, capital, amérique du sud, Fusagasugá, Fusagasuga, rhum coloma, café, tour bogota, tours bogota, bogotá tours, bogota private tours, private tour bogota, private tours bogota, guide français bogota, guide francophone bogota, visite la candelaria, candelaria tour bogota, monserrate tour, zipaquira salt cathedral tour, catedral de sal zipaquira, la chorrera waterfall, cascada la chorrera, coffee farm tour, hacienda coloma coffee tour, street art bogota, graffiti tour bogota, museo del oro, gold museum bogota, usaquén, usaquen, sabana de bogotá, savane de bogota, transport aéroport bogota, airport transfer bogota, airport shuttle bogota, chauffeur privé bogota, van privé bogota, excursion depuis bogota, day trip from bogota, hiking bogota, randonnée bogota, tours en français bogota, tours en anglais bogota, tours en español bogotá, local guide bogota, tour guide bogota, colombia travel bogota, best tours bogota, small group tours bogota, private driver bogota, pickup aeropuerto bogota">
 
   <!-- CMP / consentmanager -->
   <script type="text/javascript" data-cmp-ab="1"
@@ -79,13 +79,15 @@
     .logo{height:44px; width:auto; display:block}
     @media (max-width:640px){ .logo{height:32px} }
 
+    .site-title{font-size:20px; font-weight:600;}
     .main-nav{display:flex; align-items:center; gap:18px; font-weight:600}
     .main-nav a{text-decoration:none}
     .lang-switcher{display:flex; gap:8px; margin-left:8px}
     .lang-switcher a{font-size:20px; line-height:1; padding:4px 6px; border-radius:6px}
 
-    /* Sur cette page (hero en fond) : liens & logo blancs au départ */
+    /* Sur cette page (hero en fond) : liens/titre/logo blancs au départ */
     .header-on-hero .main-nav a{color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.35)}
+    .header-on-hero .site-title{color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.35)}
     .logo--dark{display:none}
 
     /* Au scroll / fond clair */
@@ -97,6 +99,7 @@
     .site-header.scrolled .logo--light{display:none}
     .site-header.scrolled .logo--dark{display:block}
     .site-header.scrolled .main-nav a{color:#0f172a}
+    .site-header.scrolled .site-title{color:#0f172a}
   </style>
 
   <!-- ✅ AJOUT MINIMAL: réactive l’effet glissant & flèches toujours cliquables -->
@@ -194,13 +197,13 @@
     .no-swiper .swiper-slide._is-active{ display:block !important; }
   </style>
 
-  <!-- ✅ AJOUT: titre blanc sur la hero + retour noir au scroll -->
+  <!-- ✅ Titre blanc sur la hero + noir au scroll -->
   <style>
     .header-on-hero .site-title{ color:#fff !important; text-shadow:0 1px 2px rgba(0,0,0,.35); }
     .site-header.scrolled .site-title{ color:#0f172a !important; text-shadow:none; }
   </style>
 
-  <!-- ✅ Burger menu CSS (AJOUT) -->
+  <!-- ✅ Burger menu CSS -->
   <style>
     .burger{display:none;background:none;border:0;width:38px;height:38px;
             align-items:center;justify-content:center;border-radius:8px;color:#fff}
@@ -236,71 +239,70 @@
 </head>
 <body>
 
- <!-- ✅ Header fixe (logo + nav) -->
-<!-- Logo clair (sur hero/photo) -->
-<img src="{{ url_for('static', filename='img/logo-light.png') }}"
-     alt="{% if get_locale()=='fr' %}Logo Oh La La Tours Bogotá avec colibri et Monserrate symbole de liberté et authenticité, visites guidées privées et transport à Bogota Colombie{% elif get_locale()=='en' %}Oh La La Tours Bogotá logo with hummingbird and Monserrate symbol of freedom and authenticity, private guided tours and transport in Bogota Colombia{% else %}Logo de Oh La La Tours Bogotá con colibrí y Monserrate símbolo de libertad y autenticidad, tours guiados privados y transporte en Bogotá Colombia{% endif %}"
-     class="logo logo--light">
+  <!-- ========= HEADER collant (logo gauche, menu droite) ========= -->
+  <header class="site-header header-on-hero">
+    <a href="{{ url_for('index', lang=get_locale()) }}" class="brand" aria-label="Oh La La Tours Bogotá — Accueil">
+      <!-- Logo clair -->
+      <img src="{{ url_for('static', filename='img/logo-light.png') }}"
+           alt="{% if get_locale()=='fr' %}Logo Oh La La Tours Bogotá avec colibri et Monserrate symbole de liberté et authenticité, visites guidées privées et transport à Bogota Colombie{% elif get_locale()=='en' %}Oh La La Tours Bogotá logo with hummingbird and Monserrate symbol of freedom and authenticity, private guided tours and transport in Bogota Colombia{% else %}Logo de Oh La La Tours Bogotá con colibrí y Monserrate símbolo de libertad y autenticidad, tours guiados privados y transporte en Bogotá Colombia{% endif %}"
+           class="logo logo--light">
+      <!-- Logo foncé -->
+      <img src="{{ url_for('static', filename='img/logo-dark.png') }}"
+           alt="{% if get_locale()=='fr' %}Logo Oh La La Tours Bogotá avec colibri stylisé et silhouette de Monserrate représentant la nature, la culture et les excursions privées en Colombie{% elif get_locale()=='en' %}Oh La La Tours Bogotá logo with stylized hummingbird and Monserrate silhouette representing nature culture and private excursions in Colombia{% else %}Logo de Oh La La Tours Bogotá con colibrí estilizado y silueta de Monserrate representando naturaleza cultura y excursiones privadas en Colombia{% endif %}"
+           class="logo logo--dark">
+      <span class="site-title">Oh La La Tours Bogotá</span>
+    </a>
 
-<!-- Logo foncé (après scroll, fond clair) -->
-<img src="{{ url_for('static', filename='img/logo-dark.png') }}"
-     alt="{% if get_locale()=='fr' %}Logo Oh La La Tours Bogotá avec colibri stylisé et silhouette de Monserrate représentant la nature, la culture et les excursions privées en Colombie{% elif get_locale()=='en' %}Oh La La Tours Bogotá logo with stylized hummingbird and Monserrate silhouette representing nature culture and private excursions in Colombia{% else %}Logo de Oh La La Tours Bogotá con colibrí estilizado y silueta de Monserrate representando naturaleza cultura y excursiones privadas en Colombia{% endif %}"
-     class="logo logo--dark">
- </div>
+    <nav class="main-nav" aria-label="{{ _('Navigation principale') }}">
+      <a href="{{ url_for('index', lang=get_locale()) }}">{{ _("Accueil") }}</a>
+      <a href="{{ url_for('tours', lang=get_locale()) }}">{{ _("Nos tours") }}</a>
+      <a href="{{ url_for('transport', lang=get_locale()) }}">{{ _("Service de Transport") }}</a>
+      <a href="{{ url_for('reservation', lang=get_locale()) }}">{{ _("Réservation") }}</a>
 
-  <nav class="main-nav" aria-label="{{ _('Navigation principale') }}">
-    <a href="{{ url_for('index', lang=get_locale()) }}">{{ _("Accueil") }}</a>
-    <a href="{{ url_for('tours', lang=get_locale()) }}">{{ _("Nos tours") }}</a>
-    <a href="{{ url_for('transport', lang=get_locale()) }}">{{ _("Service de Transport") }}</a>
-    <a href="{{ url_for('reservation', lang=get_locale()) }}">{{ _("Réservation") }}</a>
+      <!-- Drapeaux (desktop) -->
+      <div class="lang-switcher" aria-label="{{ _('Changer de langue') }}">
+        <a href="{{ lang_url('fr') }}" lang="fr" aria-label="Français">🇫🇷<span class="sr-only">Français</span></a>
+        <a href="{{ lang_url('en') }}" lang="en" aria-label="English">🇺🇸<span class="sr-only">English</span></a>
+        <a href="{{ lang_url('es') }}" lang="es" aria-label="Español">🇪🇸<span class="sr-only">Español</span></a>
+      </div>
+    </nav>
 
-    <!-- (Drapeaux visibles sur desktop ; cachés en mobile via CSS) -->
-    <div class="lang-switcher" aria-label="{{ _('Changer de langue') }}">
-      <a href="{{ lang_url('fr') }}" lang="fr" aria-label="Français">🇫🇷<span class="sr-only">Français</span></a>
-      <a href="{{ lang_url('en') }}" lang="en" aria-label="English">🇺🇸<span class="sr-only">English</span></a>
-      <a href="{{ lang_url('es') }}" lang="es" aria-label="Español">🇪🇸<span class="sr-only">Español</span></a>
-    </div>
-  </nav>
-
-  <!-- ✅ Burger -->
-  <button class="burger" aria-label="Ouvrir le menu" aria-controls="mobileMenu" aria-expanded="false">
-    <svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true">
-      <path d="M3 6h18M3 12h18M3 18h18"
-            stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/>
-    </svg>
-  </button>
-</header>
-
-<!-- ✅ Overlay -->
-<div id="mobileOverlay" class="mobile-overlay"></div>
-
-<!-- ✅ Menu mobile -->
-<aside id="mobileMenu" class="mobile-menu" role="dialog" aria-modal="true" aria-label="Menu" aria-hidden="true">
-  <header>
-    <strong>Oh La La Tours Bogotá</strong>
-    <button id="mobileClose" class="mobile-close" aria-label="Fermer">
+    <!-- Burger -->
+    <button class="burger" aria-label="Ouvrir le menu" aria-controls="mobileMenu" aria-expanded="false">
       <svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true">
-        <path d="M6 6l12 12M18 6L6 18"
+        <path d="M3 6h18M3 12h18M3 18h18"
               stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/>
       </svg>
     </button>
   </header>
 
-  <nav>
-    <a href="{{ url_for('index',     lang=get_locale()) }}">{{ _("Accueil") }}</a>
-    <a href="{{ url_for('tours',     lang=get_locale()) }}">{{ _("Nos tours") }}</a>
-    <a href="{{ url_for('transport', lang=get_locale()) }}">{{ _("Service de Transport") }}</a>
-    <a href="{{ url_for('reservation', lang=get_locale()) }}">{{ _("Réservation") }}</a>
-  </nav>
+  <!-- Overlay + Menu mobile -->
+  <div id="mobileOverlay" class="mobile-overlay"></div>
+  <aside id="mobileMenu" class="mobile-menu" role="dialog" aria-modal="true" aria-label="Menu" aria-hidden="true">
+    <header>
+      <strong>Oh La La Tours Bogotá</strong>
+      <button id="mobileClose" class="mobile-close" aria-label="Fermer">
+        <svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true">
+          <path d="M6 6l12 12M18 6L6 18"
+                stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </header>
 
-  <!-- Langues uniquement dans le menu mobile -->
-  <div class="langs" aria-label="{{ _('Changer de langue') }}">
-    <a href="{{ lang_url('fr') }}" lang="fr" aria-label="Français">🇫🇷</a>
-    <a href="{{ lang_url('en') }}" lang="en" aria-label="English">🇺🇸</a>
-    <a href="{{ lang_url('es') }}" lang="es" aria-label="Español">🇪🇸</a>
-  </div>
-</aside>
+    <nav>
+      <a href="{{ url_for('index',     lang=get_locale()) }}">{{ _("Accueil") }}</a>
+      <a href="{{ url_for('tours',     lang=get_locale()) }}">{{ _("Nos tours") }}</a>
+      <a href="{{ url_for('transport', lang=get_locale()) }}">{{ _("Service de Transport") }}</a>
+      <a href="{{ url_for('reservation', lang=get_locale()) }}">{{ _("Réservation") }}</a>
+    </nav>
 
+    <!-- Langues uniquement dans le menu mobile -->
+    <div class="langs" aria-label="{{ _('Changer de langue') }}">
+      <a href="{{ lang_url('fr') }}" lang="fr" aria-label="Français">🇫🇷</a>
+      <a href="{{ lang_url('en') }}" lang="en" aria-label="English">🇺🇸</a>
+      <a href="{{ lang_url('es') }}" lang="es" aria-label="Español">🇪🇸</a>
+    </div>
+  </aside>
 
   <!-- Bandeau image + titre -->
   <header class="hero background-half"
@@ -554,7 +556,7 @@
           var nextBtn = slider.querySelector('.swiper-button-next');
           var prevBtn = slider.querySelector('.swiper-button-prev');
 
-          new Swiper(slider, {
+        new Swiper(slider, {
             slidesPerView: 1,
             spaceBetween: 0,
             effect: 'slide',
@@ -563,7 +565,6 @@
             loopAdditionalSlides: 1,
             watchOverflow: true,
             preloadImages: true,
-            // lazy: { loadPrevNext: true },
             autoplay: { delay: 3500, disableOnInteraction: false, pauseOnMouseEnter: true },
             observer: true,
             observeParents: true,
@@ -647,7 +648,7 @@
   })();
   </script>
 
-  <!-- ✅ Script AJOUTÉ : toggle du header au scroll -->
+  <!-- ✅ Script : header qui change au scroll -->
   <script>
     (function(){
       const header = document.querySelector('.site-header');
@@ -658,7 +659,7 @@
     })();
   </script>
 
-  <!-- ✅ Burger JS (AJOUT) -->
+  <!-- ✅ Burger JS -->
   <script>
     (function(){
       const burger  = document.querySelector('.burger');
@@ -688,4 +689,3 @@
   </script>
 </body>
 </html>
-
