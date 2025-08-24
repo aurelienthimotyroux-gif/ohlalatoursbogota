@@ -7,7 +7,7 @@
 
   <!-- ✅ Meta SEO -->
   <meta name="description" content="{{ _('Réservez votre visite guidée à Bogotá : Candelaria, Monserrate, Zipaquirá, La Chorrera et finca café. Guide francophone/anglais/espagnol.') }}">
-  <meta name="keywords" content="réservation tour Bogotá, réserver visite guidée Bogotá, tours privés Bogotá, Candelaria, Monserrate, Zipaquirá, La Chorrera, Hacienda Coloma, guide francophone Bogotá">
+  <meta name="keywords" content="réservation tour Bogotá, réserver visite guidée Bogotá, tours privés Bogotá, Candelaria, Monserrate, Zipaquirá, La Chorrera, Hacienda Coloma, guide francophone Bogotá, book tour Bogota, private tour booking Bogotá, reservar tour Bogotá, cathedral salt zipaquira booking, monserrate tickets guide, candelaria walking tour reservation, coffee farm tour booking, airport transfer booking Bogotá, paiement PayPal, secure booking Colombia, tour francophone Bogotá, guía en español Bogotá, English guide Bogotá">
 
   <!-- ✅ CMP / consentmanager (doit être avant GA) -->
   <script type="text/javascript" data-cmp-ab="0"
@@ -117,15 +117,50 @@
   <meta property="og:description" content="{{ _('Réservez une visite guidée : Candelaria, Monserrate, Zipaquirá, La Chorrera ou finca café. Paiement PayPal, guide francophone/anglais/espagnol.') }}">
   <meta property="og:image" content="{{ url_for('static', filename='images/bg_reservation.jpg', _external=True) }}">
   <meta property="og:image:alt" content="{{ _('Panorama de Bogotá, téléphérique de Monserrate et rues coloniales de la Candelaria...') }}">
+  {% if get_locale() == 'fr' %}
+    <meta property="og:locale" content="fr_FR">
+  {% elif get_locale() == 'en' %}
+    <meta property="og:locale" content="en_US">
+  {% else %}
+    <meta property="og:locale" content="es_CO">
+  {% endif %}
+  <meta property="og:locale:alternate" content="en_US">
+  <meta property="og:locale:alternate" content="es_CO">
 
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="{{ _('Réserver votre visite – Oh La La Tours Bogotá') }}">
   <meta name="twitter:description" content="{{ _('Réservez une visite guidée...') }}">
   <meta name="twitter:image" content="{{ url_for('static', filename='images/bg_reservation.jpg', _external=True) }}">
   <meta name="twitter:image:alt" content="{{ _('Panorama de Bogotá, téléphérique de Monserrate et rues coloniales de la Candelaria...') }}">
+  <!-- (ajout léger) identifiant compte si tu en as un -->
+  <!-- <meta name="twitter:site" content="@ton_compte_twitter"> -->
 
   <!-- ✅ CSS global -->
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+  <!-- ✅ JSON-LD Reservation Service (ajouté) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "serviceType": "Online Tour Reservation",
+    "name": "Oh La La Tours Bogotá — Réservation",
+    "url": "https://www.ohlalatoursbogota.com/reservation",
+    "provider": {
+      "@type": "Organization",
+      "name": "Oh La La Tours Bogotá",
+      "url": "https://www.ohlalatoursbogota.com"
+    },
+    "areaServed": { "@type": "City", "name": "Bogotá" },
+    "offers": {
+      "@type": "AggregateOffer",
+      "priceCurrency": "COP",
+      "lowPrice": "235000",
+      "highPrice": "580000",
+      "availability": "https://schema.org/InStock"
+    }
+  }
+  </script>
 
   <!-- 📱 intl-tel-input (drapeaux + indicatifs) -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.6/build/css/intlTelInput.css" />
@@ -157,15 +192,16 @@
 </head>
 <body>
 
-<header class="site-header header-on-hero">
-  <div class="logo-container">
-    <!-- Logo clair -->
-    <img src="{{ url_for('static', filename='img/logo-light.png') }}" alt="Oh La La Tours Bogotá" class="logo logo--light">
-    <!-- Logo foncé -->
-    <img src="{{ url_for('static', filename='img/logo-dark.png') }}" alt="Oh La La Tours Bogotá" class="logo logo--dark">
-    <!-- Titre -->
-    <span class="site-title">Oh La La Tours Bogotá</span>
-  </div>
+<!-- Logo clair (sur hero/photo) -->
+<img src="{{ url_for('static', filename='img/logo-light.png') }}"
+     alt="{% if get_locale()=='fr' %}Logo Oh La La Tours Bogotá avec colibri et Monserrate symbole de liberté et authenticité, visites guidées privées et transport à Bogota Colombie{% elif get_locale()=='en' %}Oh La La Tours Bogotá logo with hummingbird and Monserrate symbol of freedom and authenticity, private guided tours and transport in Bogota Colombia{% else %}Logo de Oh La La Tours Bogotá con colibrí y Monserrate símbolo de libertad y autenticidad, tours guiados privados y transporte en Bogotá Colombia{% endif %}"
+     class="logo logo--light">
+
+<!-- Logo foncé (après scroll, fond clair) -->
+<img src="{{ url_for('static', filename='img/logo-dark.png') }}"
+     alt="{% if get_locale()=='fr' %}Logo Oh La La Tours Bogotá avec colibri stylisé et silhouette de Monserrate représentant la nature, la culture et les excursions privées en Colombie{% elif get_locale()=='en' %}Oh La La Tours Bogotá logo with stylized hummingbird and Monserrate silhouette representing nature culture and private excursions in Colombia{% else %}Logo de Oh La La Tours Bogotá con colibrí estilizado y silueta de Monserrate representando naturaleza cultura y excursiones privadas en Colombia{% endif %}"
+     class="logo logo--dark">
+</div>
 
   <nav class="main-nav" aria-label="{{ _('Navigation principale') }}">
     <a href="{{ url_for('index', lang=get_locale()) }}">{{ _("Accueil") }}</a>

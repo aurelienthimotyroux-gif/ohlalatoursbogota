@@ -9,7 +9,7 @@
   <meta name="description" content="{{ _('Visites guidées à Bogotá avec Alejandra, guide locale. Tours privés en français, anglais et espagnol : Candelaria, Monserrate, Zipaquirá, café (Hacienda Coloma), transport et transferts aéroport.') }}">
 
   <!-- Keywords (facultatif) -->
-  <meta name="keywords" content="visite guidée Bogotá, guide francophone Bogotá, excursion Bogotá, tours privés Bogotá, visiter la Candelaria Bogotá, excursion Zipaquirá depuis Bogotá, randonnée Monserrate Bogotá, café, Bogota, Colombie, Monserrate, Zipaquira, Coloma, Hacienda Coloma, guide, tejo, Chapinero, hôtel, hostel, Alejandra, gastronomie, pesos, taxi, transport, van, aéroport, français, anglais, espagnol, Aguila, Club Colombia, histoire, tours exceptionnels">
+  <meta name="keywords" content="visite guidée Bogotá, guide francophone Bogotá, excursion Bogotá, tours privés Bogotá, visiter la Candelaria Bogotá, excursion Zipaquirá depuis Bogotá, randonnée Monserrate Bogotá, café, Bogota, Colombie, Monserrate, Zipaquira, Coloma, Hacienda Coloma, guide, tejo, Chapinero, hôtel, hostel, Alejandra, gastronomie, pesos, taxi, transport, van, aéroport, français, anglais, espagnol, Aguila, Club Colombia, histoire, tours exceptionnels, tour bogota, bogota private tours, private driver bogota, airport transfer bogota, coffee farm tour, la chorrera waterfall, catedral de sal zipaquira, graffiti tour bogota, gold museum bogota, museo del oro, street art bogota, best tours bogota, small group tours bogota, local guide bogota, guía en español bogotá, guide français bogota, visite francophone bogota">
 
   <!-- CMP / consentmanager -->
   <script type="text/javascript" data-cmp-ab="1"
@@ -61,13 +61,16 @@
 {% else %}
 <meta property="og:locale" content="es_CO">
 {% endif %}
-
+<meta property="og:locale:alternate" content="en_US">
+<meta property="og:locale:alternate" content="es_CO">
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="{{ _('Visites guidées à Bogotá – Guide francophone & tours privés') }}">
   <meta name="twitter:description" content="{{ _('Découvrez Bogotá : Candelaria, Monserrate, Zipaquirá, café à Hacienda Coloma. Visites en français, anglais et espagnol. Transferts aéroport, chauffeur/van privé.') }}">
   <meta name="twitter:image" content="{{ url_for('static', filename='images/accueil.jpg', _external=True) }}">
+  <!-- Optionnel si tu as un compte X/Twitter -->
+  <!-- <meta name="twitter:site" content="@ton_compte"> -->
 
   <!-- Perf & UI mobile -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -80,6 +83,34 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='mobile-pack.css', v=1) }}" media="(max-width: 767px)">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 
+  <!-- ✅ JSON-LD: WebSite (SearchAction) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Oh La La Tours Bogotá",
+    "url": "https://www.ohlalatoursbogota.com",
+    "inLanguage": "{{ 'fr-FR' if get_locale()=='fr' else ('en-US' if get_locale()=='en' else 'es-CO') }}",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://www.ohlalatoursbogota.com/tours?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
+
+  <!-- ✅ JSON-LD: Organisation (agence/tours locaux) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TravelAgency",
+    "name": "Oh La La Tours Bogotá",
+    "url": "https://www.ohlalatoursbogota.com",
+    "image": "{{ url_for('static', filename='images/accueil.jpg', _external=True) }}",
+    "areaServed": { "@type": "City", "name": "Bogotá" },
+    "description": {% if get_locale()=='fr' %}"Visites guidées privées à Bogotá : Candelaria, Monserrate, Zipaquirá, café (Hacienda Coloma). Guide francophone/anglais/espagnol, transferts aéroport, chauffeur/van privé."{% elif get_locale()=='en' %}"Private guided tours in Bogotá: Candelaria, Monserrate, Zipaquirá, coffee (Hacienda Coloma). French/English/Spanish guide, airport transfers, private driver/van."{% else %}"Tours guiados privados en Bogotá: Candelaria, Monserrate, Zipaquirá, café (Hacienda Coloma). Guía en francés/inglés/español, traslados al aeropuerto, conductor/van privado."{% endif %}
+  }
+  </script>
   <!-- Favicons -->
   <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='img/favicon/apple-touch-icon.png') }}">
   <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='img/favicon/favicon-32x32.png') }}">
@@ -209,15 +240,16 @@
   </symbol>
 </svg>
 
-<!-- HEADER (logos light/dark + nav) -->
-<header class="site-header header-on-hero">
-  <div class="logo-container">
-    <!-- Logo clair (sur hero/photo) -->
-    <img src="{{ url_for('static', filename='img/logo-light.png') }}" alt="Oh La La Tours Bogotá" class="logo logo--light">
-    <!-- Logo foncé (après scroll, fond clair) -->
-    <img src="{{ url_for('static', filename='img/logo-dark.png') }}" alt="Oh La La Tours Bogotá" class="logo logo--dark">
-    <span class="site-title">Oh La La Tours Bogotá</span>
-  </div>
+<!-- Logo clair (sur hero/photo) -->
+<img src="{{ url_for('static', filename='img/logo-light.png') }}"
+     alt="{% if get_locale()=='fr' %}Logo Oh La La Tours Bogotá avec colibri et Monserrate symbole de liberté et authenticité, visites guidées privées et transport à Bogota Colombie{% elif get_locale()=='en' %}Oh La La Tours Bogotá logo with hummingbird and Monserrate symbol of freedom and authenticity, private guided tours and transport in Bogota Colombia{% else %}Logo de Oh La La Tours Bogotá con colibrí y Monserrate símbolo de libertad y autenticidad, tours guiados privados y transporte en Bogotá Colombia{% endif %}"
+     class="logo logo--light">
+
+<!-- Logo foncé (après scroll, fond clair) -->
+<img src="{{ url_for('static', filename='img/logo-dark.png') }}"
+     alt="{% if get_locale()=='fr' %}Logo Oh La La Tours Bogotá avec colibri stylisé et silhouette de Monserrate représentant la nature, la culture et les excursions privées en Colombie{% elif get_locale()=='en' %}Oh La La Tours Bogotá logo with stylized hummingbird and Monserrate silhouette representing nature culture and private excursions in Colombia{% else %}Logo de Oh La La Tours Bogotá con colibrí estilizado y silueta de Monserrate representando naturaleza cultura y excursiones privadas en Colombia{% endif %}"
+     class="logo logo--dark">
+
 
   <!-- Navigation -->
   <nav class="main-nav" aria-label="{{ _('Navigation principale') }}">

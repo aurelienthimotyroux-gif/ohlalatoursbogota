@@ -7,7 +7,7 @@
 
   <!-- SEO -->
   <meta name="description" content="{{ _('Tours privés à Bogotá : Candelaria, Monserrate, Zipaquirá, La Chorrera et finca café (Hacienda Coloma). Guide francophone, anglais et espagnol. Transport/van et transferts aéroport disponibles.') }}">
-  <meta name="keywords" content="tours privés Bogota visite guidée Bogota guide francophone Bogota excursion Zipaquira randonnée Monserrate Candelaria Hacienda Coloma cascade La Chorrera transport privé Bogota van transfert aéroport Bogota colombie capital amérique du sud Fusagasugá Fusagasuga rhum coloma café">
+  <meta name="keywords" content="tours privés Bogota, visite guidée Bogota, guide francophone Bogota, excursion Zipaquira, randonnée Monserrate, Candelaria, Hacienda Coloma, cascade La Chorrera, transport privé Bogota, van, transfert aéroport Bogota, colombie, capital, amérique du sud, Fusagasugá, Fusagasuga, rhum coloma, café, tour bogota, tours bogota, bogota tours, bogotá tours, bogota private tours, private tour bogota, private tours bogota, guide français bogota, guide francophone bogota, visite la candelaria, candelaria tour bogota, monserrate tour, zipaquira salt cathedral tour, catedral de sal zipaquira, la chorrera waterfall, cascada la chorrera, coffee farm tour, hacienda coloma coffee tour, street art bogota, graffiti tour bogota, museo del oro, gold museum bogota, usaquén, usaquen, sabana de bogotá, savane de bogota, transport aéroport bogota, airport transfer bogota, airport shuttle bogota, chauffeur privé bogota, van privé bogota, excursion depuis bogota, day trip from bogota, hiking bogota, randonnée bogota, tours en français bogota, tours en anglais bogota, tours en español bogotá, local guide bogota, tour guide bogota, colombia travel bogota, best tours bogota, small group tours bogota, private driver bogota, pickup aeropuerto bogota">
 
   <!-- CMP / consentmanager -->
   <script type="text/javascript" data-cmp-ab="1"
@@ -237,18 +237,16 @@
 <body>
 
  <!-- ✅ Header fixe (logo + nav) -->
-<header class="site-header header-on-hero">
-  <a href="{{ url_for('index', lang=get_locale()) }}" class="brand" aria-label="Oh La La Tours Bogotá — Accueil">
-    <!-- Logo clair (sur la hero/photo) -->
-    <img class="logo logo--light"
-         src="{{ url_for('static', filename='img/logo-light.png') }}"
-         alt="Oh La La Tours Bogotá">
-    <!-- Logo foncé (au scroll / fond clair) -->
-    <img class="logo logo--dark"
-         src="{{ url_for('static', filename='img/logo-dark.png') }}"
-         alt="Oh La La Tours Bogotá">
-    <span class="site-title">Oh La La Tours Bogotá</span>
-  </a>
+<!-- Logo clair (sur hero/photo) -->
+<img src="{{ url_for('static', filename='img/logo-light.png') }}"
+     alt="{% if get_locale()=='fr' %}Logo Oh La La Tours Bogotá avec colibri et Monserrate symbole de liberté et authenticité, visites guidées privées et transport à Bogota Colombie{% elif get_locale()=='en' %}Oh La La Tours Bogotá logo with hummingbird and Monserrate symbol of freedom and authenticity, private guided tours and transport in Bogota Colombia{% else %}Logo de Oh La La Tours Bogotá con colibrí y Monserrate símbolo de libertad y autenticidad, tours guiados privados y transporte en Bogotá Colombia{% endif %}"
+     class="logo logo--light">
+
+<!-- Logo foncé (après scroll, fond clair) -->
+<img src="{{ url_for('static', filename='img/logo-dark.png') }}"
+     alt="{% if get_locale()=='fr' %}Logo Oh La La Tours Bogotá avec colibri stylisé et silhouette de Monserrate représentant la nature, la culture et les excursions privées en Colombie{% elif get_locale()=='en' %}Oh La La Tours Bogotá logo with stylized hummingbird and Monserrate silhouette representing nature culture and private excursions in Colombia{% else %}Logo de Oh La La Tours Bogotá con colibrí estilizado y silueta de Monserrate representando naturaleza cultura y excursiones privadas en Colombia{% endif %}"
+     class="logo logo--dark">
+ </div>
 
   <nav class="main-nav" aria-label="{{ _('Navigation principale') }}">
     <a href="{{ url_for('index', lang=get_locale()) }}">{{ _("Accueil") }}</a>
@@ -412,60 +410,60 @@
   }
 ] %}
 
-{# >>> ALT maps FR/EN/ES inchangées pour ne rien supprimer #}
+{# >>> ALT maps FR/EN/ES enrichies SANS ACCENTS ni VIRGULES #}
 {% set alt_map = {
-  'candelaria1.jpg': _('Maisons coloniales colorées dans la Candelaria centre historique de Bogota quartier colonial bogota graffitis bogota street art ruelles pavées andines maisons colorées façades chorro de quevedo guide francophone centre historique'),
-  'candelaria2.jpg': _('Street art de Bogota pendant la visite guidée de la Candelaria '),
-  'candelaria3.jpg': _('Ruelles pavées et façades coloniales à La Candelaria'),
-  'monserratevue.jpg': _('Vue panoramique depuis Monserrate au dessus de Bogota téléphérique bogota sanctuaire senor caido vue panoramique bogota coucher de soleil andes funiculaire monserrate courte randonnée sommet'),
-  'monserrate2.jpg': _('Sanctuaire du Senor Caido à Monserrate'),
-  'monserrate3.jpg': _('Montée en téléphérique à Monserrate'),
-  'monserrate4.jpg': _('Paysages andins autour de Bogotá vus de Monserrate'),
-  'zipaquira1.jpg': _('Cathédrale de sel de Zipaquira galerie souterraine illuminée cathédrale de sel mine de sel souterraine croix sculptées sel éclairage bleu violet via crucis galerie minière'),
-  'zipaquira2.jpg': _('Croix sculptées dans le sel à Zipaquira'),
-  'zipaquira3.jpg': _('Couloirs miniers et jeux de lumière à Zipaquira'),
-  'chorrera1.jpg': _('Sentier andin vers la cascade de La Chorrera randonnée andine jungle de brouillard cascade 590m réserve naturelle choachí ponts et sentiers brume tropicale'),
-  'chorrera2.jpeg': _('La Chorrera plus haute cascade de Colombie randonnée cascade'),
-  'chorrera3.jpeg': _('Paysage de montagne et brume près de La Chorrera cascade'),
-  'finca-cafe1.jpg': _('Plantation de café grains et caféiers plantation café arabica cerises de café à la main séchage sur patios récolte manuelle dégustation café finca'),
-  'finca-cafe2.jpg': _('Processus de torréfaction et mouture du café expresso machiato graine de café'),
-  'finca-cafe3.jpg': _('Visite d’une finca café près de Bogotá grains fraîchement récoltés hacienda coloma rhum coloma rhum ')
+  'candelaria1.jpg': _('Maisons coloniales colorees de la Candelaria centre historique de Bogota street art ruelles pavees balcons en bois artisanat guide francophone bogota'),
+  'candelaria2.jpg': _('Street art de Bogota durant la visite de la Candelaria fresques murals artistes locaux et culture urbaine'),
+  'candelaria3.jpg': _('Ruelles pavees de la Candelaria facades colorees patios caches et ambiance historique'),
+  'monserratevue.jpg': _('Vue panoramique depuis Monserrate sur Bogota montagnes andines sanctuaire au sommet lever ou coucher de soleil'),
+  'monserrate2.jpg': _('Sanctuaire du Senor Caido a Monserrate site sacre architecture et devotion locale'),
+  'monserrate3.jpg': _('Montee en telepherique vers Monserrate experience panoramique funiculaire et nature andine'),
+  'monserrate4.jpg': _('Paysages andins autour de Bogota vus depuis Monserrate forets nuages et horizon large'),
+  'zipaquira1.jpg': _('Cathedrale de sel de Zipaquira galerie souterraine croix sculptees eclairage bleu violet patrimoine minier'),
+  'zipaquira2.jpg': _('Croix en sel sculptees a Zipaquira detail artistique spiritualite et savoir faire'),
+  'zipaquira3.jpg': _('Couloirs miniers illumines a Zipaquira perspective profonde et ambiance souterraine'),
+  'chorrera1.jpg': _('Sentier andin vers la cascade de La Chorrera foret de brouillard ponts en bois et randonnee'),
+  'chorrera2.jpeg': _('La Chorrera plus haute cascade de Colombie chute d eau puissante et paroi rocheuse'),
+  'chorrera3.jpeg': _('Montagnes andines pres de La Chorrera brume fraiche et vegetation luxuriante'),
+  'finca-cafe1.jpg': _('Plantation de cafe arabica cerises rouges cueillette manuelle patios de sechage degustation a la finca'),
+  'finca-cafe2.jpg': _('Torr efaction et mouture du cafe atelier pratique espresso et aromes'),
+  'finca-cafe3.jpg': _('Visite de la finca cafe pres de Bogota grains fraichement recoltes hacienda coloma')
 } %}
 {% set alt_map_en = {
-  'candelaria1.jpg': _('Colorful colonial houses in La Candelaria historic center of Bogota colonial quarter bogota bogota street art murals cobblestone alleys andean colorful facades chorro de quevedo french speaking guide historic center'),
-  'candelaria2.jpg': _('Bogota street art during La Candelaria walking tour murals'),
-  'candelaria3.jpg': _('Cobblestone alleys and colonial facades in La Candelaria'),
-  'monserratevue.jpg': _('Panoramic view from Monserrate above Bogota above Bogota cable car bogota sanctuary senor cado panoramic view bogota andes sunset monserrate funicular short hike summit'),
-  'monserrate2.jpg': _('Sanctuary of Señor Caído at Monserrate'),
-  'monserrate3.jpg': _('Ascent by cable car to Monserrate'),
-  'monserrate4.jpg': _('Andean landscapes around Bogota seen from Monserrate'),
-  'zipaquira1.jpg': _('Salt Cathedral of Zipaquira illuminated underground gallery salt cathedral underground salt mine carved salt crosses blue purple lighting via crucis mining gallery'),
-  'zipaquira2.jpg': _('Carved salt crosses in Zipaquira'),
-  'zipaquira3.jpg': _('Mining corridors and light effects in Zipaquira'),
-  'chorrera1.jpg': _('Andean trail to La Chorrera waterfall andean hike cloud forest 590m waterfall choachi nature reserve bridges and trails tropical mist'),
-  'chorrera2.jpeg': _('La Chorrera highest waterfall in Colombia hiking waterfall'),
-  'chorrera3.jpeg': _('Mountain landscape and mist near La Chorrera waterfall'),
-  'finca-cafe1.jpg': _('Arabica coffee plantation coffee cherries in hand patio drying hand picking coffee tasting at the farm'),
-  'finca-cafe2.jpg': _('Roasting and grinding process espresso coffee beans'),
+  'candelaria1.jpg': _('Colorful colonial houses in La Candelaria historic center of Bogota street art cobblestone alleys wooden balconies craft shops french speaking guide'),
+  'candelaria2.jpg': _('Bogota street art during La Candelaria tour murals local artists and urban culture'),
+  'candelaria3.jpg': _('Cobblestone alleys of La Candelaria colorful facades hidden patios and historic mood'),
+  'monserratevue.jpg': _('Panoramic view from Monserrate over Bogota Andean mountains sanctuary on the summit sunrise or sunset'),
+  'monserrate2.jpg': _('Sanctuary of Senor Caido at Monserrate sacred site architecture and local devotion'),
+  'monserrate3.jpg': _('Cable car ascent to Monserrate panoramic experience funicular and Andean nature'),
+  'monserrate4.jpg': _('Andean landscapes around Bogota seen from Monserrate forests clouds and wide horizon'),
+  'zipaquira1.jpg': _('Salt Cathedral of Zipaquira underground gallery carved crosses blue purple lights mining heritage'),
+  'zipaquira2.jpg': _('Carved salt crosses in Zipaquira artistic detail spirituality and craftsmanship'),
+  'zipaquira3.jpg': _('Illuminated mining corridors in Zipaquira deep perspective and underground atmosphere'),
+  'chorrera1.jpg': _('Andean trail to La Chorrera waterfall cloud forest wooden bridges and hiking'),
+  'chorrera2.jpeg': _('La Chorrera highest waterfall in Colombia powerful drop and rock wall'),
+  'chorrera3.jpeg': _('Andean mountains near La Chorrera fresh mist and lush vegetation'),
+  'finca-cafe1.jpg': _('Arabica coffee plantation red cherries hand picking patio drying tasting at the farm'),
+  'finca-cafe2.jpg': _('Coffee roasting and grinding hands on workshop espresso and aromas'),
   'finca-cafe3.jpg': _('Visit to a coffee farm near Bogota freshly picked beans hacienda coloma')
 } %}
 {% set alt_map_es = {
-  'candelaria1.jpg': _('Casas coloniales coloridas en La Candelaria centro histórico de Bogotá barrio colonial bogotá murales street art bogotá callejones empedrados fachadas coloridas plaza chorro de quevedo guía francófona centro histórico'),
-  'candelaria2.jpg': _('Street art de Bogotá durante el tour por La Candelaria murales'),
-  'candelaria3.jpg': _('Callejones empedrados y fachadas coloniales en La Candelaria'),
-  'monserratevue.jpg': _('Vista panorámica desde Monserrate sobre Bogotá teleférico bogotá santuario señor caído vista panorámica bogotá atardecer andes funicular monserrate caminata corta cumbre'),
-  'monserrate2.jpg': _('Santuario del Señor Caído en Monserrate'),
-  'monserrate3.jpg': _('Subida en teleférico a Monserrate'),
-  'monserrate4.jpg': _('Paisajes andinos alrededor de Bogotá vistos desde Monserrate'),
-  'zipaquira1.jpg': _('Catedral de Sal de Zipaquirá galería subterránea iluminada catedral de sal mina de sal subterránea cruces talladas en sal iluminación azul violeta vía crucis galería minera'),
-  'zipaquira2.jpg': _('Cruces talladas en sal en Zipaquirá'),
-  'zipaquira3.jpg': _('Pasillos mineros y juegos de luces en Zipaquirá'),
-  'chorrera1.jpg': _('Sendero andino hacia la cascada de La Chorrera caminata andina bosque de niebla cascada 590m reserva natural choachí puentes y senderos neblina tropical'),
-  'chorrera2.jpeg': _('La Chorrera la cascada más alta de Colombia caminata cascada'),
-  'chorrera3.jpeg': _('Paisaje de montaña y neblina cerca de la cascada La Chorrera'),
-  'finca-cafe1.jpg': _('Plantación de café arábica cerezas de café en la mano secado en patios recolección manual cata de café en la finca'),
-  'finca-cafe2.jpg': _('Proceso de tostión y molienda espresso granos de café'),
-  'finca-cafe3.jpg': _('Visita a una finca cafetera cerca de Bogotá recién recolectados hacienda coloma')
+  'candelaria1.jpg': _('Casas coloniales coloridas en La Candelaria centro historico de Bogota arte urbano calles empedradas balcones de madera tiendas artesanales guia francofona'),
+  'candelaria2.jpg': _('Arte urbano de Bogota durante el tour por La Candelaria murales artistas locales y cultura urbana'),
+  'candelaria3.jpg': _('Callejones empedrados de La Candelaria fachadas coloridas patios ocultos y ambiente historico'),
+  'monserratevue.jpg': _('Vista panoramica desde Monserrate sobre Bogota montanas andinas santuario en la cumbre amanecer o atardecer'),
+  'monserrate2.jpg': _('Santuario del Senor Caido en Monserrate sitio sagrado arquitectura y devocion local'),
+  'monserrate3.jpg': _('Ascenso en teleferico a Monserrate experiencia panoramica funicular y naturaleza andina'),
+  'monserrate4.jpg': _('Paisajes andinos alrededor de Bogota vistos desde Monserrate bosques nubes y horizonte amplio'),
+  'zipaquira1.jpg': _('Catedral de Sal de Zipaquira galeria subterranea cruces talladas luces azules y violetas patrimonio minero'),
+  'zipaquira2.jpg': _('Cruces de sal talladas en Zipaquira detalle artistico espiritualidad y oficio'),
+  'zipaquira3.jpg': _('Pasillos mineros iluminados en Zipaquira perspectiva profunda y ambiente subterraneo'),
+  'chorrera1.jpg': _('Sendero andino hacia la cascada La Chorrera bosque de niebla puentes de madera y caminata'),
+  'chorrera2.jpeg': _('La Chorrera la cascada mas alta de Colombia caida poderosa y pared rocosa'),
+  'chorrera3.jpeg': _('Montanas andinas cerca de La Chorrera neblina fresca y vegetacion frondosa'),
+  'finca-cafe1.jpg': _('Plantacion de cafe arabica cerezas rojas recoleccion manual secado en patio cata en la finca'),
+  'finca-cafe2.jpg': _('Tostion y molienda de cafe taller practico espresso y aromas'),
+  'finca-cafe3.jpg': _('Visita a una finca cafetera cerca de Bogota granos recien cosechados hacienda coloma')
 } %}
 {% set _alt_maps = {'fr': alt_map, 'en': alt_map_en, 'es': alt_map_es} %}
 {% set ALT = _alt_maps.get(get_locale(), alt_map) %}
@@ -690,3 +688,4 @@
   </script>
 </body>
 </html>
+

@@ -2,8 +2,20 @@
 <html lang="{{ get_locale() }}">
 <head>
   <meta charset="UTF-8">
-  <title>{{ _("Service de Transport") }} — Oh La La Tours Bogotá</title>
+  <title>
+    {% if get_locale() == 'fr' -%}
+      Service de transport privé — Aéroport & visites | Oh La La Tours Bogotá
+    {%- elif get_locale() == 'en' -%}
+      Private Transport Service — Airport & Tours | Oh La La Tours Bogotá
+    {%- else -%}
+      Servicio de transporte privado — Aeropuerto y tours | Oh La La Tours Bogotá
+    {%- endif %}
+  </title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- ✅ SEO -->
+  <meta name="description" content="{% if get_locale()=='fr' %}Service de transport privé à Bogotá : transferts aéroport-hôtel, chauffeur professionnel, van ou voiture. Prix fixe 60 000 COP (1 à 4 personnes). Options pour visites guidées et excursions.{% elif get_locale()=='en' %}Private transport service in Bogotá: airport-hotel transfers, professional driver, car or van. Fixed price 60,000 COP (1–4 people). Options available for guided tours and excursions.{% else %}Servicio de transporte privado en Bogotá: traslados aeropuerto-hotel, conductor profesional, coche o van. Precio fijo 60 000 COP (1–4 personas). Opciones disponibles para visitas guiadas y excursiones.{% endif %}">
+  <meta name="keywords" content="transport privé Bogotá, transfert aéroport Bogotá, taxi aéroport Bogotá, navette aéroport Bogotá, chauffeur privé Bogotá, airport transfer Bogota, airport shuttle Bogota, private driver Bogotá, transporte privado Bogotá, traslado aeropuerto Bogotá, service de transport Bogota, van aéroport Bogotá, voiture privée Bogotá, airport pickup Bogotá, transport touristique Bogotá">
 
   <!-- CMP / consentmanager -->
   <script type="text/javascript" data-cmp-ab="1"
@@ -29,23 +41,22 @@
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-92M6CENDXH"></script>
   <script>
     gtag('js', new Date());
-    // Id de mesure GA4
     gtag('config', 'G-92M6CENDXH', { anonymize_ip: true });
   </script>
 
   <!-- ✅ Canonical + hreflang -->
-  <link rel="canonical" href="https://www.ohlalatoursbogota.com{{ request.path }}{% if get_locale()!='fr' %}?lang={{ get_locale() }}{% endif %}">
-  <link rel="alternate" href="{{ url_for('transport', lang='fr', _external=True) }}" hreflang="fr">
-  <link rel="alternate" href="{{ url_for('transport', lang='en', _external=True) }}" hreflang="en">
-  <link rel="alternate" href="{{ url_for('transport', lang='es', _external=True) }}" hreflang="es">
-  <link rel="alternate" href="{{ url_for('transport', lang='fr', _external=True) }}" hreflang="x-default">
+  <link rel="canonical" href="https://www.ohlalatoursbogota.com/transport">
+  <link rel="alternate" hreflang="fr" href="{{ url_for('transport', _external=True) }}">
+  <link rel="alternate" hreflang="en" href="{{ url_for('transport', lang='en', _external=True) }}">
+  <link rel="alternate" hreflang="es" href="{{ url_for('transport', lang='es', _external=True) }}">
+  <link rel="alternate" hreflang="x-default" href="{{ url_for('transport', _external=True) }}">
 
   <!-- ✅ Open Graph -->
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://www.ohlalatoursbogota.com{{ request.path }}{% if get_locale()!='fr' %}?lang={{ get_locale() }}{% endif %}">
+  <meta property="og:url" content="https://www.ohlalatoursbogota.com/transport">
   <meta property="og:site_name" content="Oh La La Tours Bogotá">
-  <meta property="og:title" content="{{ _('Service de Transport — Hôtel ⇄ Aéroport Bogotá') }}">
-  <meta property="og:description" content="{{ _('Transfert privé et sécurisé depuis/vers votre hébergement. Prix fixe 60 000 COP (1 à 4 personnes).') }}">
+  <meta property="og:title" content="{% if get_locale()=='fr' %}Transport privé à Bogotá — Hôtel ⇄ Aéroport{% elif get_locale()=='en' %}Private Transport Bogotá — Hotel ⇄ Airport{% else %}Transporte privado Bogotá — Hotel ⇄ Aeropuerto{% endif %}">
+  <meta property="og:description" content="{% if get_locale()=='fr' %}Transfert privé et sécurisé avec chauffeur professionnel. Prix fixe 60 000 COP (1 à 4 personnes).{% elif get_locale()=='en' %}Private and secure transfer with professional driver. Fixed price 60,000 COP (1–4 people).{% else %}Traslado privado y seguro con conductor profesional. Precio fijo 60 000 COP (1–4 personas).{% endif %}">
   <meta property="og:image" content="{{ url_for('static', filename='images/bg_transport.webp', _external=True) }}">
   {% if get_locale() == 'fr' %}
     <meta property="og:locale" content="fr_FR">
@@ -54,11 +65,55 @@
   {% else %}
     <meta property="og:locale" content="es_CO">
   {% endif %}
+  <meta property="og:locale:alternate" content="en_US">
+  <meta property="og:locale:alternate" content="es_CO">
 
-  <!-- ✅ Favicon + CSS global -->
+  <!-- ✅ Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{% if get_locale()=='fr' %}Service de transport privé à Bogotá{% elif get_locale()=='en' %}Private transport service in Bogotá{% else %}Servicio de transporte privado en Bogotá{% endif %}">
+  <meta name="twitter:description" content="{% if get_locale()=='fr' %}Aéroport ⇄ hôtel, chauffeur privé, voiture ou van. Prix fixe 60 000 COP.{% elif get_locale()=='en' %}Airport ⇄ hotel, private driver, car or van. Fixed price 60,000 COP.{% else %}Aeropuerto ⇄ hotel, conductor privado, coche o van. Precio fijo 60 000 COP.{% endif %}">
+  <meta name="twitter:image" content="{{ url_for('static', filename='images/bg_transport.webp', _external=True) }}">
+
+  <!-- ✅ JSON-LD Transport Service -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TaxiService",
+    "name": "Oh La La Tours Bogotá - Transport Privé",
+    "url": "https://www.ohlalatoursbogota.com/transport",
+    "image": "{{ url_for('static', filename='images/bg_transport.webp', _external=True) }}",
+    "areaServed": {
+      "@type": "City",
+      "name": "Bogotá"
+    },
+    "offers": {
+      "@type": "Offer",
+      "price": "60000",
+      "priceCurrency": "COP",
+      "description": "Transfert privé aéroport ⇄ hôtel (1–4 personnes)"
+    },
+    "provider": {
+      "@type": "Organization",
+      "name": "Oh La La Tours Bogotá",
+      "url": "https://www.ohlalatoursbogota.com"
+    }
+  }
+  </script>
+
+  <!-- 🟦 ALT multilingue pour l'image de transport + OG -->
+  {% if get_locale() == 'fr' %}
+    {% set TRANSPORT_IMG_ALT = "Van de transport prive a Bogota transfert aeroport El Dorado BOG vers hotel ou hebergement service securise ponctuel et confortable chauffeur professionnel courtois vehicule propre et climatise ideal pour voyageurs d affaires touristes familles et petits groupes disponible jour et nuit navette fiable prise en charge a la reception ou au terminal assistance pour bagages" %}
+  {% elif get_locale() == 'en' %}
+    {% set TRANSPORT_IMG_ALT = "Private transport van in Bogota airport transfer from El Dorado BOG to hotel or accommodation safe punctual and comfortable service professional and courteous driver clean air conditioned vehicle ideal for business travelers tourists families and small groups available day and night reliable shuttle pickup at reception or airport terminal with luggage assistance" %}
+  {% else %}
+    {% set TRANSPORT_IMG_ALT = "Van de transporte privado en Bogota traslado aeropuerto El Dorado BOG a hotel o alojamiento servicio seguro puntual y comodo conductor profesional y atento vehiculo limpio y con aire acondicionado ideal para viajeros de negocios turistas familias y grupos pequenos disponible de dia y de noche traslado confiable recogida en recepcion o terminal del aeropuerto con asistencia para equipaje" %}
+  {% endif %}
+  <meta property="og:image:alt" content="{{ TRANSPORT_IMG_ALT }}">
+
+  <!-- ✅ Favicon + CSS -->
   <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-
+</head>
   <!-- ✅ Styles AJOUTÉS pour le header fixe + logo -->
   <style>
     .site-header{
@@ -198,15 +253,16 @@
 <body>
 
   <!-- ✅ Nouveau header fixe (logo + nav + drapeaux) -->
-  <header class="site-header header-on-hero">
-    <div class="logo-container">
-      <!-- Logo clair (sur hero/photo) -->
-      <img src="{{ url_for('static', filename='img/logo-light.png') }}" alt="Oh La La Tours Bogotá" class="logo logo--light">
-      <!-- Logo foncé (après scroll, fond clair) -->
-      <img src="{{ url_for('static', filename='img/logo-dark.png') }}" alt="Oh La La Tours Bogotá" class="logo logo--dark">
-      <!-- Titre -->
-      <span class="site-title">Oh La La Tours Bogotá</span>
-    </div>
+<!-- Logo clair (sur hero/photo) -->
+<img src="{{ url_for('static', filename='img/logo-light.png') }}"
+     alt="{% if get_locale()=='fr' %}Logo Oh La La Tours Bogotá avec colibri et Monserrate symbole de liberté et authenticité, visites guidées privées et transport à Bogota Colombie{% elif get_locale()=='en' %}Oh La La Tours Bogotá logo with hummingbird and Monserrate symbol of freedom and authenticity, private guided tours and transport in Bogota Colombia{% else %}Logo de Oh La La Tours Bogotá con colibrí y Monserrate símbolo de libertad y autenticidad, tours guiados privados y transporte en Bogotá Colombia{% endif %}"
+     class="logo logo--light">
+
+<!-- Logo foncé (après scroll, fond clair) -->
+<img src="{{ url_for('static', filename='img/logo-dark.png') }}"
+     alt="{% if get_locale()=='fr' %}Logo Oh La La Tours Bogotá avec colibri stylisé et silhouette de Monserrate représentant la nature, la culture et les excursions privées en Colombie{% elif get_locale()=='en' %}Oh La La Tours Bogotá logo with stylized hummingbird and Monserrate silhouette representing nature culture and private excursions in Colombia{% else %}Logo de Oh La La Tours Bogotá con colibrí estilizado y silueta de Monserrate representando naturaleza cultura y excursiones privadas en Colombia{% endif %}"
+     class="logo logo--dark">
+</div>
 
     <nav class="main-nav" aria-label="{{ _('Navigation principale') }}">
       <a href="{{ url_for('index', lang=get_locale()) }}">{{ _("Accueil") }}</a>
@@ -313,7 +369,7 @@
 
         <div class="transport-img">
           <img src="{{ url_for('static', filename='images/transport_service.jpeg') }}"
-               alt="{{ _('Service de transport privé à Bogota professionnel van taxi aéroport el dorado trajet ponctuel sécurité tour bienvenue à bogota colombie amérique du sud') }}">
+               alt="{{ TRANSPORT_IMG_ALT }}">
         </div>
       </div>
 
