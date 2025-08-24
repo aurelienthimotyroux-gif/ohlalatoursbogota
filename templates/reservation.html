@@ -9,7 +9,7 @@
   <meta name="description" content="{{ _('Réservez votre visite guidée à Bogotá : Candelaria, Monserrate, Zipaquirá, La Chorrera et finca café. Guide francophone/anglais/espagnol.') }}">
   <meta name="keywords" content="réservation tour Bogotá, réserver visite guidée Bogotá, tours privés Bogotá, Candelaria, Monserrate, Zipaquirá, La Chorrera, Hacienda Coloma, guide francophone Bogotá">
 
-  <!-- ✅ CMP / consentmanager (doit être avant GA) -->
+  <!-- ✅ CMP / consentmanager -->
   <script type="text/javascript" data-cmp-ab="0"
           src="https://cdn.consentmanager.net/delivery/autoblocking/62cc8437f29ac.js"
           data-cmp-host="b.delivery.consentmanager.net"
@@ -60,11 +60,11 @@
     .lang-switcher{display:flex; gap:8px; margin-left:8px}
     .lang-switcher a{font-size:20px; line-height:1; padding:4px 6px; border-radius:6px}
 
-    /* Sur cette page (hero en fond) : liens & logo blancs au départ */
+    /* Sur cette page (hero en fond) */
     .header-on-hero .main-nav a{color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.35)}
     .logo--dark{display:none}
 
-    /* ✅ Titre ajouté */
+    /* ✅ Titre */
     .site-title{
       font-size:1.35rem;
       font-weight:600;
@@ -83,6 +83,13 @@
     .site-header.scrolled .logo--light{display:none}
     .site-header.scrolled .logo--dark{display:block}
     .site-header.scrolled .main-nav a{color:#0f172a}
+
+    /* ======= AJOUT MOBILE: logo seul ======= */
+    @media (max-width:768px){
+      .site-title{ display:none; }
+      .logo{ height:36px; }
+      .main-nav{ gap:12px; font-size:14px; }
+    }
   </style>
 
   <!-- ✅ Favicons -->
@@ -120,18 +127,15 @@
   <!-- ✅ CSS global -->
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
-  <!-- 📱 intl-tel-input (drapeaux + indicatifs) -->
+  <!-- 📱 intl-tel-input -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.6/build/css/intlTelInput.css" />
 </head>
 <body>
 
 <header class="site-header header-on-hero">
   <div class="logo-container">
-    <!-- Logo clair -->
     <img src="{{ url_for('static', filename='img/logo-light.png') }}" alt="Oh La La Tours Bogotá" class="logo logo--light">
-    <!-- Logo foncé -->
     <img src="{{ url_for('static', filename='img/logo-dark.png') }}" alt="Oh La La Tours Bogotá" class="logo logo--dark">
-    <!-- ✅ Titre ajouté -->
     <span class="site-title">Oh La La Tours Bogotá</span>
   </div>
 
@@ -167,7 +171,6 @@
 <main>
   <section class="reservation-container">
 
-    <!-- 🔔 Messages flash visibles en haut de la section -->
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
         <div class="flash-messages" style="max-width:1000px;margin:16px auto;padding:12px 14px;border-radius:10px;background:#e6ffed;color:#065f46;border:1px solid #a7f3d0;">
@@ -178,9 +181,7 @@
       {% endif %}
     {% endwith %}
 
-    <!-- ✅ Le message est au-dessus du formulaire -->
     <form class="reservation-form" method="POST" action="{{ url_for('reservation', lang=get_locale()) }}" novalidate>
-
       <input type="hidden" name="ui_lang" value="{{ get_locale() }}">
 
       <label for="nom">{{ _("Nom") }}</label>
@@ -189,7 +190,6 @@
       <label for="email">{{ _("Email") }}</label>
       <input type="email" id="email" name="email" required autocomplete="email" inputmode="email">
 
-      <!-- 📞 Téléphone -->
       <label for="phone_input">{{ _("Téléphone (WhatsApp de préférence)") }}</label>
       <input type="tel" id="phone_input" inputmode="tel" autocomplete="tel" placeholder="{{ _('Ex. +33 6 12 34 56 78') }}" />
       <input type="hidden" name="phone" id="phone_full">
@@ -200,10 +200,8 @@
       <label for="date">{{ _("Date souhaitée") }}</label>
       <input type="date" id="date" name="date" required>
 
-      <!-- 👥 Nombre de personnes -->
-      <label for="persons">{{ _("Nombre de personnes") }} <small aria-hidden="true">({{ _("max") }} 6)</small></label>
-      <input type="number" id="persons" name="persons" min="1" max="6" value="1" required aria-describedby="persons-hint">
-      <div id="persons-hint" class="sr-only">{{ _("Maximum 6 personnes") }}</div>
+      <label for="persons">{{ _("Nombre de personnes") }}</label>
+      <input type="number" id="persons" name="persons" min="1" max="6" value="1" required>
 
       <label for="message">{{ _("Message") }}</label>
       <textarea id="message" name="message" rows="4" placeholder="{{ _('Infos utiles, horaires, etc.') }}"></textarea>
@@ -218,14 +216,10 @@
         <option value="finca-cafe" {{ 'selected' if tour=='finca-cafe' else '' }}>{{ _("Visite d’une finca à café") }}</option>
       </select>
 
-      <!-- 🟡 PayPal: champ caché pour l’ID de capture -->
       <input type="hidden" id="paypal_capture_id" name="paypal_capture_id" value="">
-
-      <!-- Bouton Envoyer désactivé tant que le paiement n'est pas confirmé -->
       <button type="submit" id="form-submit" disabled>{{ _("Envoyer") }}</button>
     </form>
 
-    <!-- 🟡 PayPal: bloc bouton -->
     <div class="payment-box" style="max-width:1000px;margin:24px auto;padding:16px;border:1px solid #e5e7eb;border-radius:12px;background:#fafafa">
       <h2 style="margin:0 0 12px 0;font-size:1.25rem">{{ _("Payer maintenant par PayPal") }}</h2>
       <div id="paypal-button-container"></div>
@@ -233,10 +227,8 @@
         {{ _("Le paiement est sécurisé via PayPal. Le montant est calculé automatiquement selon le tour et le nombre de personnes.") }}
       </p>
     </div>
-    <!-- /PayPal -->
   </section>
 </main>
-
 
 <!-- Données structurées -->
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Service","name":"Réservation de visites guidées à Bogotá"}</script>
@@ -252,44 +244,32 @@
   })();
 </script>
 
-<!-- 📱 intl-tel-input JS -->
+<!-- 📱 intl-tel-input -->
 <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.6/build/js/intlTelInput.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.6/build/js/utils.js"></script>
 <script>
   (function(){
     const input = document.getElementById('phone_input');
     if(!input) return;
-    // Choix du pays par défaut selon la langue du site
     const lang = "{{ get_locale() }}";
     let initial = 'fr';
     if (lang === 'en') initial = 'us';
-    if (lang === 'es') initial = 'co'; // Colombie sur ES
-
-    const iti = window.intlTelInput(input, {
-      initialCountry: initial,
-      separateDialCode: true,
-      utilsScript: 'https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.6/build/js/utils.js'
-    });
-
-    // À l’envoi: on stocke le numéro complet au format E.164 dans l’input caché "phone"
+    if (lang === 'es') initial = 'co';
+    const iti = window.intlTelInput(input, { initialCountry: initial, separateDialCode: true, utilsScript: 'https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.6/build/js/utils.js' });
     const form = document.querySelector('.reservation-form');
     form.addEventListener('submit', function(){
-      const hidden = document.getElementById('phone_full');
-      const e164 = iti.getNumber(); // ex: +33612345678
-      hidden.value = e164 || input.value.trim();
+      document.getElementById('phone_full').value = iti.getNumber() || input.value.trim();
     });
   })();
 </script>
 
-<!-- ===== PayPal: bloc complet (SDK + createOrder + onApprove robuste) ===== -->
+<!-- ===== PayPal ===== -->
 <script>
   (async function(){
-    // 1) Récupère la config serveur (client_id + currency)
     const cfgRes = await fetch("/paypal-config");
     if (!cfgRes.ok) { alert("Erreur /paypal-config"); return; }
     const cfg = await cfgRes.json();
 
-    // 2) Charge le SDK PayPal (LIVE si PAYPAL_MODE=live)
     await new Promise((ok, ko) => {
       const s = document.createElement("script");
       s.src = `https://www.paypal.com/sdk/js?client-id=${encodeURIComponent(cfg.client_id)}&components=buttons&currency=${encodeURIComponent(cfg.currency)}`;
@@ -297,110 +277,17 @@
       document.head.appendChild(s);
     });
 
-    // 3) Rend les boutons
     paypal.Buttons({
       style: { shape: "rect", layout: "vertical" },
-
-      // 👉 IMPORTANT : créer la commande côté serveur pour calculer le montant
       createOrder: async () => {
         const tour = (document.getElementById("tour")?.value || "").toLowerCase();
         const persons = parseInt(document.getElementById("persons")?.value || "1", 10);
-
         if (!tour) { alert("Merci de choisir un tour."); throw new Error("tour_required"); }
-
         const r = await fetch("/create-paypal-order", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
+          method: "POST", headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ tour, persons })
         });
         const data = await r.json();
-        if (!r.ok) {
-          const msg = (data && (data.error?.message || data.error || data.detail)) || "Erreur serveur";
-          alert("❌ Création de la commande PayPal impossible : " + msg);
-          throw new Error(msg);
-        }
-        return data.id; // orderID
-      },
-
-      // ✅ Ton onApprove robuste (serveur -> fallback client -> order.get)
-      onApprove: async (data, actions) => {
-        const setPaid = (capId) => {
-          if (!capId) return false;
-          document.getElementById('paypal_capture_id').value = capId;
-          const submitBtn = document.getElementById('form-submit');
-          if (submitBtn) submitBtn.disabled = false;
-          return true;
-        };
-
-        // 1) Capture SERVEUR
-        try {
-          const r = await fetch(`/capture-paypal-order/${data.orderID}`, { method: 'POST' });
-          const res = await r.json();
-
-          if (r.ok && (res.status === "COMPLETED" || res.status === "APPROVED")) {
-            let capId = res.id;
-            try { if (!capId) capId = res.raw?.purchase_units?.[0]?.payments?.captures?.[0]?.id; } catch(e){}
-            if (setPaid(capId)) { alert('✅ Paiement confirmé ! Vous pouvez envoyer votre réservation.'); return; }
-          }
-        } catch(e) { console.warn("capture serveur KO, fallback client", e); }
-
-        // 2) Fallback: CAPTURE CLIENT
-        try {
-          const clientCap = await actions.order.capture();
-          let capId = clientCap?.purchase_units?.[0]?.payments?.captures?.[0]?.id || clientCap?.id;
-          if (setPaid(capId)) { alert('✅ Paiement confirmé (fallback). Vous pouvez envoyer votre réservation.'); return; }
-        } catch(e) { console.warn("fallback capture client KO", e); }
-
-        // 3) Dernier recours : lire l’ordre
-        try {
-          const details = await actions.order.get();
-          let capId = details?.purchase_units?.[0]?.payments?.captures?.[0]?.id || details?.id;
-          if (setPaid(capId)) { alert('✅ Paiement confirmé. Vous pouvez envoyer votre réservation.'); return; }
-        } catch(e) { console.warn("order.get KO", e); }
-
-        alert("Paiement validé mais la confirmation n'a pas été reçue. Contactez-nous si besoin.");
-      },
-
-      onCancel: () => { alert("Paiement annulé."); },
-      onError:  (err) => { console.error(err); alert("Erreur PayPal : " + (err?.message || "inconnue")); }
-    }).render('#paypal-button-container');
-  })();
-</script>
-
-<!-- Garde-fou: empêche l'envoi si paiement non confirmé -->
-<script>
-  (function(){
-    const form = document.querySelector('.reservation-form');
-    if(!form) return;
-    form.addEventListener('submit', function(e){
-      const paid = (document.getElementById('paypal_capture_id').value || '').trim().length > 0;
-      if(!paid){
-        e.preventDefault();
-        alert("Merci d'effectuer le paiement PayPal avant d'envoyer la réservation.");
-      }
-    });
-  })();
-</script>
-<!-- ===== /PayPal ===== -->
-
-
-<!-- Garde-fou: empêche l'envoi si paiement non confirmé -->
-<script>
-  (function(){
-    const form = document.querySelector('.reservation-form');
-    if(!form) return;
-    form.addEventListener('submit', function(e){
-      const paid = (document.getElementById('paypal_capture_id').value || '').trim().length > 0;
-      if(!paid){
-        e.preventDefault();
-        alert("Merci d'effectuer le paiement PayPal avant d'envoyer la réservation.");
-      }
-    });
-  })();
-</script>
-<!-- /PayPal -->
-
-</body>
-</html>
+       
 
 

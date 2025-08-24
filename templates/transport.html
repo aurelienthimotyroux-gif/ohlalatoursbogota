@@ -78,7 +78,7 @@
 
     /* Titre "Oh La La Tours Bogotá" */
     .site-title{
-      font-size:1.2rem;       /* même gabarit que l’accueil */
+      font-size:1.2rem;
       font-weight:600;
       margin-left:8px;
       line-height:1.2;
@@ -99,11 +99,18 @@
     .site-header.scrolled .logo--dark{display:block}
     .site-header.scrolled .main-nav a{color:#0f172a; text-shadow:none}
     .site-header.scrolled .site-title{color:#0f172a; text-shadow:none}
+
+    /* ======= AJOUT MOBILE: logo seul (cache le titre) ======= */
+    @media (max-width:768px){
+      .site-title{ display:none; }
+      .logo{ height:36px; }
+      .main-nav{ gap:12px; font-size:14px; }
+    }
+    /* =============================================== */
   </style>
 
   <!-- ✅ Styles locaux (on conserve le design : image à droite) -->
   <style>
-    /* Bloc texte + image côte à côte */
     .transport-description {
       display: flex;
       flex-wrap: wrap;
@@ -120,7 +127,6 @@
       display: block;
     }
 
-    /* Petites listes / chips déjà présentes dans ton design global */
     .tour-includes { position: relative; margin: 14px 0 12px; padding-left: 14px; }
     .tour-includes::before {
       content: "";
@@ -141,10 +147,8 @@
       border-radius: 12px; font-weight: 700; cursor: pointer;
     }
 
-    /* Note discrète à côté de la durée */
     .chip-note{ font-size:.95em; opacity:.85; }
 
-    /* Responsive : on garde l’image sous le texte en mobile */
     @media (max-width: 900px){
       .transport-description { flex-direction: column; }
       .transport-text, .transport-img { flex: 1 1 auto; }
@@ -157,9 +161,7 @@
 <link rel="manifest" href="{{ url_for('static', filename='img/favicon/site.webmanifest') }}">
 <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='img/favicon/favicon.ico') }}">
 <meta name="theme-color" content="#0b4654">
-
 <link rel="icon" href="/favicon.ico" sizes="any">
-
 <meta name="google-site-verification" content="4z28-XXEkdcB_VOcaGoy1bhgA-zj7xr6wSf76ZwZ4tQ" />
 
 </head>
@@ -168,11 +170,8 @@
   <!-- ✅ Nouveau header fixe (logo + nav + drapeaux) -->
   <header class="site-header header-on-hero">
     <div class="logo-container">
-      <!-- Logo clair (sur hero/photo) -->
       <img src="{{ url_for('static', filename='img/logo-light.png') }}" alt="Oh La La Tours Bogotá" class="logo logo--light">
-      <!-- Logo foncé (après scroll, fond clair) -->
       <img src="{{ url_for('static', filename='img/logo-dark.png') }}" alt="Oh La La Tours Bogotá" class="logo logo--dark">
-      <!-- Titre visible (blanc sur hero) -->
       <span class="site-title">Oh La La Tours Bogotá</span>
     </div>
 
@@ -190,7 +189,7 @@
     </nav>
   </header>
 
-  <!-- Bandeau image + titre (ancienne topbar supprimée) -->
+  <!-- Bandeau image + titre -->
   <header class="hero background-half"
           style="background-image: url('{{ url_for('static', filename='images/bg_transport.webp') }}');">
     <h1 class="hero-title">{{ _("Service de Transport — Hôtel ⇄ Aéroport Bogotá") }}</h1>
@@ -198,16 +197,11 @@
 
   <main>
     <section id="transport" class="container">
-
-      <!-- Texte à gauche -->
       <div class="transport-description">
         <div class="transport-text">
           <h2>{{ _("Transfert privé, ponctuel et sécurisé") }}</h2>
-          <p>
-            {{ _("Profitez d’un trajet confortable entre votre hébergement et l’aéroport El Dorado (BOG). Chauffeur professionnel et courtois, prise en charge à l’heure et service porte-à-porte.") }}
-          </p>
+          <p>{{ _("Profitez d’un trajet confortable entre votre hébergement et l’aéroport El Dorado (BOG). Chauffeur professionnel et courtois, prise en charge à l’heure et service porte-à-porte.") }}</p>
 
-          <!-- Inclus / Caractéristiques -->
           <div class="tour-includes">
             <h3 class="includes-title">{{ _("Ce qui est inclus :") }}</h3>
             <ul class="includes-list">
@@ -219,7 +213,6 @@
             </ul>
           </div>
 
-          <!-- Infos pratiques (chips) -->
           <ul class="tour-chips" aria-label="{{ _('Informations pratiques') }}">
             <li class="chip">
               <strong>{{ _("Durée") }}:</strong>&nbsp;{{ _("~40–60 min") }}
@@ -228,33 +221,21 @@
             <li class="chip"><strong>{{ _("Tarif") }}:</strong>&nbsp;{{ _("60 000 COP (1 à 4 personnes)") }}</li>
           </ul>
 
-          <!-- Réservation -->
           <h3>{{ _("Comment réserver ?") }}</h3>
+          <p>{{ _("Réservez facilement par WhatsApp ou e-mail. Indiquez la date, l’heure de prise en charge, le numéro de vol et le nombre de passagers.") }}</p>
           <p>
-            {{ _("Réservez facilement par WhatsApp ou e-mail. Indiquez la date, l’heure de prise en charge, le numéro de vol et le nombre de passagers.") }}
-          </p>
-          <p>
-            <a class="btn-primary" href="https://wa.me/573000000000" target="_blank" rel="noopener">
-              {{ _("Réserver sur WhatsApp") }}
-            </a>
+            <a class="btn-primary" href="https://wa.me/573000000000" target="_blank" rel="noopener">{{ _("Réserver sur WhatsApp") }}</a>
             &nbsp;
-            <a class="btn-primary" href="mailto:contact@ohlalatoursbogota.com">
-              {{ _("Réserver par e-mail") }}
-            </a>
+            <a class="btn-primary" href="mailto:contact@ohlalatoursbogota.com">{{ _("Réserver par e-mail") }}</a>
           </p>
-
-          <p style="margin-top:10px;">
-            <small>{{ _("Besoin d’un siège enfant, d’un van ou d’horaires très matinaux ? Dites-le nous lors de la réservation.") }}</small>
-          </p>
+          <p style="margin-top:10px;"><small>{{ _("Besoin d’un siège enfant, d’un van ou d’horaires très matinaux ? Dites-le nous lors de la réservation.") }}</small></p>
         </div>
 
-        <!-- Photo à droite (conservée) -->
         <div class="transport-img">
           <img src="{{ url_for('static', filename='images/transport_service.jpeg') }}"
                alt="{{ _('Service de transport privé à Bogota professionnel van taxi aéroport el dorado trajet ponctuel sécurité tour bienvenue à bogota colombie amérique du sud') }}">
         </div>
       </div>
-
     </section>
   </main>
 

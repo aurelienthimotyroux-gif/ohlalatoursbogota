@@ -120,6 +120,15 @@
     .site-header.scrolled .main-nav a{color:#0f172a}
     .site-header.scrolled .site-title{ color:#0f172a; }
 
+    /* ======= AJOUT MOBILE: logo seul (titre caché) ======= */
+    @media (max-width:768px){
+      .site-title{ display:none; }         /* cache le texte "Oh La La Tours Bogotá" */
+      .logo-container{ gap:6px; }
+      .logo{ height:36px; }                /* logo un peu plus compact */
+      .main-nav{ gap:12px; font-size:14px; } /* resserre la nav pour éviter les retours à la ligne */
+    }
+    /* ================================================ */
+
     /* Styles existants pour avis, etc. (conservés) */
     .testimonials { background:#fff; padding:40px 20px; margin-top:40px; }
     .testimonials .container { max-width:1000px; margin:0 auto; }
@@ -392,4 +401,5 @@
 
 </body>
 </html>
+
 

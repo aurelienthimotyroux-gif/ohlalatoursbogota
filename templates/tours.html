@@ -84,6 +84,9 @@
     .lang-switcher{display:flex; gap:8px; margin-left:8px}
     .lang-switcher a{font-size:20px; line-height:1; padding:4px 6px; border-radius:6px}
 
+    /* Ajout: style de base du titre pour desktop */
+    .site-title{font-size:20px; font-weight:600; color:#0f172a;}
+
     /* Sur cette page (hero en fond) : liens & logo blancs au départ */
     .header-on-hero .main-nav a{color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.35)}
     .logo--dark{display:none}
@@ -97,6 +100,14 @@
     .site-header.scrolled .logo--light{display:none}
     .site-header.scrolled .logo--dark{display:block}
     .site-header.scrolled .main-nav a{color:#0f172a}
+
+    /* ======= AJOUT MOBILE: logo seul (cache le titre) ======= */
+    @media (max-width:768px){
+      .site-title{ display:none; }
+      .logo{ height:36px; }
+      .main-nav{ gap:12px; font-size:14px; }
+    }
+    /* =============================================== */
   </style>
 
   <!-- ✅ AJOUT MINIMAL: réactive l’effet glissant & flèches toujours cliquables -->
@@ -596,6 +607,5 @@
   </script>
 </body>
 </html>
-
 
 
