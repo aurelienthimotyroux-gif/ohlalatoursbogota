@@ -9,7 +9,7 @@
   <meta name="description" content="{{ _('Réservez votre visite guidée à Bogotá : Candelaria, Monserrate, Zipaquirá, La Chorrera et finca café. Guide francophone/anglais/espagnol.') }}">
   <meta name="keywords" content="réservation tour Bogotá, réserver visite guidée Bogotá, tours privés Bogotá, Candelaria, Monserrate, Zipaquirá, La Chorrera, Hacienda Coloma, guide francophone Bogotá">
 
-  <!-- ✅ CMP / consentmanager -->
+  <!-- ✅ CMP / consentmanager (doit être avant GA) -->
   <script type="text/javascript" data-cmp-ab="0"
           src="https://cdn.consentmanager.net/delivery/autoblocking/62cc8437f29ac.js"
           data-cmp-host="b.delivery.consentmanager.net"
@@ -127,15 +127,43 @@
   <!-- ✅ CSS global -->
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
-  <!-- 📱 intl-tel-input -->
+  <!-- 📱 intl-tel-input (drapeaux + indicatifs) -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.6/build/css/intlTelInput.css" />
+
+  <!-- ✅ Burger menu CSS -->
+  <style>
+    .burger{display:none;background:none;border:0;width:38px;height:38px;
+            align-items:center;justify-content:center;border-radius:8px;color:#fff}
+    .burger svg{width:26px;height:26px}
+    .site-header.scrolled .burger{color:#0f172a}
+    @media (max-width:900px){ .main-nav{display:none} .burger{display:inline-flex} }
+
+    .mobile-menu{position:fixed;top:0;right:0;bottom:0;width:min(86vw,360px);
+      background:#fff;box-shadow:-10px 0 30px rgba(0,0,0,.15);
+      transform:translateX(100%);transition:transform .25s ease;z-index:120}
+    .mobile-menu.open{transform:translateX(0)}
+    .mobile-menu header{display:flex;align-items:center;justify-content:space-between;
+      padding:12px 16px;border-bottom:1px solid #eee}
+    .mobile-menu header button{background:none;border:0;width:36px;height:36px}
+    .mobile-menu nav a{display:block;padding:14px 16px;border-bottom:1px solid #f1f1f1;
+      color:#0f172a;text-decoration:none}
+    .mobile-menu .langs{display:flex;gap:10px;padding:14px 16px;font-size:22px}
+
+    .mobile-overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);
+      backdrop-filter:blur(2px);opacity:0;pointer-events:none;transition:opacity .2s;
+      z-index:110}
+    .mobile-overlay.show{opacity:1;pointer-events:auto}
+  </style>
 </head>
 <body>
 
 <header class="site-header header-on-hero">
   <div class="logo-container">
+    <!-- Logo clair -->
     <img src="{{ url_for('static', filename='img/logo-light.png') }}" alt="Oh La La Tours Bogotá" class="logo logo--light">
+    <!-- Logo foncé -->
     <img src="{{ url_for('static', filename='img/logo-dark.png') }}" alt="Oh La La Tours Bogotá" class="logo logo--dark">
+    <!-- Titre -->
     <span class="site-title">Oh La La Tours Bogotá</span>
   </div>
 
@@ -150,7 +178,41 @@
       <a href="{{ lang_url('es') }}" lang="es" aria-label="Español">🇪🇸<span class="sr-only">Español</span></a>
     </div>
   </nav>
+
+  <!-- ✅ Burger -->
+  <button class="burger" aria-label="Ouvrir le menu" aria-controls="mobileMenu" aria-expanded="false">
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M3 6h18M3 12h18M3 18h18"/>
+    </svg>
+  </button>
 </header>
+
+<!-- ✅ Overlay + panneau mobile -->
+<div id="mobileOverlay" class="mobile-overlay"></div>
+
+<aside id="mobileMenu" class="mobile-menu" role="dialog" aria-modal="true" aria-label="Menu">
+  <header>
+    <strong>Oh La La Tours Bogotá</strong>
+    <button id="mobileClose" aria-label="Fermer">
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true">
+        <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/>
+      </svg>
+    </button>
+  </header>
+
+  <nav>
+    <a href="{{ url_for('index',     lang=get_locale()) }}">{{ _("Accueil") }}</a>
+    <a href="{{ url_for('tours',     lang=get_locale()) }}">{{ _("Nos tours") }}</a>
+    <a href="{{ url_for('transport', lang=get_locale()) }}">{{ _("Service de Transport") }}</a>
+    <a href="{{ url_for('reservation', lang=get_locale()) }}">{{ _("Réservation") }}</a>
+  </nav>
+
+  <div class="langs" aria-label="{{ _('Changer de langue') }}">
+    <a href="{{ lang_url('fr') }}" lang="fr" aria-label="Français">🇫🇷</a>
+    <a href="{{ lang_url('en') }}" lang="en" aria-label="English">🇺🇸</a>
+    <a href="{{ lang_url('es') }}" lang="es" aria-label="Español">🇪🇸</a>
+  </div>
+</aside>
 
 <!-- Bandeau -->
 <header class="hero background-half"
@@ -182,6 +244,7 @@
     {% endwith %}
 
     <form class="reservation-form" method="POST" action="{{ url_for('reservation', lang=get_locale()) }}" novalidate>
+
       <input type="hidden" name="ui_lang" value="{{ get_locale() }}">
 
       <label for="nom">{{ _("Nom") }}</label>
@@ -230,6 +293,7 @@
   </section>
 </main>
 
+
 <!-- Données structurées -->
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Service","name":"Réservation de visites guidées à Bogotá"}</script>
 
@@ -244,7 +308,7 @@
   })();
 </script>
 
-<!-- 📱 intl-tel-input -->
+<!-- 📱 intl-tel-input JS -->
 <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.6/build/js/intlTelInput.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.6/build/js/utils.js"></script>
 <script>
@@ -263,7 +327,7 @@
   })();
 </script>
 
-<!-- ===== PayPal ===== -->
+<!-- ===== PayPal: bloc complet (SDK + createOrder + onApprove robuste) ===== -->
 <script>
   (async function(){
     const cfgRes = await fetch("/paypal-config");
@@ -288,6 +352,96 @@
           body: JSON.stringify({ tour, persons })
         });
         const data = await r.json();
-       
+        if (!r.ok) {
+          const msg = (data && (data.error?.message || data.error || data.detail)) || "Erreur serveur";
+          alert("❌ Création de la commande PayPal impossible : " + msg);
+          throw new Error(msg);
+        }
+        return data.id;
+      },
+      onApprove: async (data, actions) => {
+        const setPaid = (capId) => {
+          if (!capId) return false;
+          document.getElementById('paypal_capture_id').value = capId;
+          const submitBtn = document.getElementById('form-submit');
+          if (submitBtn) submitBtn.disabled = false;
+          return true;
+        };
+        try {
+          const r = await fetch(`/capture-paypal-order/${data.orderID}`, { method: 'POST' });
+          const res = await r.json();
+          if (r.ok && (res.status === "COMPLETED" || res.status === "APPROVED")) {
+            let capId = res.id;
+            try { if (!capId) capId = res.raw?.purchase_units?.[0]?.payments?.captures?.[0]?.id; } catch(e){}
+            if (setPaid(capId)) { alert('✅ Paiement confirmé ! Vous pouvez envoyer votre réservation.'); return; }
+          }
+        } catch(e) { console.warn("capture serveur KO, fallback client", e); }
+
+        try {
+          const clientCap = await actions.order.capture();
+          let capId = clientCap?.purchase_units?.[0]?.payments?.captures?.[0]?.id || clientCap?.id;
+          if (setPaid(capId)) { alert('✅ Paiement confirmé (fallback). Vous pouvez envoyer votre réservation.'); return; }
+        } catch(e) { console.warn("fallback capture client KO", e); }
+
+        try {
+          const details = await actions.order.get();
+          let capId = details?.purchase_units?.[0]?.payments?.captures?.[0]?.id || details?.id;
+          if (setPaid(capId)) { alert('✅ Paiement confirmé. Vous pouvez envoyer votre réservation.'); return; }
+        } catch(e) { console.warn("order.get KO", e); }
+
+        alert("Paiement validé mais la confirmation n'a pas été reçue. Contactez-nous si besoin.");
+      },
+      onCancel: () => { alert("Paiement annulé."); },
+      onError:  (err) => { console.error(err); alert("Erreur PayPal : " + (err?.message || "inconnue")); }
+    }).render('#paypal-button-container');
+  })();
+</script>
+
+<!-- Empêche l'envoi si paiement non confirmé -->
+<script>
+  (function(){
+    const form = document.querySelector('.reservation-form');
+    if(!form) return;
+    form.addEventListener('submit', function(e){
+      const paid = (document.getElementById('paypal_capture_id').value || '').trim().length > 0;
+      if(!paid){
+        e.preventDefault();
+        alert("Merci d'effectuer le paiement PayPal avant d'envoyer la réservation.");
+      }
+    });
+  })();
+</script>
+
+<!-- ✅ Burger JS -->
+<script>
+  (function(){
+    const burger  = document.querySelector('.burger');
+    const menu    = document.getElementById('mobileMenu');
+    const closeBt = document.getElementById('mobileClose');
+    const overlay = document.getElementById('mobileOverlay');
+    if(!burger || !menu || !overlay) return;
+
+    const open = () => {
+      menu.classList.add('open');
+      overlay.classList.add('show');
+      burger.setAttribute('aria-expanded','true');
+      document.body.style.overflow='hidden';
+    };
+    const close = () => {
+      menu.classList.remove('open');
+      overlay.classList.remove('show');
+      burger.setAttribute('aria-expanded','false');
+      document.body.style.overflow='';
+    };
+
+    burger.addEventListener('click', open, {passive:true});
+    if (closeBt) closeBt.addEventListener('click', close, {passive:true});
+    overlay.addEventListener('click', close, {passive:true});
+    window.addEventListener('keydown', (e)=>{ if(e.key==='Escape') close(); });
+  })();
+</script>
+
+</body>
+</html>
 
 

@@ -120,15 +120,6 @@
     .site-header.scrolled .main-nav a{color:#0f172a}
     .site-header.scrolled .site-title{ color:#0f172a; }
 
-    /* ======= AJOUT MOBILE: logo seul (titre caché) ======= */
-    @media (max-width:768px){
-      .site-title{ display:none; }         /* cache le texte "Oh La La Tours Bogotá" */
-      .logo-container{ gap:6px; }
-      .logo{ height:36px; }                /* logo un peu plus compact */
-      .main-nav{ gap:12px; font-size:14px; } /* resserre la nav pour éviter les retours à la ligne */
-    }
-    /* ================================================ */
-
     /* Styles existants pour avis, etc. (conservés) */
     .testimonials { background:#fff; padding:40px 20px; margin-top:40px; }
     .testimonials .container { max-width:1000px; margin:0 auto; }
@@ -156,6 +147,36 @@
     .flash-success{ background:#eefbf0; border:1px solid #b7ebc6; color:#1b5e20; }
     .flash-error{ background:#fdeaea; border:1px solid #f5c2c2; color:#8a1f1f; }
     @media (min-width: 768px){ .sticky-cta { display: none; } }
+  </style>
+
+  <!-- ✅ AJOUT CSS: Burger + menu mobile (rien supprimé) -->
+  <style>
+    /* Cacher le titre en mobile */
+    @media (max-width: 640px){ .site-title{ display:none; } }
+
+    /* Bouton burger */
+    .burger{display:none;background:none;border:0;width:38px;height:38px;
+            align-items:center;justify-content:center;border-radius:8px;color:#fff}
+    .burger svg{width:26px;height:26px}
+    .site-header.scrolled .burger{color:#0f172a}
+    @media (max-width:900px){ .main-nav{display:none} .burger{display:inline-flex} }
+
+    /* Panneau mobile + overlay */
+    .mobile-menu{position:fixed;top:0;right:0;bottom:0;width:min(86vw,360px);
+      background:#fff;box-shadow:-10px 0 30px rgba(0,0,0,.15);
+      transform:translateX(100%);transition:transform .25s ease;z-index:120}
+    .mobile-menu.open{transform:translateX(0)}
+    .mobile-menu header{display:flex;align-items:center;justify-content:space-between;
+      padding:12px 16px;border-bottom:1px solid #eee}
+    .mobile-menu header button{background:none;border:0;width:36px;height:36px}
+    .mobile-menu nav a{display:block;padding:14px 16px;border-bottom:1px solid #f1f1f1;
+      color:#0f172a;text-decoration:none}
+    .mobile-menu .langs{display:flex;gap:10px;padding:14px 16px;font-size:22px}
+
+    .mobile-overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);
+      backdrop-filter:blur(2px);opacity:0;pointer-events:none;transition:opacity .2s;
+      z-index:110}
+    .mobile-overlay.show{opacity:1;pointer-events:auto}
   </style>
 </head>
 
@@ -197,7 +218,41 @@
       <a href="{{ lang_url('es') }}" lang="es" aria-label="Español">🇪🇸<span class="sr-only">Español</span></a>
     </div>
   </nav>
+
+  <!-- ✅ AJOUT: bouton burger (ne remplace rien) -->
+  <button class="burger" aria-label="Ouvrir le menu" aria-controls="mobileMenu" aria-expanded="false">
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M3 6h18M3 12h18M3 18h18"/>
+    </svg>
+  </button>
 </header>
+
+<!-- ✅ AJOUT: overlay + panneau mobile (ajoutés, rien supprimé) -->
+<div id="mobileOverlay" class="mobile-overlay"></div>
+
+<aside id="mobileMenu" class="mobile-menu" role="dialog" aria-modal="true" aria-label="Menu">
+  <header>
+    <strong>Oh La La Tours Bogotá</strong>
+    <button id="mobileClose" aria-label="Fermer">
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true">
+        <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/>
+      </svg>
+    </button>
+  </header>
+
+  <nav>
+    <a href="{{ url_for('index',     lang=get_locale()) }}">{{ _("Accueil") }}</a>
+    <a href="{{ url_for('tours',     lang=get_locale()) }}">{{ _("Nos tours") }}</a>
+    <a href="{{ url_for('transport', lang=get_locale()) }}">{{ _("Service de Transport") }}</a>
+    <a href="{{ url_for('reservation', lang=get_locale()) }}">{{ _("Réservation") }}</a>
+  </nav>
+
+  <div class="langs" aria-label="{{ _('Changer de langue') }}">
+    <a href="{{ lang_url('fr') }}" lang="fr" aria-label="Français">🇫🇷</a>
+    <a href="{{ lang_url('en') }}" lang="en" aria-label="English">🇺🇸</a>
+    <a href="{{ lang_url('es') }}" lang="es" aria-label="Español">🇪🇸</a>
+  </div>
+</aside>
 
 <!-- HERO (image de couverture) -->
 <header class="hero"
@@ -396,6 +451,35 @@
     function onScroll(){ header.classList.toggle('scrolled', window.scrollY > 60); }
     onScroll();
     window.addEventListener('scroll', onScroll, {passive:true});
+  })();
+</script>
+
+<!-- ✅ AJOUT JS: contrôle du burger/menu mobile (sans toucher à ton script existant) -->
+<script>
+  (function(){
+    const burger  = document.querySelector('.burger');
+    const menu    = document.getElementById('mobileMenu');
+    const closeBt = document.getElementById('mobileClose');
+    const overlay = document.getElementById('mobileOverlay');
+    if(!burger || !menu || !overlay) return;
+
+    const open = () => {
+      menu.classList.add('open');
+      overlay.classList.add('show');
+      burger.setAttribute('aria-expanded','true');
+      document.body.style.overflow='hidden';
+    };
+    const close = () => {
+      menu.classList.remove('open');
+      overlay.classList.remove('show');
+      burger.setAttribute('aria-expanded','false');
+      document.body.style.overflow='';
+    };
+
+    burger.addEventListener('click', open, {passive:true});
+    if (closeBt) closeBt.addEventListener('click', close, {passive:true});
+    overlay.addEventListener('click', close, {passive:true});
+    window.addEventListener('keydown', (e)=>{ if(e.key==='Escape') close(); });
   })();
 </script>
 

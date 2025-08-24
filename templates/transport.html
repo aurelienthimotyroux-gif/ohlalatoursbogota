@@ -106,7 +106,6 @@
       .logo{ height:36px; }
       .main-nav{ gap:12px; font-size:14px; }
     }
-    /* =============================================== */
   </style>
 
   <!-- ✅ Styles locaux (on conserve le design : image à droite) -->
@@ -155,13 +154,44 @@
     }
   </style>
 
+  <!-- ✅ Burger menu (CSS uniquement ajouté) -->
+  <style>
+    .burger{display:none;background:none;border:0;width:38px;height:38px;
+            align-items:center;justify-content:center;border-radius:8px;color:#fff}
+    .burger svg{width:26px;height:26px}
+    .site-header.scrolled .burger{color:#0f172a}
+
+    @media (max-width:900px){
+      .main-nav{display:none}
+      .burger{display:inline-flex}
+    }
+
+    .mobile-menu{position:fixed;top:0;right:0;bottom:0;width:min(86vw,360px);
+      background:#fff;box-shadow:-10px 0 30px rgba(0,0,0,.15);
+      transform:translateX(100%);transition:transform .25s ease;z-index:120}
+    .mobile-menu.open{transform:translateX(0)}
+    .mobile-menu header{display:flex;align-items:center;justify-content:space-between;
+      padding:12px 16px;border-bottom:1px solid #eee}
+    .mobile-menu header button{background:none;border:0;width:36px;height:36px}
+    .mobile-menu nav a{display:block;padding:14px 16px;border-bottom:1px solid #f1f1f1;
+      color:#0f172a;text-decoration:none}
+    .mobile-menu .langs{display:flex;gap:10px;padding:14px 16px;font-size:22px}
+
+    .mobile-overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);
+      backdrop-filter:blur(2px);opacity:0;pointer-events:none;transition:opacity .2s;
+      z-index:110}
+    .mobile-overlay.show{opacity:1;pointer-events:auto}
+  </style>
+
 <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='img/favicon/apple-touch-icon.png') }}">
 <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='img/favicon/favicon-32x32.png') }}">
 <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='img/favicon/favicon-16x16.png') }}">
 <link rel="manifest" href="{{ url_for('static', filename='img/favicon/site.webmanifest') }}">
 <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='img/favicon/favicon.ico') }}">
 <meta name="theme-color" content="#0b4654">
+
 <link rel="icon" href="/favicon.ico" sizes="any">
+
 <meta name="google-site-verification" content="4z28-XXEkdcB_VOcaGoy1bhgA-zj7xr6wSf76ZwZ4tQ" />
 
 </head>
@@ -170,8 +200,11 @@
   <!-- ✅ Nouveau header fixe (logo + nav + drapeaux) -->
   <header class="site-header header-on-hero">
     <div class="logo-container">
+      <!-- Logo clair (sur hero/photo) -->
       <img src="{{ url_for('static', filename='img/logo-light.png') }}" alt="Oh La La Tours Bogotá" class="logo logo--light">
+      <!-- Logo foncé (après scroll, fond clair) -->
       <img src="{{ url_for('static', filename='img/logo-dark.png') }}" alt="Oh La La Tours Bogotá" class="logo logo--dark">
+      <!-- Titre -->
       <span class="site-title">Oh La La Tours Bogotá</span>
     </div>
 
@@ -187,9 +220,43 @@
         <a href="{{ lang_url('es') }}" lang="es" aria-label="Español">🇪🇸<span class="sr-only">Español</span></a>
       </div>
     </nav>
+
+    <!-- ✅ Burger button -->
+    <button class="burger" aria-label="Ouvrir le menu" aria-controls="mobileMenu" aria-expanded="false">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M3 6h18M3 12h18M3 18h18"/>
+      </svg>
+    </button>
   </header>
 
-  <!-- Bandeau image + titre -->
+  <!-- ✅ Overlay + panneau mobile -->
+  <div id="mobileOverlay" class="mobile-overlay"></div>
+
+  <aside id="mobileMenu" class="mobile-menu" role="dialog" aria-modal="true" aria-label="Menu">
+    <header>
+      <strong>Oh La La Tours Bogotá</strong>
+      <button id="mobileClose" aria-label="Fermer">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true">
+          <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </header>
+
+    <nav>
+      <a href="{{ url_for('index',     lang=get_locale()) }}">{{ _("Accueil") }}</a>
+      <a href="{{ url_for('tours',     lang=get_locale()) }}">{{ _("Nos tours") }}</a>
+      <a href="{{ url_for('transport', lang=get_locale()) }}">{{ _("Service de Transport") }}</a>
+      <a href="{{ url_for('reservation', lang=get_locale()) }}">{{ _("Réservation") }}</a>
+    </nav>
+
+    <div class="langs" aria-label="{{ _('Changer de langue') }}">
+      <a href="{{ lang_url('fr') }}" lang="fr" aria-label="Français">🇫🇷</a>
+      <a href="{{ lang_url('en') }}" lang="en" aria-label="English">🇺🇸</a>
+      <a href="{{ lang_url('es') }}" lang="es" aria-label="Español">🇪🇸</a>
+    </div>
+  </aside>
+
+  <!-- Bandeau image + titre (ancienne topbar supprimée) -->
   <header class="hero background-half"
           style="background-image: url('{{ url_for('static', filename='images/bg_transport.webp') }}');">
     <h1 class="hero-title">{{ _("Service de Transport — Hôtel ⇄ Aéroport Bogotá") }}</h1>
@@ -197,10 +264,13 @@
 
   <main>
     <section id="transport" class="container">
+
       <div class="transport-description">
         <div class="transport-text">
           <h2>{{ _("Transfert privé, ponctuel et sécurisé") }}</h2>
-          <p>{{ _("Profitez d’un trajet confortable entre votre hébergement et l’aéroport El Dorado (BOG). Chauffeur professionnel et courtois, prise en charge à l’heure et service porte-à-porte.") }}</p>
+          <p>
+            {{ _("Profitez d’un trajet confortable entre votre hébergement et l’aéroport El Dorado (BOG). Chauffeur professionnel et courtois, prise en charge à l’heure et service porte-à-porte.") }}
+          </p>
 
           <div class="tour-includes">
             <h3 class="includes-title">{{ _("Ce qui est inclus :") }}</h3>
@@ -222,13 +292,22 @@
           </ul>
 
           <h3>{{ _("Comment réserver ?") }}</h3>
-          <p>{{ _("Réservez facilement par WhatsApp ou e-mail. Indiquez la date, l’heure de prise en charge, le numéro de vol et le nombre de passagers.") }}</p>
           <p>
-            <a class="btn-primary" href="https://wa.me/573000000000" target="_blank" rel="noopener">{{ _("Réserver sur WhatsApp") }}</a>
-            &nbsp;
-            <a class="btn-primary" href="mailto:contact@ohlalatoursbogota.com">{{ _("Réserver par e-mail") }}</a>
+            {{ _("Réservez facilement par WhatsApp ou e-mail. Indiquez la date, l’heure de prise en charge, le numéro de vol et le nombre de passagers.") }}
           </p>
-          <p style="margin-top:10px;"><small>{{ _("Besoin d’un siège enfant, d’un van ou d’horaires très matinaux ? Dites-le nous lors de la réservation.") }}</small></p>
+          <p>
+            <a class="btn-primary" href="https://wa.me/573000000000" target="_blank" rel="noopener">
+              {{ _("Réserver sur WhatsApp") }}
+            </a>
+            &nbsp;
+            <a class="btn-primary" href="mailto:contact@ohlalatoursbogota.com">
+              {{ _("Réserver par e-mail") }}
+            </a>
+          </p>
+
+          <p style="margin-top:10px;">
+            <small>{{ _("Besoin d’un siège enfant, d’un van ou d’horaires très matinaux ? Dites-le nous lors de la réservation.") }}</small>
+          </p>
         </div>
 
         <div class="transport-img">
@@ -236,6 +315,7 @@
                alt="{{ _('Service de transport privé à Bogota professionnel van taxi aéroport el dorado trajet ponctuel sécurité tour bienvenue à bogota colombie amérique du sud') }}">
         </div>
       </div>
+
     </section>
   </main>
 
@@ -271,6 +351,34 @@
       window.addEventListener('scroll', onScroll, {passive:true});
     })();
   </script>
+
+  <!-- ✅ Burger JS -->
+  <script>
+    (function(){
+      const burger  = document.querySelector('.burger');
+      const menu    = document.getElementById('mobileMenu');
+      const closeBt = document.getElementById('mobileClose');
+      const overlay = document.getElementById('mobileOverlay');
+      if(!burger || !menu || !overlay) return;
+
+      const open = () => {
+        menu.classList.add('open');
+        overlay.classList.add('show');
+        burger.setAttribute('aria-expanded','true');
+        document.body.style.overflow='hidden';
+      };
+      const close = () => {
+        menu.classList.remove('open');
+        overlay.classList.remove('show');
+        burger.setAttribute('aria-expanded','false');
+        document.body.style.overflow='';
+      };
+
+      burger.addEventListener('click', open, {passive:true});
+      if (closeBt) closeBt.addEventListener('click', close, {passive:true});
+      overlay.addEventListener('click', close, {passive:true});
+      window.addEventListener('keydown', (e)=>{ if(e.key==='Escape') close(); });
+    })();
+  </script>
 </body>
 </html>
-

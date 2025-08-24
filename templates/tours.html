@@ -84,9 +84,6 @@
     .lang-switcher{display:flex; gap:8px; margin-left:8px}
     .lang-switcher a{font-size:20px; line-height:1; padding:4px 6px; border-radius:6px}
 
-    /* Ajout: style de base du titre pour desktop */
-    .site-title{font-size:20px; font-weight:600; color:#0f172a;}
-
     /* Sur cette page (hero en fond) : liens & logo blancs au départ */
     .header-on-hero .main-nav a{color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.35)}
     .logo--dark{display:none}
@@ -100,14 +97,6 @@
     .site-header.scrolled .logo--light{display:none}
     .site-header.scrolled .logo--dark{display:block}
     .site-header.scrolled .main-nav a{color:#0f172a}
-
-    /* ======= AJOUT MOBILE: logo seul (cache le titre) ======= */
-    @media (max-width:768px){
-      .site-title{ display:none; }
-      .logo{ height:36px; }
-      .main-nav{ gap:12px; font-size:14px; }
-    }
-    /* =============================================== */
   </style>
 
   <!-- ✅ AJOUT MINIMAL: réactive l’effet glissant & flèches toujours cliquables -->
@@ -211,6 +200,31 @@
     .site-header.scrolled .site-title{ color:#0f172a !important; text-shadow:none; }
   </style>
 
+  <!-- ✅ Burger menu CSS (AJOUT) -->
+  <style>
+    .burger{display:none;background:none;border:0;width:38px;height:38px;
+            align-items:center;justify-content:center;border-radius:8px;color:#fff}
+    .burger svg{width:26px;height:26px}
+    .site-header.scrolled .burger{color:#0f172a}
+    @media (max-width:900px){ .main-nav{display:none} .burger{display:inline-flex} }
+
+    .mobile-menu{position:fixed;top:0;right:0;bottom:0;width:min(86vw,360px);
+      background:#fff;box-shadow:-10px 0 30px rgba(0,0,0,.15);
+      transform:translateX(100%);transition:transform .25s ease;z-index:120}
+    .mobile-menu.open{transform:translateX(0)}
+    .mobile-menu header{display:flex;align-items:center;justify-content:space-between;
+      padding:12px 16px;border-bottom:1px solid #eee}
+    .mobile-menu header button{background:none;border:0;width:36px;height:36px}
+    .mobile-menu nav a{display:block;padding:14px 16px;border-bottom:1px solid #f1f1f1;
+      color:#0f172a;text-decoration:none}
+    .mobile-menu .langs{display:flex;gap:10px;padding:14px 16px;font-size:22px}
+
+    .mobile-overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);
+      backdrop-filter:blur(2px);opacity:0;pointer-events:none;transition:opacity .2s;
+      z-index:110}
+    .mobile-overlay.show{opacity:1;pointer-events:auto}
+  </style>
+
   <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='img/favicon/apple-touch-icon.png') }}">
   <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='img/favicon/favicon-32x32.png') }}">
   <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='img/favicon/favicon-16x16.png') }}">
@@ -248,7 +262,41 @@
         <a href="{{ lang_url('es') }}" lang="es" aria-label="Español">🇪🇸<span class="sr-only">Español</span></a>
       </div>
     </nav>
+
+    <!-- ✅ Burger (AJOUT) -->
+    <button class="burger" aria-label="Ouvrir le menu" aria-controls="mobileMenu" aria-expanded="false">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M3 6h18M3 12h18M3 18h18"/>
+      </svg>
+    </button>
   </header>
+
+  <!-- ✅ Overlay + panneau mobile (AJOUT) -->
+  <div id="mobileOverlay" class="mobile-overlay"></div>
+
+  <aside id="mobileMenu" class="mobile-menu" role="dialog" aria-modal="true" aria-label="Menu">
+    <header>
+      <strong>Oh La La Tours Bogotá</strong>
+      <button id="mobileClose" aria-label="Fermer">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true">
+          <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </header>
+
+    <nav>
+      <a href="{{ url_for('index',     lang=get_locale()) }}">{{ _("Accueil") }}</a>
+      <a href="{{ url_for('tours',     lang=get_locale()) }}">{{ _("Nos tours") }}</a>
+      <a href="{{ url_for('transport', lang=get_locale()) }}">{{ _("Service de Transport") }}</a>
+      <a href="{{ url_for('reservation', lang=get_locale()) }}">{{ _("Réservation") }}</a>
+    </nav>
+
+    <div class="langs" aria-label="{{ _('Changer de langue') }}">
+      <a href="{{ lang_url('fr') }}" lang="fr" aria-label="Français">🇫🇷</a>
+      <a href="{{ lang_url('en') }}" lang="en" aria-label="English">🇺🇸</a>
+      <a href="{{ lang_url('es') }}" lang="es" aria-label="Español">🇪🇸</a>
+    </div>
+  </aside>
 
   <!-- Bandeau image + titre -->
   <header class="hero background-half"
@@ -605,7 +653,37 @@
       window.addEventListener('scroll', onScroll, {passive:true});
     })();
   </script>
+
+  <!-- ✅ Burger JS (AJOUT) -->
+  <script>
+    (function(){
+      const burger  = document.querySelector('.burger');
+      const menu    = document.getElementById('mobileMenu');
+      const closeBt = document.getElementById('mobileClose');
+      const overlay = document.getElementById('mobileOverlay');
+      if(!burger || !menu || !overlay) return;
+
+      const open = () => {
+        menu.classList.add('open');
+        overlay.classList.add('show');
+        burger.setAttribute('aria-expanded','true');
+        document.body.style.overflow='hidden';
+      };
+      const close = () => {
+        menu.classList.remove('open');
+        overlay.classList.remove('show');
+        burger.setAttribute('aria-expanded','false');
+        document.body.style.overflow='';
+      };
+
+      burger.addEventListener('click', open, {passive:true});
+      if (closeBt) closeBt.addEventListener('click', close, {passive:true});
+      overlay.addEventListener('click', close, {passive:true});
+      window.addEventListener('keydown', (e)=>{ if(e.key==='Escape') close(); });
+    })();
+  </script>
 </body>
 </html>
+
 
 
