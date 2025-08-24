@@ -934,6 +934,92 @@ def verify_paypal_capture(capture_id: str) -> bool:
     data = r.json()
     return data.get("status") == "COMPLETED"
 
+# ===== DEBUG PAYPAL =====
+@app.get("/paypal-config")
+def paypal_config():  # si tu l'as déjà, remplace par cette version verbosée
+    return {
+        "client_id": PAYPAL_CLIENT_ID,
+        "currency": PAYPAL_CURRENCY,
+        "mode": PAYPAL_MODE,
+        "client_id_last6": PAYPAL_CLIENT_ID[-6:] if PAYPAL_CLIENT_ID else None,
+        "api_base": PAYPAL_API_BASE,
+    }
+
+@app.get("/paypal-order/<order_id>")
+def paypal_order(order_id):
+    token = paypal_access_token()
+    r = requests.get(
+        f"{PAYPAL_API_BASE}/v2/checkout/orders/{order_id}",
+        headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"},
+        timeout=60
+    )
+    data = r.json()
+    # petite synthèse utile
+    try:
+        payee_mid = data["purchase_units"][0]["payee"].get("merchant_id")
+        status = data.get("status")
+    except Exception:
+        payee_mid = None
+        status = None
+    return {"summary": {"status": status, "payee_merchant_id": payee_mid,
+                        "server_client_id_last6": PAYPAL_CLIENT_ID[-6:] if PAYPAL_CLIENT_ID else None},
+            "raw": data}, r.status_code
+
+@app.post("/capture-paypal-order/<order_id>")
+def capture_paypal_order(order_id):
+    token = paypal_access_token()
+    # (A) on lit l’ordre avant capture pour afficher à qui il appartient
+    r0 = requests.get(
+        f"{PAYPAL_API_BASE}/v2/checkout/orders/{order_id}",
+        headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"},
+        timeout=60
+    )
+    info = {}
+    try:
+        j0 = r0.json()
+        info["pre_status"] = j0.get("status")
+        info["payee_merchant_id"] = j0["purchase_units"][0]["payee"].get("merchant_id")
+    except Exception:
+        pass
+
+    # (B) capture
+    r = requests.post(
+        f"{PAYPAL_API_BASE}/v2/checkout/orders/{order_id}/capture",
+        headers={"Content-Type": "application/json", "Authorization": f"Bearer {token}"},
+        timeout=60
+    )
+    if r.status_code >= 400:
+        try: err = r.json()
+        except: err = {"error": r.text}
+        # on logge + on renvoie un message HUMAIN-LECTIBLE
+        app.logger.error("paypal_capture_error: %s", err)
+        return {
+            "error": "CAPTURE_FAILED",
+            "reason": err,
+            "hint": {
+                "mode": PAYPAL_MODE,
+                "server_client_id_last6": PAYPAL_CLIENT_ID[-6:] if PAYPAL_CLIENT_ID else None,
+                "order_payee_merchant_id": info.get("payee_merchant_id"),
+                "explain": "Si merchant_id ≠ ton compte, ou si client_id_last6 ≠ celui chargé côté front, PayPal renverra 403 PERMISSION_DENIED."
+            }
+        }, 400
+
+    data = r.json()
+    status = data.get("status", "UNKNOWN")
+    capture_id = None
+    try:
+        capture_id = data["purchase_units"][0]["payments"]["captures"][0]["id"]
+    except Exception:
+        pass
+    return {
+        "id": capture_id or data.get("id"),
+        "status": status,
+        "pre": info,
+        "raw": data
+    }
+# ===== /DEBUG PAYPAL =====
+
+
 # ------------------------------------------------------------------
 
 if __name__ == "__main__":
