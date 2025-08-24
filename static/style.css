@@ -541,4 +541,18 @@ form button:hover { background-color: #0056b3; }
   }
 })();
 </script>
+ 
+/* --- BURGER: visible en mobile, caché en desktop --- */
+@media (max-width: 900px){
+  header.site-header .burger{display:inline-flex !important;}
+  header.site-header .main-nav{display:none !important;}
+}
+
+/* Couleur lisible : blanc sur la hero, noir après scroll */
+header.site-header.header-on-hero .burger{ color:#fff; }
+header.site-header.scrolled .burger{ color:#0f172a; }
+
+/* Toujours cliquable au-dessus de tout */
+header.site-header{ z-index: 1000; }
+header.site-header .burger{ z-index: 130; position: relative; }
 
