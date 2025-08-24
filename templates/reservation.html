@@ -283,66 +283,81 @@
 
 <!-- 🟡 PayPal: chargement SDK via /paypal-config + flux complet -->
 <script>
-  (async function(){
-    try {
-      // 1) Récupère client_id + currency depuis le serveur
-      const cfg = await fetch("/paypal-config").then(r => r.json());
+  // … garde le reste identique …
 
-      // 2) Charge le SDK PayPal dynamiquement
-      await new Promise((resolve, reject) => {
-        const s = document.createElement('script');
-        s.src = `https://www.paypal.com/sdk/js?client-id=${cfg.client_id}&components=buttons&currency=${cfg.currency}`;
-        s.onload = resolve;
-        s.onerror = reject;
-        document.head.appendChild(s);
-      });
+  paypal.Buttons({
+    // ... createOrder identique ...
 
-      // 3) Rend le bouton
-      paypal.Buttons({
-        style: { shape: 'rect', layout: 'vertical' },
+    onApprove: async (data, actions) => {
+      const setPaid = (capId) => {
+        if (!capId) return false;
+        document.getElementById('paypal_capture_id').value = capId;
+        const submitBtn = document.getElementById('form-submit');
+        if (submitBtn) submitBtn.disabled = false;
+        return true;
+      };
 
-        // Le montant est calculé côté serveur : on envoie seulement tour + persons
-        createOrder: async () => {
-          const tourSel = document.getElementById('tour');
-          const personsEl = document.getElementById('persons');
-          const tour = tourSel ? tourSel.value : "";
-          const persons = personsEl ? parseInt(personsEl.value || "1", 10) : 1;
+      // 1) Capture SERVEUR (chemin normal)
+      try {
+        const r = await fetch(`/capture-paypal-order/${data.orderID}`, { method: 'POST' });
+        const res = await r.json();
 
-          const r = await fetch('/create-paypal-order', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ tour, persons })
-          });
-          const data = await r.json();
-          if(!r.ok) throw new Error(data.error || 'create order failed');
-          return data.id;
-        },
-
-        // Capture côté serveur puis déverrouille l'envoi
-        onApprove: async (data) => {
-          const r = await fetch(`/capture-paypal-order/${data.orderID}`, { method: 'POST' });
-          const res = await r.json();
-          if(!r.ok || res.status !== "COMPLETED"){
-            alert("Paiement refusé ou annulé.");
+        if (r.ok && (res.status === "COMPLETED" || res.status === "APPROVED")) {
+          // essaie d'extraire la capture depuis plusieurs emplacements possibles
+          let capId = res.id;
+          try {
+            if (!capId) capId = res.raw?.purchase_units?.[0]?.payments?.captures?.[0]?.id;
+          } catch(e){}
+          if (setPaid(capId)) {
+            alert('✅ Paiement confirmé ! Vous pouvez envoyer votre réservation.');
             return;
           }
-          // Stocke l'ID de capture et active le bouton d'envoi
-          document.getElementById('paypal_capture_id').value = res.id || "";
-          const submitBtn = document.getElementById('form-submit');
-          if (submitBtn) submitBtn.disabled = false;
-          alert('✅ Paiement confirmé ! Vous pouvez maintenant envoyer votre réservation.');
-        },
-
-        onError: (err) => {
-          console.error(err);
-          alert("Paiement refusé ou annulé.");
         }
-      }).render('#paypal-button-container');
+      } catch(e) {
+        console.warn("capture serveur KO, on tente un fallback client", e);
+      }
 
-    } catch (e) {
-      console.error("PayPal init error", e);
+      // 2) Fallback: CAPTURE CLIENT (utile surtout pour carte + 3DS)
+      try {
+        const clientCap = await actions.order.capture();   // peut déjà être "COMPLETED"
+        let capId =
+          clientCap?.purchase_units?.[0]?.payments?.captures?.[0]?.id ||
+          clientCap?.id;
+        if (setPaid(capId)) {
+          alert('✅ Paiement confirmé (fallback). Vous pouvez envoyer votre réservation.');
+          return;
+        }
+      } catch(e) {
+        console.warn("fallback capture client KO", e);
+      }
+
+      // 3) Dernier recours : lire la commande et extraire la capture
+      try {
+        const details = await actions.order.get();
+        let capId =
+          details?.purchase_units?.[0]?.payments?.captures?.[0]?.id ||
+          details?.id;
+        if (setPaid(capId)) {
+          alert('✅ Paiement confirmé. Vous pouvez envoyer votre réservation.');
+          return;
+        }
+      } catch(e) {
+        console.warn("order.get KO", e);
+      }
+
+      // Si on arrive ici : on n'a pas trouvé de capture → on indique le pb
+      alert("Paiement validé mais la confirmation n'a pas été reçue. Si le problème persiste, contactez-nous.");
+    },
+
+    onCancel: () => {
+      alert("Paiement annulé.");
+    },
+
+    onError: (err) => {
+      console.error(err);
+      alert("Erreur PayPal : " + (err?.message || "inconnue"));
     }
-  })();
+  }).render('#paypal-button-container');
 </script>
 
 <!-- Garde-fou: empêche l'envoi si paiement non confirmé -->
