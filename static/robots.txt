@@ -1,8 +1,11 @@
 User-agent: *
-# On autorise toutes les pages importantes
+# On autorise toutes les pages principales
 Allow: /
+Allow: /tours
+Allow: /reservation
+Allow: /transport
 
-# On bloque les pages techniques inutiles pour Google
+# On bloque les pages techniques de paiement (inutiles pour le SEO)
 Disallow: /paiement-annule
 Disallow: /paiement-erreur
 Disallow: /paiement-refuse
