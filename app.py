@@ -988,6 +988,20 @@ def verify_paypal_capture(capture_id: str) -> bool:
     return (r.json().get("status") == "COMPLETED")
 # ------------------------------------------------------------------
 
+# --- ALIAS D’ENDPOINTS (secours) : ne fait rien si déjà présents ---
+if "tours" not in app.view_functions:
+    @app.route("/tours", endpoint="tours", methods=["GET"])
+    def __tours_alias():
+        # Rend le template attendu par index.html
+        return render_template("tours.html")
+
+if "transport" not in app.view_functions:
+    @app.route("/transport", endpoint="transport", methods=["GET"])
+    def __transport_alias():
+        return render_template("transport.html")
+# -------------------------------------------------------------------
+
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.getenv("PORT","10000")), debug=bool(os.getenv("DEBUG","0")=="1"))
 
