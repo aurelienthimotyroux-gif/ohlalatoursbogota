@@ -806,11 +806,11 @@ PAYPAL_API_BASE = "https://api-m.sandbox.paypal.com" if PAYPAL_MODE == "sandbox"
 
 # Tarifs par personne en COP (ceux que tu m’as donnés). Ajoute/ajuste si besoin.
 PRICE_COP_PER_PERSON = {
-    "zipaquira": 465_000,
-    "monserrate": 235_000,
-    "finca-cafe": 580_000,
-    # "candelaria": 150_000,
-    # "chorrera": 320_000,
+    "zipaquira": 6000,
+    "monserrate": 6000,
+    "finca-cafe": 6000,
+    # "candelaria": 6000,
+    # "chorrera": 6000,
 }
 
 # Taux interne: 1 unité devise = X COP (ex: 1 USD ≈ 3800 COP)
