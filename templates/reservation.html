@@ -281,84 +281,108 @@
   })();
 </script>
 
-<!-- 🟡 PayPal: chargement SDK via /paypal-config + flux complet -->
+<!-- ===== PayPal: bloc complet (SDK + createOrder + onApprove robuste) ===== -->
 <script>
-  // … garde le reste identique …
+  (async function(){
+    // 1) Récupère la config serveur (client_id + currency)
+    const cfgRes = await fetch("/paypal-config");
+    if (!cfgRes.ok) { alert("Erreur /paypal-config"); return; }
+    const cfg = await cfgRes.json();
 
-  paypal.Buttons({
-    // ... createOrder identique ...
+    // 2) Charge le SDK PayPal (LIVE si PAYPAL_MODE=live)
+    await new Promise((ok, ko) => {
+      const s = document.createElement("script");
+      s.src = `https://www.paypal.com/sdk/js?client-id=${encodeURIComponent(cfg.client_id)}&components=buttons&currency=${encodeURIComponent(cfg.currency)}`;
+      s.onload = ok; s.onerror = () => ko(new Error("Échec chargement SDK PayPal"));
+      document.head.appendChild(s);
+    });
 
-    onApprove: async (data, actions) => {
-      const setPaid = (capId) => {
-        if (!capId) return false;
-        document.getElementById('paypal_capture_id').value = capId;
-        const submitBtn = document.getElementById('form-submit');
-        if (submitBtn) submitBtn.disabled = false;
-        return true;
-      };
+    // 3) Rend les boutons
+    paypal.Buttons({
+      style: { shape: "rect", layout: "vertical" },
 
-      // 1) Capture SERVEUR (chemin normal)
-      try {
-        const r = await fetch(`/capture-paypal-order/${data.orderID}`, { method: 'POST' });
-        const res = await r.json();
+      // 👉 IMPORTANT : créer la commande côté serveur pour calculer le montant
+      createOrder: async () => {
+        const tour = (document.getElementById("tour")?.value || "").toLowerCase();
+        const persons = parseInt(document.getElementById("persons")?.value || "1", 10);
 
-        if (r.ok && (res.status === "COMPLETED" || res.status === "APPROVED")) {
-          // essaie d'extraire la capture depuis plusieurs emplacements possibles
-          let capId = res.id;
-          try {
-            if (!capId) capId = res.raw?.purchase_units?.[0]?.payments?.captures?.[0]?.id;
-          } catch(e){}
-          if (setPaid(capId)) {
-            alert('✅ Paiement confirmé ! Vous pouvez envoyer votre réservation.');
-            return;
+        if (!tour) { alert("Merci de choisir un tour."); throw new Error("tour_required"); }
+
+        const r = await fetch("/create-paypal-order", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ tour, persons })
+        });
+        const data = await r.json();
+        if (!r.ok) {
+          const msg = (data && (data.error?.message || data.error || data.detail)) || "Erreur serveur";
+          alert("❌ Création de la commande PayPal impossible : " + msg);
+          throw new Error(msg);
+        }
+        return data.id; // orderID
+      },
+
+      // ✅ Ton onApprove robuste (serveur -> fallback client -> order.get)
+      onApprove: async (data, actions) => {
+        const setPaid = (capId) => {
+          if (!capId) return false;
+          document.getElementById('paypal_capture_id').value = capId;
+          const submitBtn = document.getElementById('form-submit');
+          if (submitBtn) submitBtn.disabled = false;
+          return true;
+        };
+
+        // 1) Capture SERVEUR
+        try {
+          const r = await fetch(`/capture-paypal-order/${data.orderID}`, { method: 'POST' });
+          const res = await r.json();
+
+          if (r.ok && (res.status === "COMPLETED" || res.status === "APPROVED")) {
+            let capId = res.id;
+            try { if (!capId) capId = res.raw?.purchase_units?.[0]?.payments?.captures?.[0]?.id; } catch(e){}
+            if (setPaid(capId)) { alert('✅ Paiement confirmé ! Vous pouvez envoyer votre réservation.'); return; }
           }
-        }
-      } catch(e) {
-        console.warn("capture serveur KO, on tente un fallback client", e);
-      }
+        } catch(e) { console.warn("capture serveur KO, fallback client", e); }
 
-      // 2) Fallback: CAPTURE CLIENT (utile surtout pour carte + 3DS)
-      try {
-        const clientCap = await actions.order.capture();   // peut déjà être "COMPLETED"
-        let capId =
-          clientCap?.purchase_units?.[0]?.payments?.captures?.[0]?.id ||
-          clientCap?.id;
-        if (setPaid(capId)) {
-          alert('✅ Paiement confirmé (fallback). Vous pouvez envoyer votre réservation.');
-          return;
-        }
-      } catch(e) {
-        console.warn("fallback capture client KO", e);
-      }
+        // 2) Fallback: CAPTURE CLIENT
+        try {
+          const clientCap = await actions.order.capture();
+          let capId = clientCap?.purchase_units?.[0]?.payments?.captures?.[0]?.id || clientCap?.id;
+          if (setPaid(capId)) { alert('✅ Paiement confirmé (fallback). Vous pouvez envoyer votre réservation.'); return; }
+        } catch(e) { console.warn("fallback capture client KO", e); }
 
-      // 3) Dernier recours : lire la commande et extraire la capture
-      try {
-        const details = await actions.order.get();
-        let capId =
-          details?.purchase_units?.[0]?.payments?.captures?.[0]?.id ||
-          details?.id;
-        if (setPaid(capId)) {
-          alert('✅ Paiement confirmé. Vous pouvez envoyer votre réservation.');
-          return;
-        }
-      } catch(e) {
-        console.warn("order.get KO", e);
-      }
+        // 3) Dernier recours : lire l’ordre
+        try {
+          const details = await actions.order.get();
+          let capId = details?.purchase_units?.[0]?.payments?.captures?.[0]?.id || details?.id;
+          if (setPaid(capId)) { alert('✅ Paiement confirmé. Vous pouvez envoyer votre réservation.'); return; }
+        } catch(e) { console.warn("order.get KO", e); }
 
-      // Si on arrive ici : on n'a pas trouvé de capture → on indique le pb
-      alert("Paiement validé mais la confirmation n'a pas été reçue. Si le problème persiste, contactez-nous.");
-    },
+        alert("Paiement validé mais la confirmation n'a pas été reçue. Contactez-nous si besoin.");
+      },
 
-    onCancel: () => {
-      alert("Paiement annulé.");
-    },
-
-    onError: (err) => {
-      console.error(err);
-      alert("Erreur PayPal : " + (err?.message || "inconnue"));
-    }
-  }).render('#paypal-button-container');
+      onCancel: () => { alert("Paiement annulé."); },
+      onError:  (err) => { console.error(err); alert("Erreur PayPal : " + (err?.message || "inconnue")); }
+    }).render('#paypal-button-container');
+  })();
 </script>
+
+<!-- Garde-fou: empêche l'envoi si paiement non confirmé -->
+<script>
+  (function(){
+    const form = document.querySelector('.reservation-form');
+    if(!form) return;
+    form.addEventListener('submit', function(e){
+      const paid = (document.getElementById('paypal_capture_id').value || '').trim().length > 0;
+      if(!paid){
+        e.preventDefault();
+        alert("Merci d'effectuer le paiement PayPal avant d'envoyer la réservation.");
+      }
+    });
+  })();
+</script>
+<!-- ===== /PayPal ===== -->
+
 
 <!-- Garde-fou: empêche l'envoi si paiement non confirmé -->
 <script>
