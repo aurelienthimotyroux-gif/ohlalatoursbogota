@@ -773,19 +773,19 @@ def favicon():
     )
 
 # ------------------------------------------------------------------
-# 🟡 PAYPAL — unified (keep only ONE copy of these)
+# 🟡 PAYPAL — unified (bloc unique à remplacer tel quel)
 # ------------------------------------------------------------------
 import time, requests
 
 # Config
-PAYPAL_MODE = os.getenv("PAYPAL_MODE", "sandbox").lower()  # 'sandbox' or 'live'
+PAYPAL_MODE = os.getenv("PAYPAL_MODE", "sandbox").lower()  # 'sandbox' ou 'live'
 PAYPAL_CLIENT_ID = os.getenv("PAYPAL_CLIENT_ID", "")
-# accept either PAYPAL_CLIENT_SECRET or PAYPAL_SECRET (fallback)
+# accepte PAYPAL_CLIENT_SECRET ou PAYPAL_SECRET (fallback)
 PAYPAL_CLIENT_SECRET = os.getenv("PAYPAL_CLIENT_SECRET") or os.getenv("PAYPAL_SECRET", "")
 PAYPAL_CURRENCY = os.getenv("PAYPAL_CURRENCY", "USD").upper()
 PAYPAL_API_BASE = "https://api-m.sandbox.paypal.com" if PAYPAL_MODE == "sandbox" else "https://api-m.paypal.com"
 
-# Price table (per person, in COP). Add the missing tours when you have prices.
+# Tarifs par personne (COP). Ajoute les manquants quand dispo.
 PRICE_COP_PER_PERSON = {
     "zipaquira": 6000,
     "monserrate": 6000,
@@ -794,21 +794,22 @@ PRICE_COP_PER_PERSON = {
     # "chorrera": 6000,
 }
 
-# FX: 1 UNIT currency = X COP (internal rate for conversion)
+# FX interne: 1 unité devise = X COP (utilisé si tu encaisses en USD/EUR)
 COP_PER_UNIT = Decimal(os.getenv("COP_PER_UNIT", "3800"))
 
-HTTP_TIMEOUT = 60  # give PayPal enough time
+HTTP_TIMEOUT = 60  # laisser le temps à PayPal
 
 def _money2(q: Decimal) -> str:
     return str(q.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP))
 
 def compute_price(tour: str, persons: int):
     """
-    Returns (amount_str_in_PAYPAL_CURRENCY, description)
+    Retourne (amount_str_en_PAYPAL_CURRENCY, description)
     """
     key = (tour or "").strip().lower()
     if key not in PRICE_COP_PER_PERSON:
         raise ValueError("Tour non tarifé")
+
     try:
         n = int(persons)
     except Exception:
@@ -820,6 +821,7 @@ def compute_price(tour: str, persons: int):
         total_unit = total_cop
     else:
         total_unit = (total_cop / COP_PER_UNIT)
+
     amount = _money2(total_unit)
     desc = f"Reservation {key} x{n}"
     return amount, desc
@@ -833,18 +835,20 @@ def paypal_access_token() -> str:
         timeout=HTTP_TIMEOUT
     )
     r.raise_for_status()
-    return r.json()["access_token"]
+    js = r.json()
+    return js["access_token"]
 
-# ---- Routes (one copy only) ----
+# ---- Routes (un seul exemplaire de chacune) ----
 
 @app.get("/paypal-config")
 def paypal_config():
+    # Utile pour vérifier en prod la cohérence front/serveur
     return {
         "client_id": PAYPAL_CLIENT_ID,
         "currency": PAYPAL_CURRENCY,
         "mode": PAYPAL_MODE,
-        "client_id_last6": PAYPAL_CLIENT_ID[-6:] if PAYPAL_CLIENT_ID else None,
         "api_base": PAYPAL_API_BASE,
+        "client_id_last6": PAYPAL_CLIENT_ID[-6:] if PAYPAL_CLIENT_ID else None,
     }
 
 @app.post("/create-paypal-order")
@@ -852,6 +856,7 @@ def create_paypal_order():
     data = request.get_json(silent=True) or {}
     tour = (data.get("tour") or "").strip()
     persons = data.get("persons") or 1
+
     try:
         amount, description = compute_price(tour, persons)
     except ValueError as e:
@@ -869,19 +874,26 @@ def create_paypal_order():
             "user_action": "PAY_NOW",
         }
     }
+
     r = requests.post(
         f"{PAYPAL_API_BASE}/v2/checkout/orders",
-        headers={"Content-Type": "application/json", "Authorization": f"Bearer {token}"},
+        headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"},
         json=payload, timeout=HTTP_TIMEOUT
     )
     if r.status_code >= 400:
-        try: err = r.json()
-        except: err = {"error": r.text}
+        try:
+            err = r.json()
+        except Exception:
+            err = {"error": r.text}
         app.logger.error("paypal_create_error: %s", err)
         return {"error": err}, 400
 
     order = r.json()
-    return {"id": order["id"]}
+    oid = order.get("id")
+    if not oid:
+        app.logger.error("paypal_create_no_id: %s", order)
+        return {"error": "CREATE_NO_ID", "raw": order}, 400
+    return {"id": oid}
 
 @app.get("/paypal-order/<order_id>")
 def paypal_order(order_id):
@@ -891,44 +903,52 @@ def paypal_order(order_id):
         headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"},
         timeout=HTTP_TIMEOUT
     )
-    data = r.json()
+    data = r.json() if r.content else {}
     try:
         payee_mid = data["purchase_units"][0]["payee"].get("merchant_id")
-        status = data.get("status")
     except Exception:
-        payee_mid, status = None, None
-    return {"summary": {"status": status,
-                        "payee_merchant_id": payee_mid,
-                        "server_client_id_last6": PAYPAL_CLIENT_ID[-6:] if PAYPAL_CLIENT_ID else None},
-            "raw": data}, r.status_code
+        payee_mid = None
+    return {
+        "summary": {
+            "status": data.get("status"),
+            "payee_merchant_id": payee_mid,
+            "server_client_id_last6": PAYPAL_CLIENT_ID[-6:] if PAYPAL_CLIENT_ID else None
+        },
+        "raw": data
+    }, r.status_code
 
 @app.post("/capture-paypal-order/<order_id>")
 def capture_paypal_order(order_id):
     token = paypal_access_token()
 
-    # (A) Read order before capture (useful for debugging merchant mismatch)
-    r0 = requests.get(
-        f"{PAYPAL_API_BASE}/v2/checkout/orders/{order_id}",
-        headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"},
-        timeout=HTTP_TIMEOUT
-    )
-    info = {}
+    # (A) Lecture de l'order avant capture (debug mismatch de compte)
+    pre = {}
     try:
-        j0 = r0.json()
-        info["pre_status"] = j0.get("status")
-        info["payee_merchant_id"] = j0["purchase_units"][0]["payee"].get("merchant_id")
-    except Exception:
-        pass
+        r0 = requests.get(
+            f"{PAYPAL_API_BASE}/v2/checkout/orders/{order_id}",
+            headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"},
+            timeout=HTTP_TIMEOUT
+        )
+        j0 = r0.json() if r0.content else {}
+        pre["pre_status"] = j0.get("status")
+        try:
+            pre["payee_merchant_id"] = j0["purchase_units"][0]["payee"].get("merchant_id")
+        except Exception:
+            pre["payee_merchant_id"] = None
+    except Exception as e:
+        app.logger.warning("paypal_pre_read_failed: %s", e)
 
     # (B) Capture
     r = requests.post(
         f"{PAYPAL_API_BASE}/v2/checkout/orders/{order_id}/capture",
-        headers={"Content-Type": "application/json", "Authorization": f"Bearer {token}"},
+        headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"},
         timeout=HTTP_TIMEOUT
     )
     if r.status_code >= 400:
-        try: err = r.json()
-        except: err = {"error": r.text}
+        try:
+            err = r.json()
+        except Exception:
+            err = {"error": r.text}
         app.logger.error("paypal_capture_error: %s", err)
         return {
             "error": "CAPTURE_FAILED",
@@ -936,19 +956,22 @@ def capture_paypal_order(order_id):
             "hint": {
                 "mode": PAYPAL_MODE,
                 "server_client_id_last6": PAYPAL_CLIENT_ID[-6:] if PAYPAL_CLIENT_ID else None,
-                "order_payee_merchant_id": info.get("payee_merchant_id"),
-                "explain": "Si merchant_id ≠ ton compte, ou si client_id_last6 ≠ celui chargé côté front, PayPal renverra 403 PERMISSION_DENIED."
+                "order_payee_merchant_id": pre.get("payee_merchant_id"),
+                "explain": "Si merchant_id ≠ ton compte, ou si client_id_last6 ≠ celui chargé côté front, PayPal renvoie 403 PERMISSION_DENIED."
             }
         }, 400
 
-    data = r.json()
+    data = r.json() if r.content else {}
     status = data.get("status", "UNKNOWN")
-    capture_id = None
+
+    # capture id possible à 2 endroits selon les cas
+    cap_id = None
     try:
-        capture_id = data["purchase_units"][0]["payments"]["captures"][0]["id"]
+        cap_id = data["purchase_units"][0]["payments"]["captures"][0]["id"]
     except Exception:
-        pass
-    return {"id": capture_id or data.get("id"), "status": status, "pre": info, "raw": data}
+        cap_id = data.get("id")
+
+    return {"id": cap_id, "status": status, "pre": pre, "raw": data}
 
 def verify_paypal_capture(capture_id: str) -> bool:
     if not capture_id:
