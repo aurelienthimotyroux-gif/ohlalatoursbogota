@@ -284,9 +284,10 @@
       <button type="submit" id="form-submit" disabled>{{ _("Envoyer") }}</button>
     </form>
 
-    <div class="payment-box" style="max-width:1000px;margin:24px auto;padding:16px;border:1px solid #e5e7eb;border-radius:12px;background:#fafafa">
+    <!-- ✅ SEULE MODIF: centrage du bloc PayPal -->
+    <div class="payment-box" style="max-width:1000px;margin:24px auto;padding:16px;border:1px solid #e5e7eb;border-radius:12px;background:#fafafa;text-align:center">
       <h2 style="margin:0 0 12px 0;font-size:1.25rem">{{ _("Payer maintenant par PayPal") }}</h2>
-      <div id="paypal-button-container"></div>
+      <div id="paypal-button-container" style="display:inline-block;"></div>
       <p style="margin-top:10px;font-size:.9rem;color:#374151">
         {{ _("Le paiement est sécurisé via PayPal. Le montant est calculé automatiquement selon le tour et le nombre de personnes.") }}
       </p>
@@ -447,4 +448,3 @@
 
 </body>
 </html>
-
