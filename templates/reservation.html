@@ -218,25 +218,22 @@
         <option value="finca-cafe" {{ 'selected' if tour=='finca-cafe' else '' }}>{{ _("Visite d’une finca à café") }}</option>
       </select>
 
-      <!-- 🟡 PAYPAL: ID de capture stocké ici -->
+      <!-- 🟡 PayPal: champ caché pour l’ID de capture -->
       <input type="hidden" id="paypal_capture_id" name="paypal_capture_id" value="">
 
       <!-- Bouton Envoyer désactivé tant que le paiement n'est pas confirmé -->
       <button type="submit" id="form-submit" disabled>{{ _("Envoyer") }}</button>
     </form>
 
-    <!-- 🟡 PAYPAL: bloc paiement -->
+    <!-- 🟡 PayPal: bloc bouton -->
     <div class="payment-box" style="max-width:1000px;margin:24px auto;padding:16px;border:1px solid #e5e7eb;border-radius:12px;background:#fafafa">
       <h2 style="margin:0 0 12px 0;font-size:1.25rem">{{ _("Payer maintenant par PayPal") }}</h2>
-
-      <!-- Conteneur du bouton PayPal -->
       <div id="paypal-button-container"></div>
-
       <p style="margin-top:10px;font-size:.9rem;color:#374151">
         {{ _("Le paiement est sécurisé via PayPal. Le montant est calculé automatiquement selon le tour et le nombre de personnes.") }}
       </p>
     </div>
-    <!-- 🟡 /PAYPAL -->
+    <!-- /PayPal -->
   </section>
 </main>
 
@@ -284,33 +281,27 @@
   })();
 </script>
 
-<!-- 🟡 PAYPAL: scripts -->
+<!-- 🟡 PayPal: chargement SDK via /paypal-config + flux complet -->
 <script>
-  (function(){
-    // Charger la config PayPal (client_id + currency), puis le SDK
-    fetch("/paypal-config")
-      .then(r => r.json())
-      .then(async cfg => {
-        const sdkUrl = `https://www.paypal.com/sdk/js?client-id=${cfg.client_id}&components=buttons&currency=${cfg.currency}`;
-        await loadScript(sdkUrl);
-        renderPayPalButtons();
-      })
-      .catch(err => console.error("paypal-config error", err));
+  (async function(){
+    try {
+      // 1) Récupère client_id + currency depuis le serveur
+      const cfg = await fetch("/paypal-config").then(r => r.json());
 
-    function loadScript(src){
-      return new Promise((res, rej) => {
+      // 2) Charge le SDK PayPal dynamiquement
+      await new Promise((resolve, reject) => {
         const s = document.createElement('script');
-        s.src = src; s.onload = res; s.onerror = rej;
+        s.src = `https://www.paypal.com/sdk/js?client-id=${cfg.client_id}&components=buttons&currency=${cfg.currency}`;
+        s.onload = resolve;
+        s.onerror = reject;
         document.head.appendChild(s);
       });
-    }
 
-    function renderPayPalButtons(){
-      if (!window.paypal) return;
+      // 3) Rend le bouton
       paypal.Buttons({
         style: { shape: 'rect', layout: 'vertical' },
 
-        // ✅ Ne pas envoyer de montant : le serveur calcule à partir de tour + persons
+        // Le montant est calculé côté serveur : on envoie seulement tour + persons
         createOrder: async () => {
           const tourSel = document.getElementById('tour');
           const personsEl = document.getElementById('persons');
@@ -327,18 +318,18 @@
           return data.id;
         },
 
-        // ✅ Capture côté serveur, puis on stocke l'ID de capture et on active "Envoyer"
+        // Capture côté serveur puis déverrouille l'envoi
         onApprove: async (data) => {
           const r = await fetch(`/capture-paypal-order/${data.orderID}`, { method: 'POST' });
           const res = await r.json();
-          if(!r.ok) throw new Error(res.error || 'capture failed');
-
-          const captureId = res.id || "";
-          document.getElementById('paypal_capture_id').value = captureId;
-
+          if(!r.ok || res.status !== "COMPLETED"){
+            alert("Paiement refusé ou annulé.");
+            return;
+          }
+          // Stocke l'ID de capture et active le bouton d'envoi
+          document.getElementById('paypal_capture_id').value = res.id || "";
           const submitBtn = document.getElementById('form-submit');
           if (submitBtn) submitBtn.disabled = false;
-
           alert('✅ Paiement confirmé ! Vous pouvez maintenant envoyer votre réservation.');
         },
 
@@ -347,11 +338,14 @@
           alert("Paiement refusé ou annulé.");
         }
       }).render('#paypal-button-container');
+
+    } catch (e) {
+      console.error("PayPal init error", e);
     }
   })();
 </script>
 
-<!-- 🟡 Garde-fou: empêcher l'envoi sans paiement si bouton actif -->
+<!-- Garde-fou: empêche l'envoi si paiement non confirmé -->
 <script>
   (function(){
     const form = document.querySelector('.reservation-form');
@@ -365,10 +359,9 @@
     });
   })();
 </script>
-<!-- 🟡 /PAYPAL -->
+<!-- /PayPal -->
 
 </body>
 </html>
-
 
 
