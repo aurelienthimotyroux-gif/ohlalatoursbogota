@@ -120,7 +120,7 @@
     .site-header.scrolled .main-nav a{color:#0f172a}
     .site-header.scrolled .site-title{ color:#0f172a; }
 
-    /* Styles existants pour avis, etc. (conservés) */
+    /* Avis & divers (inchangés) */
     .testimonials { background:#fff; padding:40px 20px; margin-top:40px; }
     .testimonials .container { max-width:1000px; margin:0 auto; }
     .testimonials h2 { text-align:center; margin-bottom:22px; font-size:28px; }
@@ -149,7 +149,7 @@
     @media (min-width: 768px){ .sticky-cta { display: none; } }
   </style>
 
-  <!-- ✅ AJOUT CSS: Burger + menu mobile (rien supprimé) -->
+  <!-- ✅ AJOUT CSS: Burger + drapeaux mobile (rien d’autre modifié) -->
   <style>
     /* Cacher le titre en mobile */
     @media (max-width: 640px){ .site-title{ display:none; } }
@@ -159,7 +159,17 @@
             align-items:center;justify-content:center;border-radius:8px;color:#fff}
     .burger svg{width:26px;height:26px}
     .site-header.scrolled .burger{color:#0f172a}
-    @media (max-width:900px){ .main-nav{display:none} .burger{display:inline-flex} }
+    @media (max-width:900px){
+      .main-nav{display:none !important}
+      .burger{display:inline-flex !important}
+    }
+
+    /* Drapeaux compacts visibles en mobile dans la barre */
+    .lang-compact{display:none; gap:8px; font-size:20px; line-height:1}
+    .lang-compact a{padding:2px 4px; border-radius:6px; text-decoration:none}
+    .header-on-hero .lang-compact a{color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.35)}
+    .site-header.scrolled .lang-compact a{color:#0f172a; text-shadow:none}
+    @media (max-width:900px){ .lang-compact{display:flex} }
 
     /* Panneau mobile + overlay */
     .mobile-menu{position:fixed;top:0;right:0;bottom:0;width:min(86vw,360px);
@@ -219,7 +229,14 @@
     </div>
   </nav>
 
-  <!-- ✅ AJOUT: bouton burger (ne remplace rien) -->
+  <!-- ✅ Drapeaux compacts visibles en mobile -->
+  <div class="lang-compact" aria-label="{{ _('Changer de langue') }}">
+    <a href="{{ lang_url('fr') }}" lang="fr" aria-label="Français">🇫🇷</a>
+    <a href="{{ lang_url('en') }}" lang="en" aria-label="English">🇺🇸</a>
+    <a href="{{ lang_url('es') }}" lang="es" aria-label="Español">🇪🇸</a>
+  </div>
+
+  <!-- ✅ bouton burger -->
   <button class="burger" aria-label="Ouvrir le menu" aria-controls="mobileMenu" aria-expanded="false">
     <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
       <path d="M3 6h18M3 12h18M3 18h18"/>
@@ -227,7 +244,7 @@
   </button>
 </header>
 
-<!-- ✅ AJOUT: overlay + panneau mobile (ajoutés, rien supprimé) -->
+<!-- ✅ overlay + panneau mobile -->
 <div id="mobileOverlay" class="mobile-overlay"></div>
 
 <aside id="mobileMenu" class="mobile-menu" role="dialog" aria-modal="true" aria-label="Menu">
@@ -339,10 +356,13 @@
   <div class="container">
     <h2>{{ _("Avis des voyageurs") }}</h2>
 
-    <!-- 1) commentaires venant de la BDD (inchangé) -->
-    <div class="testimonials-grid">
+    <!-- Grille unique : on met BDD + fallback dedans, puis JS trie par date -->
+    <div class="testimonials-grid" id="all-testimonials">
+
+      {# ---- 1) Commentaires BDD (inchangés) ---- #}
       {% for comment in comments or [] %}
-        <div class="testimonial-card">
+        {% set is_long = (comment.message|length > 200) %}
+        <div class="testimonial-card" data-name="{{ comment.name }}" data-country="{{ comment.country or '' }}" data-ts="">
           <div class="t-head">
             <div class="t-name">
               {{ comment.name }}{% if comment.country %} · {{ comment.country }}{% endif %}
@@ -363,7 +383,6 @@
             <span class="sr-only">{{ comment.rating }} / 5</span>
           </div>
 
-          {% set is_long = (comment.message|length > 200) %}
           <p class="t-text{{ ' clamp' if is_long else '' }}"
              id="comment-{{ loop.index }}"
              data-full="{{ comment.message|e }}">
@@ -376,41 +395,38 @@
           </button>
         </div>
       {% endfor %}
-    </div>
 
-    <!-- 2) Fallback – commentaires par défaut (Francis, Katy, Liliana, …) -->
-    {% set fallback_comments = [
-        {"name": "Francis", "country": "Canada", "date_str": "12 mai 2025", "rating": 5, "message": "L’expérience est super. Alejandra prend son temps pour nous expliquer et répondre à nos questions."},
-        {"name": "Katy", "country": "Mexique", "date_str": "21 mars 2023", "rating": 5, "message": "Recommandé. La communication avec Alejandra était excellente avant et pendant, tout ce qui était décrit était respecté et toujours à l'écoute de nos besoins. C’est probablement un lieu que vous devez visiter si vous venez à Bogotá : belles vues et cathédrale de sel à couper le souffle."},
-        {"name": "Liliana", "country": "États-Unis", "date_str": "4 mars 2023", "rating": 4.5, "message": "Expérience incroyable ! Alejandra et son père (Omar) ont pris soin des besoins spéciaux de mon mari, et tout a été fait à 100%. La Catedral de Sal, la cuisine traditionnelle à Brasas del Llano : une expérience culturelle 5 étoiles."},
-        {"name": "Marvin", "country": "Mexique", "date_str": "15 septembre 2022", "rating": 5, "message": "Alejandra et son père sont extraordinaires et nous ont offert une très belle journée à Zipaquirá. Nous repartons avec d’excellents souvenirs. Merci !"},
-        {"name": "Oscar", "country": "Costa Rica", "date_str": "8 janvier 2023", "rating": 4.5, "message": "Merci beaucoup pour votre gentillesse et votre disponibilité. Super recommandé."},
-        {"name": "Sam", "country": "États-Unis", "date_str": "14 août 2022", "rating": 5, "message": "Alejandra et son père Omar ont été des hôtes parfaits, très attentifs à ma manière de vouloir profiter de la visite."},
-        {"name": "Kristina", "country": "Mexique", "date_str": "27 août 2022", "rating": 5, "message": "Nous recommandons cette expérience. Nous avons passé un excellent moment. Alejandra et son père sont polis et sympathiques."},
-        {"name": "Jorge", "country": "Mexique", "date_str": "11 août 2022", "rating": 5, "message": "Hautement recommandé. Alejandra et son père ont été très sympathiques et à notre écoute à tout moment."},
-        {"name": "Fabiola", "country": "Mexique", "date_str": "11 août 2022", "rating": 5, "message": "Du début à la fin, une expérience très agréable. Alejandra et son père Omar ont été très attentifs et gentils."},
-        {"name": "Luna", "country": "Costa Rica", "date_str": "25 juillet 2019", "rating": 5, "message": "Voyage bien planifié. À l’heure pour le pickup à l’hôtel. Pendant le trajet, Alejandra et Omar sont très sympathiques et patients."},
-        {"name": "Yuliana", "country": "Costa Rica", "date_str": "18 juillet 2019", "rating": 5, "message": "Ale et Omar (son papa) sont super sympas et très impliqués pour que vous vous sentiez comme chez vous."},
-        {"name": "Ann", "country": "États-Unis", "date_str": "22 février 2020", "rating": 5, "message": "Sympathiques, réactifs à nos questions, et des sites fascinants que nous n’aurions jamais trouvés seuls."},
-        {"name": "Nancy", "country": "Mexique", "date_str": "30 juillet 2019", "rating": 5, "message": "L’une des meilleures expériences à ne pas manquer. Hospitalité au top, parcours agréable, visite impressionnante de la cathédrale de sel."}
-    ] %}
+      {# ---- 2) Fallback : 13 avis fournis (avec date ISO pour tri) ---- #}
+      {% set fallback_comments = [
+        {"name":"Francis","country":"Canada","date_str":"12 mai 2025","date_iso":"2025-05-12","rating":5,"message":"L’expérience est super. Alejandra prend son temps pour nous expliquer et répondre à nos questions."},
+        {"name":"Katy","country":"Mexique","date_str":"21 mars 2023","date_iso":"2023-03-21","rating":5,"message":"Recommandé. La communication avec Alejandra était excellente avant et pendant, tout ce qui était décrit était respecté et toujours à l'écoute de nos besoins. C’est probablement un lieu que vous devez visiter si vous venez à Bogotá : belles vues et cathédrale de sel à couper le souffle."},
+        {"name":"Liliana","country":"États-Unis","date_str":"4 mars 2023","date_iso":"2023-03-04","rating":4.5,"message":"Expérience incroyable ! Alejandra et son père (Omar) ont pris soin des besoins spéciaux de mon mari, et tout a été fait à 100%. La Catedral de Sal, la cuisine traditionnelle à Brasas del Llano : une expérience culturelle 5 étoiles."},
+        {"name":"Marvin","country":"Mexique","date_str":"15 septembre 2022","date_iso":"2022-09-15","rating":5,"message":"Alejandra et son père sont extraordinaires et nous ont offert une très belle journée à Zipaquirá. Nous repartons avec d’excellents souvenirs. Merci !"},
+        {"name":"Oscar","country":"Costa Rica","date_str":"8 janvier 2023","date_iso":"2023-01-08","rating":4.5,"message":"Merci beaucoup pour votre gentillesse et votre disponibilité. Super recommandé."},
+        {"name":"Sam","country":"États-Unis","date_str":"14 août 2022","date_iso":"2022-08-14","rating":5,"message":"Alejandra et son père Omar ont été des hôtes parfaits, très attentifs à ma manière de vouloir profiter de la visite."},
+        {"name":"Kristina","country":"Mexique","date_str":"27 août 2022","date_iso":"2022-08-27","rating":5,"message":"Nous recommandons cette expérience. Nous avons passé un excellent moment. Alejandra et son père sont polis et sympathiques."},
+        {"name":"Jorge","country":"Mexique","date_str":"11 août 2022","date_iso":"2022-08-11","rating":5,"message":"Hautement recommandé. Alejandra et son père ont été très sympathiques et à notre écoute à tout moment."},
+        {"name":"Fabiola","country":"Mexique","date_str":"11 août 2022","date_iso":"2022-08-11","rating":5,"message":"Du début à la fin, une expérience très agréable. Alejandra et son père Omar ont été très attentifs et gentils."},
+        {"name":"Luna","country":"Costa Rica","date_str":"25 juillet 2019","date_iso":"2019-07-25","rating":5,"message":"Voyage bien planifié. À l’heure pour le pickup à l’hôtel. Pendant le trajet, Alejandra et Omar sont très sympathiques et patients."},
+        {"name":"Yuliana","country":"Costa Rica","date_str":"18 juillet 2019","date_iso":"2019-07-18","rating":5,"message":"Ale et Omar (son papa) sont super sympas et très impliqués pour que vous vous sentiez comme chez vous."},
+        {"name":"Ann","country":"États-Unis","date_str":"22 février 2020","date_iso":"2020-02-22","rating":5,"message":"Sympathiques, réactifs à nos questions, et des sites fascinants que nous n’aurions jamais trouvés seuls."},
+        {"name":"Nancy","country":"Mexique","date_str":"30 juillet 2019","date_iso":"2019-07-30","rating":5,"message":"L’une des meilleures expériences à ne pas manquer. Hospitalité au top, parcours agréable, visite impressionnante de la cathédrale de sel."}
+      ] %}
 
-    {% set db_pairs = namespace(seen={}) %}
-    {% for c in comments or [] %}
-      {% set kp = (c.name ~ '|' ~ (c.country or '')) %}
-      {% set _ = db_pairs.seen.update({kp: 1}) %}
-    {% endfor %}
+      {% set db_pairs = namespace(seen={}) %}
+      {% for c in comments or [] %}
+        {% set kp = (c.name ~ '|' ~ (c.country or '')) %}
+        {% set _ = db_pairs.seen.update({kp: 1}) %}
+      {% endfor %}
 
-    <div class="testimonials-grid">
-      {# on n’ajoute PAS de doublon si déjà présent dans la BDD #}
       {% for fb in fallback_comments %}
         {% set kp = fb.name ~ '|' ~ fb.country %}
         {% if not (kp in db_pairs.seen) %}
-          <div class="testimonial-card">
+          {% set is_long = (fb.message|length > 200) %}
+          <div class="testimonial-card"
+               data-name="{{ fb.name }}" data-country="{{ fb.country }}" data-ts="{{ fb.date_iso }}">
             <div class="t-head">
-              <div class="t-name">
-                {{ fb.name }}{% if fb.country %} · {{ fb.country }}{% endif %}
-              </div>
+              <div class="t-name">{{ fb.name }} · {{ fb.country }}</div>
               <div class="t-meta">{{ fb.date_str }}</div>
             </div>
 
@@ -427,7 +443,6 @@
               <span class="sr-only">{{ fb.rating }} / 5</span>
             </div>
 
-            {% set is_long = (fb.message|length > 200) %}
             <p class="t-text{{ ' clamp' if is_long else '' }}"
                id="fallback-{{ loop.index }}"
                data-full="{{ fb.message|e }}">
@@ -458,7 +473,8 @@
 <!-- JS Lire plus / Lire moins -->
 <script>
   function toggleText(index) {
-    var textElement = document.getElementById(index.startsWith('fallback-') ? index : "comment-" + index);
+    var id = (index && index.toString().startsWith('fallback-')) ? index : "comment-" + index;
+    var textElement = document.getElementById(id);
     if (!textElement) return;
     var card = textElement.closest(".testimonial-card");
     var full = textElement.dataset.full || "";
@@ -506,7 +522,7 @@
   })();
 </script>
 
-<!-- ✅ AJOUT JS: contrôle du burger/menu mobile (sans toucher à ton script existant) -->
+<!-- ✅ Menu mobile (ouvrir/fermer) -->
 <script>
   (function(){
     const burger  = document.querySelector('.burger');
@@ -532,6 +548,52 @@
     if (closeBt) closeBt.addEventListener('click', close, {passive:true});
     overlay.addEventListener('click', close, {passive:true});
     window.addEventListener('keydown', (e)=>{ if(e.key==='Escape') close(); });
+  })();
+</script>
+
+<!-- ✅ Tri par date (FR/EN/ES) pour afficher du plus récent au plus ancien -->
+<script>
+  (function(){
+    const grid = document.getElementById('all-testimonials');
+    if(!grid) return;
+
+    const monthMap = {
+      'janvier':1,'février':2,'fevrier':2,'mars':3,'avril':4,'mai':5,'juin':6,'juillet':7,'août':8,'aout':8,'septembre':9,'octobre':10,'novembre':11,'décembre':12,'decembre':12,
+      'january':1,'february':2,'march':3,'april':4,'may':5,'june':6,'july':7,'august':8,'september':9,'october':10,'november':11,'december':12,
+      'enero':1,'febrero':2,'marzo':3,'abril':4,'mayo':5,'junio':6,'julio':7,'agosto':8,'septiembre':9,'octubre':10,'noviembre':11,'diciembre':12
+    };
+
+    function parseTS(card){
+      // priorité au data-ts ISO si présent
+      const iso = card.getAttribute('data-ts');
+      if (iso && /^\d{4}-\d{2}-\d{2}$/.test(iso)) return iso.replace(/-/g,'')*1;
+
+      // sinon on tente de parser le texte de .t-meta
+      const meta = card.querySelector('.t-meta');
+      if(!meta) return 0;
+      const s = meta.textContent.trim().toLowerCase();
+
+      // formats possibles: "12 mai 2025" / "25 julio 2019" / "Feb 22, 2020" (rare)
+      const m = s.match(/(\d{1,2})\s+([a-záéíóúäëïöüâêîôûàèìòùç]+)\s+(\d{4})/i);
+      if(m){
+        const d = ('0'+m[1]).slice(-2);
+        const mm = monthMap[(m[2]||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'')] || 1;
+        const month = ('0'+mm).slice(-2);
+        const y = m[3];
+        return (y+month+d)*1;
+      }
+
+      // fallback neutre
+      return 0;
+    }
+
+    const cards = Array.from(grid.children);
+    cards.forEach(c => c.dataset._ts = parseTS(c));
+
+    cards.sort((a,b) => (b.dataset._ts|0) - (a.dataset._ts|0));
+
+    // réinjection dans la grille dans le bon ordre
+    cards.forEach(c => grid.appendChild(c));
   })();
 </script>
 
