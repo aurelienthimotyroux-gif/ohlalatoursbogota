@@ -556,3 +556,16 @@ header.site-header.scrolled .burger{ color:#0f172a; }
 header.site-header{ z-index: 1000; }
 header.site-header .burger{ z-index: 130; position: relative; }
 
+/* BURGER: toujours visible en mobile, même si un autre CSS le cache */
+@media (max-width: 900px){
+  .site-header .burger{display:inline-flex !important;}
+  .site-header .main-nav{display:none !important;}
+}
+/* couleur lisible (blanc sur la hero, noir après scroll) */
+.site-header.header-on-hero .burger{color:#fff;}
+.site-header.scrolled .burger{color:#0f172a;}
+/* au-dessus des overlays + clics non bloqués */
+.site-header{z-index:9999;}
+.site-header .burger{position:relative; z-index:10001;}
+.hero::after{pointer-events:none !important;}
+
