@@ -38,39 +38,37 @@
     gtag('config', 'G-92M6CENDXH', { anonymize_ip: true });
   </script>
 
-<!-- Canonical -->
-<link rel="canonical" href="https://www.ohlalatoursbogota.com{{ request.path }}">
+  <!-- Canonical -->
+  <link rel="canonical" href="https://www.ohlalatoursbogota.com{{ request.path }}">
 
-<!-- Hreflang -->
-<link rel="alternate" hreflang="fr" href="{{ url_for('index', _external=True) }}">
-<link rel="alternate" hreflang="en" href="{{ url_for('index', lang='en', _external=True) }}">
-<link rel="alternate" hreflang="es" href="{{ url_for('index', lang='es', _external=True) }}">
-<link rel="alternate" hreflang="x-default" href="{{ url_for('index', _external=True) }}">
+  <!-- Hreflang -->
+  <link rel="alternate" hreflang="fr" href="{{ url_for('index', _external=True) }}">
+  <link rel="alternate" hreflang="en" href="{{ url_for('index', lang='en', _external=True) }}">
+  <link rel="alternate" hreflang="es" href="{{ url_for('index', lang='es', _external=True) }}">
+  <link rel="alternate" hreflang="x-default" href="{{ url_for('index', _external=True) }}">
 
-<!-- Open Graph -->
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://www.ohlalatoursbogota.com{{ request.path }}">
-<meta property="og:site_name" content="Oh La La Tours Bogotá">
-<meta property="og:title" content="{{ _('Visites guidées à Bogotá – Guide francophone & tours privés') }}">
-<meta property="og:description" content="{{ _('Découvrez Bogotá : Candelaria, Monserrate, Zipaquirá, café à Hacienda Coloma. Visites en français, anglais et espagnol. Transferts aéroport, chauffeur/van privé.') }}">
-<meta property="og:image" content="{{ url_for('static', filename='images/accueil.jpg', _external=True) }}">
-{% if get_locale() == 'fr' %}
-<meta property="og:locale" content="fr_FR">
-{% elif get_locale() == 'en' %}
-<meta property="og:locale" content="en_US">
-{% else %}
-<meta property="og:locale" content="es_CO">
-{% endif %}
-<meta property="og:locale:alternate" content="en_US">
-<meta property="og:locale:alternate" content="es_CO">
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.ohlalatoursbogota.com{{ request.path }}">
+  <meta property="og:site_name" content="Oh La La Tours Bogotá">
+  <meta property="og:title" content="{{ _('Visites guidées à Bogotá – Guide francophone & tours privés') }}">
+  <meta property="og:description" content="{{ _('Découvrez Bogotá : Candelaria, Monserrate, Zipaquirá, café à Hacienda Coloma. Visites en français, anglais et espagnol. Transferts aéroport, chauffeur/van privé.') }}">
+  <meta property="og:image" content="{{ url_for('static', filename='images/accueil.jpg', _external=True) }}">
+  {% if get_locale() == 'fr' %}
+  <meta property="og:locale" content="fr_FR">
+  {% elif get_locale() == 'en' %}
+  <meta property="og:locale" content="en_US">
+  {% else %}
+  <meta property="og:locale" content="es_CO">
+  {% endif %}
+  <meta property="og:locale:alternate" content="en_US">
+  <meta property="og:locale:alternate" content="es_CO">
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="{{ _('Visites guidées à Bogotá – Guide francophone & tours privés') }}">
   <meta name="twitter:description" content="{{ _('Découvrez Bogotá : Candelaria, Monserrate, Zipaquirá, café à Hacienda Coloma. Visites en français, anglais et espagnol. Transferts aéroport, chauffeur/van privé.') }}">
   <meta name="twitter:image" content="{{ url_for('static', filename='images/accueil.jpg', _external=True) }}">
-  <!-- Optionnel si tu as un compte X/Twitter -->
-  <!-- <meta name="twitter:site" content="@ton_compte"> -->
 
   <!-- Perf & UI mobile -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -99,7 +97,7 @@
   }
   </script>
 
-  <!-- ✅ JSON-LD: Organisation (agence/tours locaux) -->
+  <!-- ✅ JSON-LD: Organisation -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -111,6 +109,7 @@
     "description": {% if get_locale()=='fr' %}"Visites guidées privées à Bogotá : Candelaria, Monserrate, Zipaquirá, café (Hacienda Coloma). Guide francophone/anglais/espagnol, transferts aéroport, chauffeur/van privé."{% elif get_locale()=='en' %}"Private guided tours in Bogotá: Candelaria, Monserrate, Zipaquirá, coffee (Hacienda Coloma). French/English/Spanish guide, airport transfers, private driver/van."{% else %}"Tours guiados privados en Bogotá: Candelaria, Monserrate, Zipaquirá, café (Hacienda Coloma). Guía en francés/inglés/español, traslados al aeropuerto, conductor/van privado."{% endif %}
   }
   </script>
+
   <!-- Favicons -->
   <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='img/favicon/apple-touch-icon.png') }}">
   <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='img/favicon/favicon-32x32.png') }}">
@@ -121,29 +120,27 @@
   <meta name="theme-color" content="#0b4654">
   <meta name="google-site-verification" content="4z28-XXEkdcB_VOcaGoy1bhgA-zj7xr6wSf76ZwZ4tQ" />
 
-  <!-- Styles spécifiques (header, logos, etc.) -->
+  <!-- Styles spécifiques du header (restés minimes) -->
   <style>
     .site-header{
-      position:fixed; top:0; left:0; right:0; z-index:70;
+      position:fixed; top:0; left:0; right:0; z-index:1000;
       display:flex; align-items:center; justify-content:space-between;
       padding:10px 16px; gap:16px;
       background:transparent; transition:background .25s ease, box-shadow .25s ease;
     }
-    .logo-container{display:flex; align-items:center; gap:10px}
+    .brand{display:inline-flex; align-items:center; gap:10px}
     .logo{height:44px; width:auto; display:block}
     @media (max-width:640px){ .logo{height:32px} }
+
+    .site-title{font-size:20px; font-weight:600; color:#0f172a}
     .main-nav{display:flex; align-items:center; gap:18px; font-weight:600}
     .main-nav a{text-decoration:none}
-    .site-title{font-size:20px; font-weight:600; color:#0f172a}
 
-    /* par défaut: logo clair visible, foncé caché (hero photo) */
+    /* logo clair sur la hero, foncé après scroll */
     .logo--dark{display:none}
-
-    /* Header sur la hero : liens/titre en blanc */
     .header-on-hero .site-title{ color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.35); }
     .header-on-hero .main-nav a{ color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.35); }
 
-    /* Au scroll / fond clair */
     .site-header.scrolled{
       background: rgba(255,255,255,.86);
       backdrop-filter: saturate(180%) blur(8px);
@@ -154,58 +151,13 @@
     .site-header.scrolled .main-nav a{color:#0f172a}
     .site-header.scrolled .site-title{ color:#0f172a; }
 
-    /* Avis & divers (inchangés) */
-    .testimonials { background:#fff; padding:40px 20px; margin-top:40px; }
-    .testimonials .container { max-width:1000px; margin:0 auto; }
-    .testimonials h2 { text-align:center; margin-bottom:22px; font-size:28px; }
-    .testimonials-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }
-    @media (max-width:1024px){ .testimonials-grid{ grid-template-columns:repeat(2,1fr);} }
-    @media (max-width:640px){ .testimonials-grid{ grid-template-columns:1fr;} }
-    .testimonial-card { background:#fafafa; border:1px solid #eee; border-radius:12px; padding:16px; box-shadow:0 4px 14px rgba(0,0,0,.06); }
-    .t-head { display:grid; grid-template-columns:auto 1fr; gap:6px 10px; align-items:center; margin-bottom:10px; }
-    .t-name { font-weight:600; }
-    .t-meta { color:#666; font-size:14px; }
-    .t-stars { display:inline-flex; gap:4px; align-items:center; margin-bottom:8px; }
-    .t-stars svg { width:18px; height:18px; }
-    .testimonial-card .t-text{ font-size:15px; color:#333; line-height:1.5; white-space:pre-wrap; word-break:break-word; }
-    .testimonial-card .t-text.clamp{ display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:4; overflow:hidden; }
-    .testimonial-card.expanded .t-text{ -webkit-line-clamp:unset; display:block; overflow:visible; }
-    .testimonial-card .t-toggle{ margin-top:8px; background:none; border:0; color:#007bff; font:inherit; cursor:pointer; padding:0; }
-    .testimonial-card .t-toggle:hover{ text-decoration:underline; }
-    .comment-section-title { text-align:center; font-size:2rem; margin-bottom:20px; }
-    .hero .nav-hero a { text-decoration:none; }
-    .hero .nav-hero a:focus { outline:2px dashed #333; outline-offset:3px; }
-    .sr-only { position:absolute!important; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,1px,1px); white-space:nowrap; border:0; }
-    .flash-wrap { max-width:1000px; margin:16px auto; padding:0 20px; }
-    .flash { margin:8px 0; padding:10px; border-radius:8px; }
-    .flash-success{ background:#eefbf0; border:1px solid #b7ebc6; color:#1b5e20; }
-    .flash-error{ background:#fdeaea; border:1px solid #f5c2c2; color:#8a1f1f; }
-    @media (min-width: 768px){ .sticky-cta { display: none; } }
-  </style>
-
-  <!-- ✅ AJOUT CSS: Burger + drapeaux mobile (rien d’autre modifié) -->
-  <style>
-    /* Cacher le titre en mobile */
-    @media (max-width: 640px){ .site-title{ display:none; } }
-
-    /* Bouton burger */
+    /* Burger + menu mobile (inchangés dans l’esprit) */
     .burger{display:none;background:none;border:0;width:38px;height:38px;
             align-items:center;justify-content:center;border-radius:8px;color:#fff}
     .burger svg{width:26px;height:26px}
     .site-header.scrolled .burger{color:#0f172a}
-    @media (max-width:900px){
-      .main-nav{display:none !important}
-      .burger{display:inline-flex !important}
-    }
+    @media (max-width:900px){ .main-nav{display:none !important} .burger{display:inline-flex !important} }
 
-    /* Drapeaux compacts visibles en mobile dans la barre */
-    .lang-compact{display:none; gap:8px; font-size:20px; line-height:1}
-    .lang-compact a{padding:2px 4px; border-radius:6px; text-decoration:none}
-    .header-on-hero .lang-compact a{color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.35)}
-    .site-header.scrolled .lang-compact a{color:#0f172a; text-shadow:none}
-    @media (max-width:900px){ .lang-compact{display:flex} }
-
-    /* Panneau mobile + overlay */
     .mobile-menu{position:fixed;top:0;right:0;bottom:0;width:min(86vw,360px);
       background:#fff;box-shadow:-10px 0 30px rgba(0,0,0,.15);
       transform:translateX(100%);transition:transform .25s ease;z-index:120}
@@ -221,37 +173,26 @@
       backdrop-filter:blur(2px);opacity:0;pointer-events:none;transition:opacity .2s;
       z-index:110}
     .mobile-overlay.show{opacity:1;pointer-events:auto}
+
+    /* cacher le titre sur mobile pour gagner de la place */
+    @media (max-width: 640px){ .site-title{ display:none; } }
   </style>
 </head>
 
 <body>
 
-<!-- Sprite d'icônes SVG (étoiles) -->
-<svg xmlns="http://www.w3.org/2000/svg" style="display:none;">
-  <symbol id="icon-star-full" viewBox="0 0 24 24" aria-hidden="true">
-    <path fill="#ffb400" d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21z"/>
-  </symbol>
-  <symbol id="icon-star-half" viewBox="0 0 24 24" aria-hidden="true">
-    <path fill="#ffb400" d="M12 17.27V2L9.19 8.62 2 9.24l5.46 4.73L5.82 21z"/>
-    <path fill="none" stroke="#ffb400" stroke-width="1.5" d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21z"/>
-  </symbol>
-  <symbol id="icon-star-empty" viewBox="0 0 24 24" aria-hidden="true">
-    <path fill="none" stroke="#ffb400" stroke-width="1.5" d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21z"/>
-  </symbol>
-</svg>
+<!-- ========= HEADER collant (logo à gauche, menu à droite) ========= -->
+<header class="site-header header-on-hero">
+  <a href="{{ url_for('index', lang=get_locale()) }}" class="brand" aria-label="Oh La La Tours Bogotá — Accueil">
+    <img src="{{ url_for('static', filename='img/logo-light.png') }}"
+         alt="{% if get_locale()=='fr' %}Logo Oh La La Tours Bogotá avec colibri et Monserrate symbole de liberté et authenticité, visites guidées privées et transport à Bogota Colombie{% elif get_locale()=='en' %}Oh La La Tours Bogotá logo with hummingbird and Monserrate symbol of freedom and authenticity, private guided tours and transport in Bogota Colombia{% else %}Logo de Oh La La Tours Bogotá con colibrí y Monserrate símbolo de libertad y autenticidad, tours guiados privados y transporte en Bogotá Colombia{% endif %}"
+         class="logo logo--light">
+    <img src="{{ url_for('static', filename='img/logo-dark.png') }}"
+         alt="{% if get_locale()=='fr' %}Logo Oh La La Tours Bogotá avec colibri stylisé et silhouette de Monserrate représentant la nature, la culture et les excursions privées en Colombie{% elif get_locale()=='en' %}Oh La La Tours Bogotá logo with stylized hummingbird and Monserrate silhouette representing nature culture and private excursions in Colombia{% else %}Logo de Oh La La Tours Bogotá con colibrí estilizado y silueta de Monserrate representando naturaleza cultura y excursiones privadas en Colombia{% endif %}"
+         class="logo logo--dark">
+    <span class="site-title">Oh La La Tours Bogotá</span>
+  </a>
 
-<!-- Logo clair (sur hero/photo) -->
-<img src="{{ url_for('static', filename='img/logo-light.png') }}"
-     alt="{% if get_locale()=='fr' %}Logo Oh La La Tours Bogotá avec colibri et Monserrate symbole de liberté et authenticité, visites guidées privées et transport à Bogota Colombie{% elif get_locale()=='en' %}Oh La La Tours Bogotá logo with hummingbird and Monserrate symbol of freedom and authenticity, private guided tours and transport in Bogota Colombia{% else %}Logo de Oh La La Tours Bogotá con colibrí y Monserrate símbolo de libertad y autenticidad, tours guiados privados y transporte en Bogotá Colombia{% endif %}"
-     class="logo logo--light">
-
-<!-- Logo foncé (après scroll, fond clair) -->
-<img src="{{ url_for('static', filename='img/logo-dark.png') }}"
-     alt="{% if get_locale()=='fr' %}Logo Oh La La Tours Bogotá avec colibri stylisé et silhouette de Monserrate représentant la nature, la culture et les excursions privées en Colombie{% elif get_locale()=='en' %}Oh La La Tours Bogotá logo with stylized hummingbird and Monserrate silhouette representing nature culture and private excursions in Colombia{% else %}Logo de Oh La La Tours Bogotá con colibrí estilizado y silueta de Monserrate representando naturaleza cultura y excursiones privadas en Colombia{% endif %}"
-     class="logo logo--dark">
-
-
-  <!-- Navigation -->
   <nav class="main-nav" aria-label="{{ _('Navigation principale') }}">
     <a href="{{ url_for('index', lang=get_locale()) }}">{{ _("Accueil") }}</a>
     <a href="{{ url_for('tours', lang=get_locale()) }}">{{ _("Nos tours") }}</a>
@@ -264,33 +205,17 @@
     </div>
   </nav>
 
-  <div class="mobile-menu">
-  <a href="{{ url_for('index', lang=get_locale()) }}">{{ _("Accueil") }}</a>
-  <a href="{{ url_for('tours', lang=get_locale()) }}">{{ _("Nos tours") }}</a>
-  <a href="{{ url_for('transport', lang=get_locale()) }}">{{ _("Service de Transport") }}</a>
-  <a href="{{ url_for('reservation', lang=get_locale()) }}">{{ _("Réservation") }}</a>
-
-  <!-- ✅ Langues uniquement ici -->
-  <div class="lang-switcher">
-    <a href="{{ lang_url('fr') }}">🇫🇷</a>
-    <a href="{{ lang_url('en') }}">🇺🇸</a>
-    <a href="{{ lang_url('es') }}">🇪🇸</a>
-  </div>
-</div>
-
-
- <!-- ✅ bouton burger corrigé -->
-<button class="burger" aria-label="Ouvrir le menu" aria-controls="mobileMenu" aria-expanded="false">
-  <svg viewBox="0 0 24 24" aria-hidden="true" width="28" height="28">
-    <path d="M3 6h18M3 12h18M3 18h18"
-          stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/>
-  </svg>
-</button>
+  <!-- Burger -->
+  <button class="burger" aria-label="Ouvrir le menu" aria-controls="mobileMenu" aria-expanded="false">
+    <svg viewBox="0 0 24 24" aria-hidden="true" width="28" height="28">
+      <path d="M3 6h18M3 12h18M3 18h18"
+            stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/>
+    </svg>
+  </button>
 </header>
 
-<!-- ✅ overlay + panneau mobile -->
+<!-- Overlay + panneau mobile -->
 <div id="mobileOverlay" class="mobile-overlay"></div>
-
 <aside id="mobileMenu" class="mobile-menu" role="dialog" aria-modal="true" aria-label="Menu">
   <header>
     <strong>Oh La La Tours Bogotá</strong>
@@ -300,14 +225,12 @@
       </svg>
     </button>
   </header>
-
   <nav>
     <a href="{{ url_for('index',     lang=get_locale()) }}">{{ _("Accueil") }}</a>
     <a href="{{ url_for('tours',     lang=get_locale()) }}">{{ _("Nos tours") }}</a>
     <a href="{{ url_for('transport', lang=get_locale()) }}">{{ _("Service de Transport") }}</a>
     <a href="{{ url_for('reservation', lang=get_locale()) }}">{{ _("Réservation") }}</a>
   </nav>
-
   <div class="langs" aria-label="{{ _('Changer de langue') }}">
     <a href="{{ lang_url('fr') }}" lang="fr" aria-label="Français">🇫🇷</a>
     <a href="{{ lang_url('en') }}" lang="en" aria-label="English">🇺🇸</a>
@@ -315,18 +238,16 @@
   </div>
 </aside>
 
-<!-- HERO (image de couverture) -->
+<!-- ========= HERO ========= -->
 <header class="hero"
         role="img"
         aria-label="Bogota Monserrate Candelaria street art visites guidées privées guide francophone café colombien cathédrale de sel Zipaquira Hacienda Coloma transport privé transfert aéroport safe friendly professional travel Colombia colombie chorrera gastronomie"
         style="background-image: url('{{ url_for('static', filename='images/accueil.jpg') }}');">
-
   <span class="sr-only">
     {{ _('Photo de couverture Bogotá Monserrate Candelaria street art Cathédrale de sel Zipaquirá Hacienda Coloma visites guidées privées guide francophone transport privé transfert aéroport') }}
     Cover photo Bogota Monserrate Candelaria street art Salt Cathedral Zipaquira coffee farm Hacienda Coloma private tours French speaking guide private transport airport transfer
     Foto de portada Bogotá Monserrate Candelaria arte urbano Catedral de Sal Zipaquirá finca cafetera Hacienda Coloma tours privados guía francófona transporte privado traslado aeropuerto
   </span>
-
   <h1 class="hero-title">{{ _("Bienvenue à Bogotá !") }}</h1>
 </header>
 
@@ -403,116 +324,116 @@
     <!-- Grille unique : on met BDD + fallback dedans, puis JS trie par date -->
     <div class="testimonials-grid" id="all-testimonials">
 
-{# ---- 1) Commentaires BDD (inchangés, mais on marque la langue) ---- #}
-{% set _country_lang = {
-  'france':'fr','canada':'fr','québec':'fr',
-  'mexique':'es','mexico':'es','costa rica':'es','colombie':'es','spain':'es','espagne':'es',
-  'états-unis':'en','united states':'en','usa':'en','uk':'en','royaume-uni':'en'
-} %}
-{% for comment in comments or [] %}
-  {# essaie d’utiliser comment.lang si dispo, sinon devine via le pays, sinon UI lang #}
-  {% set _c = (comment.country or '')|lower %}
-  {% set _lang_guess = _country_lang.get(_c, (get_locale()[:2] if get_locale() else 'fr')) %}
-  {% set _lang = comment.lang or _lang_guess %}
+      {# ==== BDD ==== #}
+      {% set _country_lang = {
+        'france':'fr','canada':'fr','québec':'fr',
+        'mexique':'es','mexico':'es','costa rica':'es','colombie':'es','spain':'es','espagne':'es',
+        'états-unis':'en','united states':'en','usa':'en','uk':'en','royaume-uni':'en'
+      } %}
+      {% for comment in comments or [] %}
+        {% set _c = (comment.country or '')|lower %}
+        {% set _lang_guess = _country_lang.get(_c, (get_locale()[:2] if get_locale() else 'fr')) %}
+        {% set _lang = comment.lang or _lang_guess %}
+        {% set is_long = (comment.message|length > 200) %}
+        <div class="testimonial-card" data-name="{{ comment.name }}" data-country="{{ comment.country or '' }}" data-ts="">
+          <div class="t-head">
+            <div class="t-name">
+              {{ comment.name }}{% if comment.country %} · {{ comment.country }}{% endif %}
+            </div>
+            <div class="t-meta">{{ comment.date_str }}</div>
+          </div>
 
-  {% set is_long = (comment.message|length > 200) %}
-  <div class="testimonial-card" data-name="{{ comment.name }}" data-country="{{ comment.country or '' }}" data-ts="">
-    <div class="t-head">
-      <div class="t-name">
-        {{ comment.name }}{% if comment.country %} · {{ comment.country }}{% endif %}
-      </div>
-      <div class="t-meta">{{ comment.date_str }}</div>
-    </div>
+          <div class="t-stars" aria-label="{{ comment.rating }} / 5">
+            {% for i in range(1, 6) %}
+              {% if comment.rating >= i %}
+                <svg><use href="#icon-star-full"></use></svg>
+              {% elif comment.rating >= i - 0.5 %}
+                <svg><use href="#icon-star-half"></use></svg>
+              {% else %}
+                <svg><use href="#icon-star-empty"></use></svg>
+              {% endif %}
+            {% endfor %}
+            <span class="sr-only">{{ comment.rating }} / 5</span>
+          </div>
 
-    <div class="t-stars" aria-label="{{ comment.rating }} / 5">
-      {% for i in range(1, 6) %}
-        {% if comment.rating >= i %}
-          <svg><use href="#icon-star-full"></use></svg>
-        {% elif comment.rating >= i - 0.5 %}
-          <svg><use href="#icon-star-half"></use></svg>
-        {% else %}
-          <svg><use href="#icon-star-empty"></use></svg>
+          <p class="t-text{{ ' clamp' if is_long else '' }}"
+            id="comment-{{ loop.index }}"
+            data-full="{{ comment.message|e }}"
+            lang="{{ _lang }}">
+            {{ (comment.message[:200] ~ '...') if is_long else comment.message }}
+          </p>
+          <button class="t-toggle"
+                  onclick="toggleText('{{ loop.index }}')"
+                  style="{{ '' if is_long else 'display:none;' }}">
+            {{ _("Lire plus") }}
+          </button>
+        </div>
+      {% endfor %}
+
+      {# ==== Fallback ==== #}
+      {% set fallback_comments = [
+        {"name":"Francis","country":"Canada","date_str":"12 mai 2025","date_iso":"2025-05-12","rating":5,"lang":"fr","message":"L’expérience est super. Alejandra prend son temps pour nous expliquer et répondre à nos questions."},
+        {"name":"Katy","country":"Mexique","date_str":"21 mars 2023","date_iso":"2023-03-21","rating":5,"lang":"es","message":"Recomendado. La comunicación con Alejandra fue excelente antes y durante; todo lo descrito se cumplió y siempre estuvo atenta a nuestras necesidades. Probablemente es un lugar que debes visitar si vienes a Bogotá: vistas preciosas y una catedral de sal impresionante."},
+        {"name":"Liliana","country":"États-Unis","date_str":"4 mars 2023","date_iso":"2023-03-04","rating":4.5,"lang":"en","message":"Amazing experience! Alejandra and her father (Omar) took care of my husband’s special needs, and everything was handled 100%. The Salt Cathedral and the traditional food at Brasas del Llano made it a 5-star cultural experience."},
+        {"name":"Marvin","country":"Mexique","date_str":"15 septembre 2022","date_iso":"2022-09-15","rating":5,"lang":"es","message":"Alejandra y su padre son extraordinarios y nos brindaron un día hermoso en Zipaquirá. Nos vamos con recuerdos excelentes. ¡Gracias!"},
+        {"name":"Oscar","country":"Costa Rica","date_str":"8 janvier 2023","date_iso":"2023-01-08","rating":4.5,"lang":"es","message":"Muchas gracias por su amabilidad y disponibilidad. Súper recomendado."},
+        {"name":"Sam","country":"États-Unis","date_str":"14 août 2022","date_iso":"2022-08-14","rating":5,"lang":"en","message":"Alejandra and her father Omar were perfect hosts, very attentive to the way I wanted to enjoy the tour."},
+        {"name":"Kristina","country":"Mexique","date_str":"27 août 2022","date_iso":"2022-08-27","rating":5,"lang":"es","message":"Recomendamos esta experiencia. La pasamos excelente. Alejandra y su padre son educados y muy amables."},
+        {"name":"Jorge","country":"Mexique","date_str":"11 août 2022","date_iso":"2022-08-11","rating":5,"lang":"es","message":"Altamente recomendado. Alejandra y su padre fueron muy amables y atentos con nosotros en todo momento."},
+        {"name":"Fabiola","country":"Mexique","date_str":"11 août 2022","date_iso":"2022-08-11","rating":5,"lang":"es","message":"De principio a fin, una experiencia muy agradable. Alejandra y su papá Omar fueron muy atentos y gentiles."},
+        {"name":"Luna","country":"Costa Rica","date_str":"25 juillet 2019","date_iso":"2019-07-25","rating":5,"lang":"es","message":"Viaje bien planificado. Puntuales para el pickup en el hotel. Durante el trayecto, Alejandra y Omar fueron muy amables y pacientes."},
+        {"name":"Yuliana","country":"Costa Rica","date_str":"18 juillet 2019","date_iso":"2019-07-18","rating":5,"lang":"es","message":"Ale y Omar (su papá) son súper simpáticos y se involucran mucho para que te sientas como en casa."},
+        {"name":"Ann","country":"États-Unis","date_str":"22 février 2020","date_iso":"2020-02-22","rating":5,"lang":"en","message":"Friendly, responsive to our questions, and they showed us fascinating places we would never have found on our own."},
+        {"name":"Nancy","country":"Mexique","date_str":"30 juillet 2019","date_iso":"2019-07-30","rating":5,"lang":"es","message":"Una de las mejores experiencias que no te puedes perder. Hospitalidad de primera, recorrido agradable y una visita impresionante a la catedral de sal."}
+      ] %}
+
+      {% set db_pairs = namespace(seen={}) %}
+      {% for c in comments or [] %}
+        {% set kp = (c.name ~ '|' ~ (c.country or '')) %}
+        {% set _ = db_pairs.seen.update({kp: 1}) %}
+      {% endfor %}
+
+      {% for fb in fallback_comments %}
+        {% set kp = fb.name ~ '|' ~ fb.country %}
+        {% if not (kp in db_pairs.seen) %}
+          {% set is_long = (fb.message|length > 200) %}
+          <div class="testimonial-card"
+              data-name="{{ fb.name }}" data-country="{{ fb.country }}" data-ts="{{ fb.date_iso }}">
+            <div class="t-head">
+              <div class="t-name">{{ fb.name }} · {{ fb.country }}</div>
+              <div class="t-meta">{{ fb.date_str }}</div>
+            </div>
+
+            <div class="t-stars" aria-label="{{ fb.rating }} / 5">
+              {% for i in range(1, 6) %}
+                {% if fb.rating >= i %}
+                  <svg><use href="#icon-star-full"></use></svg>
+                {% elif fb.rating >= i - 0.5 %}
+                  <svg><use href="#icon-star-half"></use></svg>
+                {% else %}
+                  <svg><use href="#icon-star-empty"></use></svg>
+                {% endif %}
+              {% endfor %}
+              <span class="sr-only">{{ fb.rating }} / 5</span>
+            </div>
+
+            <p class="t-text{{ ' clamp' if is_long else '' }}"
+              id="fallback-{{ loop.index }}"
+              data-full="{{ fb.message|e }}"
+              lang="{{ fb.lang }}">
+              {{ (fb.message[:200] ~ '...') if is_long else fb.message }}
+            </p>
+            <button class="t-toggle"
+                    onclick="toggleText('fallback-{{ loop.index }}')"
+                    style="{{ '' if is_long else 'display:none;' }}">
+              {{ _("Lire plus") }}
+            </button>
+          </div>
         {% endif %}
       {% endfor %}
-      <span class="sr-only">{{ comment.rating }} / 5</span>
     </div>
-
-    <p class="t-text{{ ' clamp' if is_long else '' }}"
-       id="comment-{{ loop.index }}"
-       data-full="{{ comment.message|e }}"
-       lang="{{ _lang }}">
-      {{ (comment.message[:200] ~ '...') if is_long else comment.message }}
-    </p>
-    <button class="t-toggle"
-            onclick="toggleText('{{ loop.index }}')"
-            style="{{ '' if is_long else 'display:none;' }}">
-      {{ _("Lire plus") }}
-    </button>
   </div>
-{% endfor %}
-
-{# ---- 2) Fallback : 13 avis fournis (avec date ISO pour tri) ---- #}
-{% set fallback_comments = [
-  {"name":"Francis","country":"Canada","date_str":"12 mai 2025","date_iso":"2025-05-12","rating":5,"lang":"fr","message":"L’expérience est super. Alejandra prend son temps pour nous expliquer et répondre à nos questions."},
-  {"name":"Katy","country":"Mexique","date_str":"21 mars 2023","date_iso":"2023-03-21","rating":5,"lang":"es","message":"Recomendado. La comunicación con Alejandra fue excelente antes y durante; todo lo descrito se cumplió y siempre estuvo atenta a nuestras necesidades. Probablemente es un lugar que debes visitar si vienes a Bogotá: vistas preciosas y una catedral de sal impresionante."},
-  {"name":"Liliana","country":"États-Unis","date_str":"4 mars 2023","date_iso":"2023-03-04","rating":4.5,"lang":"en","message":"Amazing experience! Alejandra and her father (Omar) took care of my husband’s special needs, and everything was handled 100%. The Salt Cathedral and the traditional food at Brasas del Llano made it a 5-star cultural experience."},
-  {"name":"Marvin","country":"Mexique","date_str":"15 septembre 2022","date_iso":"2022-09-15","rating":5,"lang":"es","message":"Alejandra y su padre son extraordinarios y nos brindaron un día hermoso en Zipaquirá. Nos vamos con recuerdos excelentes. ¡Gracias!"},
-  {"name":"Oscar","country":"Costa Rica","date_str":"8 janvier 2023","date_iso":"2023-01-08","rating":4.5,"lang":"es","message":"Muchas gracias por su amabilidad y disponibilidad. Súper recomendado."},
-  {"name":"Sam","country":"États-Unis","date_str":"14 août 2022","date_iso":"2022-08-14","rating":5,"lang":"en","message":"Alejandra and her father Omar were perfect hosts, very attentive to the way I wanted to enjoy the tour."},
-  {"name":"Kristina","country":"Mexique","date_str":"27 août 2022","date_iso":"2022-08-27","rating":5,"lang":"es","message":"Recomendamos esta experiencia. La pasamos excelente. Alejandra y su padre son educados y muy amables."},
-  {"name":"Jorge","country":"Mexique","date_str":"11 août 2022","date_iso":"2022-08-11","rating":5,"lang":"es","message":"Altamente recomendado. Alejandra y su padre fueron muy amables y atentos con nosotros en todo momento."},
-  {"name":"Fabiola","country":"Mexique","date_str":"11 août 2022","date_iso":"2022-08-11","rating":5,"lang":"es","message":"De principio a fin, una experiencia muy agradable. Alejandra y su papá Omar fueron muy atentos y gentiles."},
-  {"name":"Luna","country":"Costa Rica","date_str":"25 juillet 2019","date_iso":"2019-07-25","rating":5,"lang":"es","message":"Viaje bien planificado. Puntuales para el pickup en el hotel. Durante el trayecto, Alejandra y Omar fueron muy amables y pacientes."},
-  {"name":"Yuliana","country":"Costa Rica","date_str":"18 juillet 2019","date_iso":"2019-07-18","rating":5,"lang":"es","message":"Ale y Omar (su papá) son súper simpáticos y se involucran mucho para que te sientas como en casa."},
-  {"name":"Ann","country":"États-Unis","date_str":"22 février 2020","date_iso":"2020-02-22","rating":5,"lang":"en","message":"Friendly, responsive to our questions, and they showed us fascinating places we would never have found on our own."},
-  {"name":"Nancy","country":"Mexique","date_str":"30 juillet 2019","date_iso":"2019-07-30","rating":5,"lang":"es","message":"Una de las mejores experiencias que no te puedes perder. Hospitalidad de primera, recorrido agradable y una visita impresionante a la catedral de sal."}
-] %}
-
-{% set db_pairs = namespace(seen={}) %}
-{% for c in comments or [] %}
-  {% set kp = (c.name ~ '|' ~ (c.country or '')) %}
-  {% set _ = db_pairs.seen.update({kp: 1}) %}
-{% endfor %}
-
-{% for fb in fallback_comments %}
-  {% set kp = fb.name ~ '|' ~ fb.country %}
-  {% if not (kp in db_pairs.seen) %}
-    {% set is_long = (fb.message|length > 200) %}
-    <div class="testimonial-card"
-         data-name="{{ fb.name }}" data-country="{{ fb.country }}" data-ts="{{ fb.date_iso }}">
-      <div class="t-head">
-        <div class="t-name">{{ fb.name }} · {{ fb.country }}</div>
-        <div class="t-meta">{{ fb.date_str }}</div>
-      </div>
-
-      <div class="t-stars" aria-label="{{ fb.rating }} / 5">
-        {% for i in range(1, 6) %}
-          {% if fb.rating >= i %}
-            <svg><use href="#icon-star-full"></use></svg>
-          {% elif fb.rating >= i - 0.5 %}
-            <svg><use href="#icon-star-half"></use></svg>
-          {% else %}
-            <svg><use href="#icon-star-empty"></use></svg>
-          {% endif %}
-        {% endfor %}
-        <span class="sr-only">{{ fb.rating }} / 5</span>
-      </div>
-
-      <p class="t-text{{ ' clamp' if is_long else '' }}"
-         id="fallback-{{ loop.index }}"
-         data-full="{{ fb.message|e }}"
-         lang="{{ fb.lang }}">
-        {{ (fb.message[:200] ~ '...') if is_long else fb.message }}
-      </p>
-      <button class="t-toggle"
-              onclick="toggleText('fallback-{{ loop.index }}')"
-              style="{{ '' if is_long else 'display:none;' }}">
-        {{ _("Lire plus") }}
-      </button>
-    </div>
-  {% endif %}
-{% endfor %}
-
+</section>
 
 <!-- Sticky bar mobile -->
 <div class="sticky-cta">
@@ -523,6 +444,48 @@
     <a class="btn" href="{{ url_for('reservation', lang=get_locale()) }}">{{ _("Réserver") }}</a>
   </div>
 </div>
+
+<!-- Sprite d'icônes (étoiles) -->
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none;">
+  <symbol id="icon-star-full" viewBox="0 0 24 24" aria-hidden="true">
+    <path fill="#ffb400" d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21z"/>
+  </symbol>
+  <symbol id="icon-star-half" viewBox="0 0 24 24" aria-hidden="true">
+    <path fill="#ffb400" d="M12 17.27V2L9.19 8.62 2 9.24l5.46 4.73L5.82 21z"/>
+    <path fill="none" stroke="#ffb400" stroke-width="1.5" d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21z"/>
+  </symbol>
+  <symbol id="icon-star-empty" viewBox="0 0 24 24" aria-hidden="true">
+    <path fill="none" stroke="#ffb400" stroke-width="1.5" d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21z"/>
+  </symbol>
+</svg>
+
+<!-- Données structurées -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TouristInformationCenter",
+  "name": "Oh La La Tours Bogotá",
+  "url": "https://www.ohlalatoursbogota.com/",
+  "image": "{{ url_for('static', filename='images/accueil.jpg', _external=True) }}",
+  "areaServed": "Bogotá, Colombia",
+  "address": { "@type": "PostalAddress", "addressLocality": "Bogotá", "addressCountry": "CO" },
+  "availableLanguage": ["French","Spanish","English"],
+  "email": "alejandramontana25.18@gmail.com",
+  "telephone": "+57-350-538-4537",
+  "sameAs": []
+}
+</script>
+
+<!-- Script : header qui change au scroll -->
+<script>
+  (function(){
+    const header = document.querySelector('.site-header');
+    if(!header) return;
+    function onScroll(){ header.classList.toggle('scrolled', window.scrollY > 60); }
+    onScroll();
+    window.addEventListener('scroll', onScroll, {passive:true});
+  })();
+</script>
 
 <!-- JS Lire plus / Lire moins -->
 <script>
@@ -546,34 +509,6 @@
       if (toggleButton) toggleButton.textContent = "{{ _('Lire moins') }}";
     }
   }
-</script>
-
-<!-- Données structurées -->
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "TouristInformationCenter",
-  "name": "Oh La La Tours Bogotá",
-  "url": "https://www.ohlalatoursbogota.com/",
-  "image": "{{ url_for('static', filename='images/accueil.jpg', _external=True) }}",
-  "areaServed": "Bogotá, Colombia",
-  "address": { "@type": "PostalAddress", "addressLocality": "Bogotá", "addressCountry": "CO" },
-  "availableLanguage": ["French","Spanish","English"],
-  "email": "alejandramontana25.18@gmail.com",
-  "telephone": "+57-350-538-4537",
-  "sameAs": []
-}
-</script>
-
-<!-- Script : toggle du header au scroll -->
-<script>
-  (function(){
-    const header = document.querySelector('.site-header');
-    if(!header) return;
-    function onScroll(){ header.classList.toggle('scrolled', window.scrollY > 60); }
-    onScroll();
-    window.addEventListener('scroll', onScroll, {passive:true});
-  })();
 </script>
 
 <!-- ✅ Menu mobile (ouvrir/fermer) -->
@@ -604,56 +539,6 @@
     window.addEventListener('keydown', (e)=>{ if(e.key==='Escape') close(); });
   })();
 </script>
-
-<!-- ✅ Tri par date (FR/EN/ES) pour afficher du plus récent au plus ancien -->
-<script>
-  (function(){
-    const grid = document.getElementById('all-testimonials');
-    if(!grid) return;
-
-    const monthMap = {
-      'janvier':1,'février':2,'fevrier':2,'mars':3,'avril':4,'mai':5,'juin':6,'juillet':7,'août':8,'aout':8,'septembre':9,'octobre':10,'novembre':11,'décembre':12,'decembre':12,
-      'january':1,'february':2,'march':3,'april':4,'may':5,'june':6,'july':7,'august':8,'september':9,'october':10,'november':11,'december':12,
-      'enero':1,'febrero':2,'marzo':3,'abril':4,'mayo':5,'junio':6,'julio':7,'agosto':8,'septiembre':9,'octubre':10,'noviembre':11,'diciembre':12
-    };
-
-    function parseTS(card){
-      // priorité au data-ts ISO si présent
-      const iso = card.getAttribute('data-ts');
-      if (iso && /^\d{4}-\d{2}-\d{2}$/.test(iso)) return iso.replace(/-/g,'')*1;
-
-      // sinon on tente de parser le texte de .t-meta
-      const meta = card.querySelector('.t-meta');
-      if(!meta) return 0;
-      const s = meta.textContent.trim().toLowerCase();
-
-      // formats possibles: "12 mai 2025" / "25 julio 2019" / "Feb 22, 2020" (rare)
-      const m = s.match(/(\d{1,2})\s+([a-záéíóúäëïöüâêîôûàèìòùç]+)\s+(\d{4})/i);
-      if(m){
-        const d = ('0'+m[1]).slice(-2);
-        const mm = monthMap[(m[2]||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'')] || 1;
-        const month = ('0'+mm).slice(-2);
-        const y = m[3];
-        return (y+month+d)*1;
-      }
-
-      // fallback neutre
-      return 0;
-    }
-
-    const cards = Array.from(grid.children);
-    cards.forEach(c => c.dataset._ts = parseTS(c));
-
-    cards.sort((a,b) => (b.dataset._ts|0) - (a.dataset._ts|0));
-
-    // réinjection dans la grille dans le bon ordre
-    cards.forEach(c => grid.appendChild(c));
-  })();
-</script>
-
-</body>
-</html>
-
 
 </body>
 </html>
