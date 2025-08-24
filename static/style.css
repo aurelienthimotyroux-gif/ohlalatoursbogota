@@ -463,3 +463,23 @@ header.site-header .burger{ z-index: 130; position: relative; }
 .site-header .burger{position:relative; z-index:10001;}
 .hero::after{pointer-events:none !important;}
 
+/* Cache les drapeaux dans le header compact */
+.site-header .lang-switcher {
+  display: none;
+}
+
+/* Garde uniquement ceux dans le menu burger */
+.mobile-menu .lang-switcher {
+  display: flex !important;
+  justify-content: center;
+  margin-top: 12px;
+  gap: 12px;
+}
+
+/* En mobile: logo seul */
+@media (max-width: 768px) {
+  .site-title { display: none; }
+  .logo { height: 36px; }
+}
+
+
