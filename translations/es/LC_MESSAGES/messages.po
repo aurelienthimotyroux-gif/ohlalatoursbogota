@@ -1031,4 +1031,13 @@ msgstr "Pagar ahora con PayPal"
 msgid "Le paiement est sécurisé via PayPal. Le montant est calculé automatiquement selon le tour et le nombre de personnes."
 msgstr "El pago está asegurado a través de PayPal. El monto se calcula automáticamente según el tour y el número de personas."
 
+msgid "Tarif : 65 USD / personne (1 pers.) • 55 USD / personne dès 2 personnes"
+msgstr "Tarifa: 65 USD / persona (1 persona) • 55 USD / persona desde 2 personas"
+
+msgid "Tarif : 120 USD / personne (1 pers.) • 100 USD / personne (2 pers.) • 90 USD / personne dès 3 à 6 personnes"
+msgstr "Tarifa: 120 USD / persona (1 persona) • 100 USD / persona (2 personas) • 90 USD / persona desde 3 hasta 6 personas"
+
+msgid "Tarif : 150 USD / personne (1 pers.) • 105 USD / personne (2 pers.) • 95 USD / personne dès 3 à 6 personnes"
+msgstr "Tarifa: 150 USD / persona (1 persona) • 105 USD / persona (2 personas) • 95 USD / persona desde 3 hasta 6 personas"
+
 
