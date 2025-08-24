@@ -236,12 +236,13 @@
     <a href="{{ lang_url('es') }}" lang="es" aria-label="Español">🇪🇸</a>
   </div>
 
-  <!-- ✅ bouton burger -->
-  <button class="burger" aria-label="Ouvrir le menu" aria-controls="mobileMenu" aria-expanded="false">
-    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-      <path d="M3 6h18M3 12h18M3 18h18"/>
-    </svg>
-  </button>
+ <!-- ✅ bouton burger corrigé -->
+<button class="burger" aria-label="Ouvrir le menu" aria-controls="mobileMenu" aria-expanded="false">
+  <svg viewBox="0 0 24 24" aria-hidden="true" width="28" height="28">
+    <path d="M3 6h18M3 12h18M3 18h18"
+          stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/>
+  </svg>
+</button>
 </header>
 
 <!-- ✅ overlay + panneau mobile -->
