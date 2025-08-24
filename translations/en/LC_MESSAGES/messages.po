@@ -756,4 +756,10 @@ msgstr "Please fill in name, email, date and tour."
 msgid "Petit souci technique, réessaie dans quelques secondes."
 msgstr "A small technical issue occurred, please try again in a few seconds."
 
+msgid "Payer maintenant par PayPal"
+msgstr "Pay now with PayPal"
+
+msgid "Le paiement est sécurisé via PayPal. Le montant est calculé automatiquement selon le tour et le nombre de personnes."
+msgstr "The payment is secured via PayPal. The amount is automatically calculated according to the tour and the number of people."
+
 

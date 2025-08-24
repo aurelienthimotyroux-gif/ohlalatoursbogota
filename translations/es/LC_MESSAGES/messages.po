@@ -1025,4 +1025,10 @@ msgstr "Por favor completa nombre, correo electrónico, fecha y tour."
 msgid "Petit souci technique, réessaie dans quelques secondes."
 msgstr "Ha ocurrido un problema técnico, por favor inténtalo de nuevo en unos segundos."
 
+msgid "Payer maintenant par PayPal"
+msgstr "Pagar ahora con PayPal"
+
+msgid "Le paiement est sécurisé via PayPal. Le montant est calculé automatiquement selon le tour et le nombre de personnes."
+msgstr "El pago está asegurado a través de PayPal. El monto se calcula automáticamente según el tour y el número de personas."
+
 
