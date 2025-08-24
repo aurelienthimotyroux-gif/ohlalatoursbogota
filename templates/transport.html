@@ -221,10 +221,11 @@
       </div>
     </nav>
 
-    <!-- ✅ Burger button -->
+    <!-- ✅ Burger button (corrigé : stroke visible) -->
     <button class="burger" aria-label="Ouvrir le menu" aria-controls="mobileMenu" aria-expanded="false">
-      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-        <path d="M3 6h18M3 12h18M3 18h18"/>
+      <svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true">
+        <path d="M3 6h18M3 12h18M3 18h18"
+              stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/>
       </svg>
     </button>
   </header>
@@ -378,7 +379,11 @@
       if (closeBt) closeBt.addEventListener('click', close, {passive:true});
       overlay.addEventListener('click', close, {passive:true});
       window.addEventListener('keydown', (e)=>{ if(e.key==='Escape') close(); });
+
+      /* ✅ Fermeture auto quand on clique un lien dans le menu */
+      menu.addEventListener('click', (e)=>{ if(e.target.closest('a')) close(); });
     })();
   </script>
 </body>
 </html>
+
