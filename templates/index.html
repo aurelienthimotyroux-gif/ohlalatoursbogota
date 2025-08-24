@@ -38,27 +38,30 @@
     gtag('config', 'G-92M6CENDXH', { anonymize_ip: true });
   </script>
 
-  <!-- Canonical + hreflang -->
-  <link rel="canonical" href="https://www.ohlalatoursbogota.com{{ request.path }}{% if get_locale()!='fr' %}?lang={{ get_locale() }}{% endif %}">
-  <link rel="alternate" href="{{ url_for('index', lang='fr', _external=True) }}" hreflang="fr">
-  <link rel="alternate" href="{{ url_for('index', lang='en', _external=True) }}" hreflang="en">
-  <link rel="alternate" href="{{ url_for('index', lang='es', _external=True) }}" hreflang="es">
-  <link rel="alternate" href="{{ url_for('index', lang='fr', _external=True) }}" hreflang="x-default">
+<!-- Canonical -->
+<link rel="canonical" href="https://www.ohlalatoursbogota.com{{ request.path }}">
 
-  <!-- Open Graph -->
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://www.ohlalatoursbogota.com{{ request.path }}{% if get_locale()!='fr' %}?lang={{ get_locale() }}{% endif %}">
-  <meta property="og:site_name" content="Oh La La Tours Bogotá">
-  <meta property="og:title" content="{{ _('Visites guidées à Bogotá – Guide francophone & tours privés') }}">
-  <meta property="og:description" content="{{ _('Découvrez Bogotá : Candelaria, Monserrate, Zipaquirá, café à Hacienda Coloma. Visites en français, anglais et espagnol. Transferts aéroport, chauffeur/van privé.') }}">
-  <meta property="og:image" content="{{ url_for('static', filename='images/accueil.jpg', _external=True) }}">
-  {% if get_locale() == 'fr' %}
-  <meta property="og:locale" content="fr_FR">
-  {% elif get_locale() == 'en' %}
-  <meta property="og:locale" content="en_US">
-  {% else %}
-  <meta property="og:locale" content="es_CO">
-  {% endif %}
+<!-- Hreflang -->
+<link rel="alternate" hreflang="fr" href="{{ url_for('index', _external=True) }}">
+<link rel="alternate" hreflang="en" href="{{ url_for('index', lang='en', _external=True) }}">
+<link rel="alternate" hreflang="es" href="{{ url_for('index', lang='es', _external=True) }}">
+<link rel="alternate" hreflang="x-default" href="{{ url_for('index', _external=True) }}">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://www.ohlalatoursbogota.com{{ request.path }}">
+<meta property="og:site_name" content="Oh La La Tours Bogotá">
+<meta property="og:title" content="{{ _('Visites guidées à Bogotá – Guide francophone & tours privés') }}">
+<meta property="og:description" content="{{ _('Découvrez Bogotá : Candelaria, Monserrate, Zipaquirá, café à Hacienda Coloma. Visites en français, anglais et espagnol. Transferts aéroport, chauffeur/van privé.') }}">
+<meta property="og:image" content="{{ url_for('static', filename='images/accueil.jpg', _external=True) }}">
+{% if get_locale() == 'fr' %}
+<meta property="og:locale" content="fr_FR">
+{% elif get_locale() == 'en' %}
+<meta property="og:locale" content="en_US">
+{% else %}
+<meta property="og:locale" content="es_CO">
+{% endif %}
+
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image">
