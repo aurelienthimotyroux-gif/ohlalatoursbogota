@@ -13,6 +13,7 @@ from urllib.parse import urlsplit, urlunsplit, parse_qsl, urlencode
 
 # ✉️ Email
 from flask_mail import Mail, Message
+from decimal import Decimal, ROUND_HALF_UP  # 🟡 AJOUT PayPal: calcul monétaire
 
 # ------------------------------------------------------------------
 # Helpers (dates, normalisation)
@@ -793,6 +794,147 @@ def favicon():
         'favicon.ico',
         mimetype='image/vnd.microsoft.icon'
     )
+
+# ------------------------------------------------------------------
+# 🟡 PAYPAL — AJOUT (rien supprimé ailleurs)
+# ------------------------------------------------------------------
+PAYPAL_MODE = os.getenv("PAYPAL_MODE", "sandbox")  # 'sandbox' ou 'live'
+PAYPAL_CLIENT_ID = os.getenv("PAYPAL_CLIENT_ID", "")
+PAYPAL_CLIENT_SECRET = os.getenv("PAYPAL_CLIENT_SECRET", "")
+PAYPAL_CURRENCY = os.getenv("PAYPAL_CURRENCY", "USD").upper()
+PAYPAL_API_BASE = "https://api-m.sandbox.paypal.com" if PAYPAL_MODE == "sandbox" else "https://api-m.paypal.com"
+
+# Tarifs par personne en COP (ceux que tu m’as donnés). Ajoute/ajuste si besoin.
+PRICE_COP_PER_PERSON = {
+    "zipaquira": 465_000,
+    "monserrate": 235_000,
+    "finca-cafe": 580_000,
+    # "candelaria": 150_000,
+    # "chorrera": 320_000,
+}
+
+# Taux interne: 1 unité devise = X COP (ex: 1 USD ≈ 3800 COP)
+COP_PER_UNIT = Decimal(os.getenv("COP_PER_UNIT", "3800"))
+
+def _money2(q: Decimal) -> str:
+    return str(q.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP))
+
+def compute_price(tour: str, persons: int):
+    """
+    Calcule total en devise d'encaissement (PAYPAL_CURRENCY) à partir du tour + pax.
+    Retourne (amount_str, description).
+    """
+    tour_key = (tour or "").strip().lower()
+    if tour_key not in PRICE_COP_PER_PERSON:
+        raise ValueError("Tour non tarifé")
+    try:
+        n = int(persons)
+    except Exception:
+        n = 1
+    n = max(1, min(n, 6))
+
+    total_cop = Decimal(PRICE_COP_PER_PERSON[tour_key]) * Decimal(n)
+    if PAYPAL_CURRENCY == "COP":
+        total_unit = total_cop
+    else:
+        total_unit = (total_cop / COP_PER_UNIT)
+    amount = _money2(total_unit)
+    desc = f"Reservation {tour_key} x{n}"
+    return amount, desc
+
+def paypal_access_token() -> str:
+    r = requests.post(
+        f"{PAYPAL_API_BASE}/v1/oauth2/token",
+        headers={"Accept": "application/json", "Accept-Language": "en_US"},
+        data={"grant_type": "client_credentials"},
+        auth=(PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET),
+        timeout=20
+    )
+    r.raise_for_status()
+    return r.json()["access_token"]
+
+@app.get("/paypal-config")
+def paypal_config():
+    return {"client_id": PAYPAL_CLIENT_ID, "currency": PAYPAL_CURRENCY}
+
+@app.post("/create-paypal-order")
+def create_paypal_order():
+    data = request.get_json(silent=True) or {}
+    tour = (data.get("tour") or "").strip()
+    persons = data.get("persons") or 1
+
+    try:
+        amount, description = compute_price(tour, persons)
+    except ValueError as e:
+        return {"error": str(e)}, 400
+
+    token = paypal_access_token()
+    payload = {
+        "intent": "CAPTURE",
+        "purchase_units": [{
+            "amount": {"currency_code": PAYPAL_CURRENCY, "value": amount},
+            "description": description
+        }],
+        "application_context": {
+            "shipping_preference": "NO_SHIPPING",
+            "user_action": "PAY_NOW",
+        }
+    }
+    r = requests.post(
+        f"{PAYPAL_API_BASE}/v2/checkout/orders",
+        headers={"Content-Type": "application/json", "Authorization": f"Bearer {token}"},
+        json=payload, timeout=20
+    )
+    if r.status_code >= 400:
+        try: err = r.json()
+        except: err = {"error": r.text}
+        app.logger.error("paypal_create_error: %s", err)
+        return {"error": err}, 400
+
+    order = r.json()
+    return {"id": order["id"]}
+
+@app.post("/capture-paypal-order/<order_id>")
+def capture_paypal_order(order_id):
+    token = paypal_access_token()
+    r = requests.post(
+        f"{PAYPAL_API_BASE}/v2/checkout/orders/{order_id}/capture",
+        headers={"Content-Type": "application/json", "Authorization": f"Bearer {token}"},
+        timeout=20
+    )
+    if r.status_code >= 400:
+        try: err = r.json()
+        except: err = {"error": r.text}
+        app.logger.error("paypal_capture_error: %s", err)
+        return {"error": err}, 400
+
+    data = r.json()
+    # La réponse de PayPal pour /capture d’un order retourne un objet "id"/"status"
+    # et des "purchase_units" avec "payments" -> "captures"[]. On renvoie un résumé.
+    capture_id = data.get("id")
+    status = data.get("status", "COMPLETED")
+    return {"id": capture_id, "status": status, "raw": data}
+
+def verify_paypal_capture(capture_id: str) -> bool:
+    """
+    (Optionnel) Vérifie une capture via l’API PayPal.
+    Utilise-le si tu veux bloquer /reservation sans paiement.
+    """
+    if not capture_id:
+        return False
+    token = paypal_access_token()
+    r = requests.get(
+        f"{PAYPAL_API_BASE}/v2/payments/captures/{capture_id}",
+        headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"},
+        timeout=20
+    )
+    if r.status_code >= 400:
+        app.logger.error("paypal_verify_error: %s", r.text)
+        return False
+    data = r.json()
+    return data.get("status") == "COMPLETED"
+
+# ------------------------------------------------------------------
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.getenv("PORT","10000")), debug=bool(os.getenv("DEBUG","0")=="1"))
