@@ -538,4 +538,12 @@ header.site-header .burger{ z-index: 130; position: relative; }
 /* l’overlay de la hero ne bloque jamais les clics */
 .hero::after{ pointer-events:none !important; }
 
+@media (max-width: 768px) {
+  .testimonials-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+}
+
 
