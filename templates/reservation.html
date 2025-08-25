@@ -302,8 +302,31 @@
         <label for="date">{{ _("Date souhaitée") }}</label>
         <input type="date" id="date" name="date" required>
 
+        <!-- 🔸 Liens rapides de palier (AJOUT DEMANDÉ) -->
+        <div class="tier-links" style="max-width:1000px;margin:0 auto 6px;display:flex;gap:8px;flex-wrap:wrap;">
+          <a href="#" class="tier-pill" data-people="1" style="padding:6px 10px;border:1px solid rgba(0,0,0,.15);border-radius:999px;text-decoration:none;">
+            {{ _("1 personne") }}
+          </a>
+          <a href="#" class="tier-pill" data-people="2" style="padding:6px 10px;border:1px solid rgba(0,0,0,.15);border-radius:999px;text-decoration:none;">
+            {{ _("2 personnes") }}
+          </a>
+          <a href="#" class="tier-pill" data-people="3" style="padding:6px 10px;border:1px solid rgba(0,0,0,.15);border-radius:999px;text-decoration:none;">
+            {{ _("3–6 personnes") }}
+          </a>
+        </div>
+
         <label for="persons">{{ _("Nombre de personnes") }}</label>
         <input type="number" id="persons" name="persons" min="1" max="6" value="1" required>
+
+        <!-- 🔸 Encart prix (AJOUT DEMANDÉ) -->
+        <div id="priceBox" class="price-box" aria-live="polite"
+             style="max-width:1000px;margin:8px auto 12px;padding:8px 10px;border:1px dashed #e5e7eb;border-radius:10px;background:#f9fafb;">
+          <strong>{{ _("Prix") }}:</strong>
+          <span id="pricePerPerson">—</span>
+          <span> • </span>
+          <strong>{{ _("Total") }}:</strong>
+          <span id="priceTotal">—</span>
+        </div>
 
         <label for="message">{{ _("Message") }}</label>
         <textarea id="message" name="message" rows="4" placeholder="{{ _('Infos utiles, horaires, etc.') }}"></textarea>
@@ -364,6 +387,67 @@
       form.addEventListener('submit', function(){
         document.getElementById('phone_full').value = iti.getNumber() || input.value.trim();
       });
+    })();
+  </script>
+
+  <!-- 🔸 Devis dynamique / API / liens rapides (AJOUT DEMANDÉ) -->
+  <script>
+    // Expose en global pour pouvoir être rappelé si besoin
+    async function refreshQuote(){
+      const tourEl = document.getElementById('tour');
+      const paxEl  = document.getElementById('persons');
+      const perEl  = document.getElementById('pricePerPerson');
+      const totEl  = document.getElementById('priceTotal');
+      const box    = document.getElementById('priceBox');
+      if(!tourEl || !paxEl || !perEl || !totEl) return;
+
+      const slug = (tourEl.value || '').toLowerCase().trim();
+      let people = parseInt(paxEl.value || '1', 10) || 1;
+      people = Math.min(Math.max(people, 1), 6); // borne max 6
+
+      if(!slug){
+        perEl.textContent = '—';
+        totEl.textContent = '—';
+        return;
+      }
+
+      try{
+        const r = await fetch(`/api/quote?tour=${encodeURIComponent(slug)}&people=${people}`);
+        const d = await r.json();
+        if(!r.ok || !d.ok){
+          perEl.textContent = '—';
+          totEl.textContent = '—';
+          return;
+        }
+        perEl.textContent = `${d.per_person} ${d.currency} / {{ _('personne') }}`;
+        totEl.textContent = `${d.total} ${d.currency}`;
+      }catch(e){
+        perEl.textContent = '—';
+        totEl.textContent = '—';
+      }
+    }
+
+    (function(){
+      const tourEl = document.getElementById('tour');
+      const paxEl  = document.getElementById('persons');
+      const pills  = document.querySelectorAll('.tier-pill');
+
+      // Liens rapides 1 / 2 / 3–6
+      pills.forEach(p => {
+        p.addEventListener('click', function(e){
+          e.preventDefault();
+          const v = parseInt(this.getAttribute('data-people') || '1', 10) || 1;
+          paxEl.value = Math.min(Math.max(v, 1), 6);
+          refreshQuote();
+        });
+      });
+
+      // Recalcul quand le tour ou le nombre change
+      if (tourEl) tourEl.addEventListener('change', refreshQuote, {passive:true});
+      if (paxEl)  paxEl.addEventListener('change',  refreshQuote, {passive:true});
+
+      // Premier calcul au chargement
+      window.addEventListener('load', refreshQuote, {once:true});
     })();
   </script>
 
@@ -475,7 +559,8 @@
       };
 
       burger.addEventListener('click', open, {passive:true});
-      if (closeBt) closeBt.addEventListener('click', close, {passive:true});
+      const closeBtn = document.getElementById('mobileClose');
+      if (closeBtn) closeBtn.addEventListener('click', close, {passive:true});
       overlay.addEventListener('click', close, {passive:true});
       window.addEventListener('keydown', (e)=>{ if(e.key==='Escape') close(); });
 
@@ -486,4 +571,5 @@
 
 </body>
 </html>
+
 

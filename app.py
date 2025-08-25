@@ -1,6 +1,6 @@
 from flask import (
     Flask, render_template, request, url_for, flash, redirect,
-    send_from_directory, send_file, session, make_response, Response, abort
+    send_from_directory, send_file, session, make_response, Response, abort, jsonify  # ✅ ajout jsonify
 )
 from flask_babel import Babel, _
 import os, requests, logging, re, secrets, unicodedata
@@ -591,6 +591,86 @@ def _infer_lang_from_request(req, country_text: str = "", email_text: str = "", 
 
     return "fr"
 
+# ✅✅✅ AJOUT — Grille tarifs USD + API devis (groupes max 6)
+# ------------------------------------------------------------------
+PRICES_USD = {
+    "monserrate": {
+        "rules": [
+            (1, 1, 65),
+            (2, 6, 55),
+        ],
+        "max_group": 6,
+    },
+    "zipaquira": {
+        "rules": [
+            (1, 1, 120),
+            (2, 2, 100),
+            (3, 6, 90),
+        ],
+        "max_group": 6,
+    },
+    "finca-cafe": {
+        "rules": [
+            (1, 1, 150),
+            (2, 2, 105),
+            (3, 6, 95),
+        ],
+        "max_group": 6,
+    },
+}
+
+def quote_tour_usd(slug: str, people: int):
+    """
+    Retourne un dict: { 'ok': bool, 'per_person': Decimal, 'total': Decimal, 'currency': 'USD', ... }
+    - ok=False si la taille du groupe dépasse la limite (max 6)
+    """
+    conf = PRICES_USD.get((slug or "").strip().lower())
+    if not conf:
+        return {"ok": False, "reason": "unknown_tour"}
+
+    try:
+        n = int(people)
+    except Exception:
+        n = 1
+    if n < 1: n = 1
+
+    max_g = conf.get("max_group")
+    if max_g and n > max_g:
+        return {"ok": False, "reason": "group_too_large", "max": max_g}
+
+    ppp = None
+    for (mn, mx, price) in conf["rules"]:
+        if mn <= n <= mx:
+            ppp = Decimal(price)
+            break
+    if ppp is None:
+        return {"ok": False, "reason": "no_rule"}
+
+    total = (ppp * Decimal(n)).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+    ppp = ppp.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+    return {"ok": True, "per_person": ppp, "total": total, "currency": "USD", "people": n}
+
+@app.get("/api/quote")
+def api_quote():
+    slug = (request.args.get("tour") or "").strip().lower()
+    people = request.args.get("people", type=int) or 1
+    q = quote_tour_usd(slug, people)
+    if not q.get("ok"):
+        if q.get("reason") == "group_too_large":
+            return jsonify({
+                "ok": False,
+                "message": _("Groupe trop nombreux pour ce tour en réservation en ligne (max. %(max)d). Contactez-nous.", max=q.get("max", 6))
+            }), 400
+        return jsonify({"ok": False, "message": _("Tarif indisponible pour cette configuration.")}), 400
+    return jsonify({
+        "ok": True,
+        "per_person": str(q["per_person"]),
+        "total": str(q["total"]),
+        "currency": q["currency"],
+        "people": q["people"],
+    }), 200
+# ------------------------------------------------------------------
+
 # ✅ Réservation GET/POST + mails langue auto
 @app.route("/reservation", methods=["GET","POST"])
 def reservation():
@@ -1049,4 +1129,5 @@ if "transport" not in app.view_functions:
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.getenv("PORT","10000")), debug=bool(os.getenv("DEBUG","0")=="1"))
+
 
