@@ -770,10 +770,10 @@ Hemos recibido tu reserva.
 • Tour: {tour}
 • Fecha: {date_str}
 • Número de personas: {persons}
-• Teléfono: {phone o '—'}
-• País: {country o '—'}
-• Mensaje: {message o '—'}
-• Pago PayPal (captura): {capture_id o '—'}
+• Teléfono: {phone or '—'}
+• País: {country or '—'}
+• Mensaje: {message or '—'}
+• Pago PayPal (captura): {capture_id or '—'}
 
 En breve nos pondremos en contacto para organizar los detalles.
 
