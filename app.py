@@ -594,26 +594,19 @@ def _infer_lang_from_request(req, country_text: str = "", email_text: str = "", 
 # ✅✅✅ AJOUT — Grille tarifs USD + API devis (groupes max 6)
 # ------------------------------------------------------------------
 PRICES_USD = {
-    "monserrate": {
+    "chorrera": {
         "rules": [
-            (1, 1, 65),
-            (2, 6, 55),
+            (1, 1, 125),
+            (2, 3, 115),
+            (4, 6, 100),
         ],
         "max_group": 6,
     },
-    "zipaquira": {
+    "candelaria": {
         "rules": [
-            (1, 1, 120),
-            (2, 2, 100),
-            (3, 6, 90),
-        ],
-        "max_group": 6,
-    },
-    "finca-cafe": {
-        "rules": [
-            (1, 1, 150),
-            (2, 2, 105),
-            (3, 6, 95),
+            (1, 1, 40),
+            (2, 3, 35),
+            (4, 6, 33),
         ],
         "max_group": 6,
     },
@@ -777,10 +770,10 @@ Hemos recibido tu reserva.
 • Tour: {tour}
 • Fecha: {date_str}
 • Número de personas: {persons}
-• Teléfono: {phone or '—'}
-• País: {country or '—'}
-• Mensaje: {message or '—'}
-• Pago PayPal (captura): {capture_id or '—'}
+• Teléfono: {phone o '—'}
+• País: {country o '—'}
+• Mensaje: {message o '—'}
+• Pago PayPal (captura): {capture_id o '—'}
 
 En breve nos pondremos en contacto para organizar los detalles.
 
@@ -911,16 +904,13 @@ PAYPAL_CLIENT_SECRET = os.getenv("PAYPAL_CLIENT_SECRET") or os.getenv("PAYPAL_SE
 PAYPAL_CURRENCY = os.getenv("PAYPAL_CURRENCY", "USD").upper()
 PAYPAL_API_BASE = "https://api-m.sandbox.paypal.com" if PAYPAL_MODE == "sandbox" else "https://api-m.paypal.com"
 
-# Tarifs par personne (COP). Ajoute les manquants quand dispo.
-PRICE_COP_PER_PERSON = {
-    "zipaquira": 6000,
-    "monserrate": 6000,
-    "finca-cafe": 6000,
-    # "candelaria": 6000,
-    # "chorrera": 6000,
+# 🔁 Tarifs USD par personne (paliers selon la taille du groupe 1..6)
+PRICES_USD_PAYPAL = {
+    "chorrera": [(1, 1, Decimal("125")), (2, 3, Decimal("115")), (4, 6, Decimal("100"))],
+    "candelaria": [(1, 1, Decimal("40")), (2, 3, Decimal("35")), (4, 6, Decimal("33"))],
 }
 
-# FX interne: 1 unité devise = X COP (utilisé si tu encaisses en USD/EUR)
+# FX interne: 1 unité devise = X COP (utilisé si tu encaisses en COP)
 COP_PER_UNIT = Decimal(os.getenv("COP_PER_UNIT", "3800"))
 
 HTTP_TIMEOUT = 60  # laisser le temps à PayPal
@@ -931,9 +921,13 @@ def _money2(q: Decimal) -> str:
 def compute_price(tour: str, persons: int):
     """
     Retourne (amount_str_en_PAYPAL_CURRENCY, description)
+    - Base tarifaire en USD (paliers / personne)
+    - Si PAYPAL_CURRENCY == 'USD' ➜ montant en USD
+      Sinon si 'COP' ➜ conversion via COP_PER_UNIT
+      Sinon ➜ fallback USD
     """
     key = (tour or "").strip().lower()
-    if key not in PRICE_COP_PER_PERSON:
+    if key not in PRICES_USD_PAYPAL:
         raise ValueError("Tour non tarifé")
 
     try:
@@ -942,14 +936,29 @@ def compute_price(tour: str, persons: int):
         n = 1
     n = max(1, min(n, 6))
 
-    total_cop = Decimal(PRICE_COP_PER_PERSON[key]) * Decimal(n)
-    if PAYPAL_CURRENCY == "COP":
-        total_unit = total_cop
+    # prix / personne selon palier
+    per_person_usd = None
+    for (mn, mx, price) in PRICES_USD_PAYPAL[key]:
+        if mn <= n <= mx:
+            per_person_usd = Decimal(price)
+            break
+    if per_person_usd is None:
+        # si pas de règle, on refuse
+        raise ValueError("Aucune règle de prix pour ce nombre de personnes")
+
+    total_usd = (per_person_usd * Decimal(n))
+
+    # conversion selon la devise PayPal
+    if PAYPAL_CURRENCY == "USD":
+        total_unit = total_usd
+    elif PAYPAL_CURRENCY == "COP":
+        total_unit = (total_usd * COP_PER_UNIT)
     else:
-        total_unit = (total_cop / COP_PER_UNIT)
+        # fallback : on garde USD
+        total_unit = total_usd
 
     amount = _money2(total_unit)
-    desc = f"Reservation {key} x{n}"
+    desc = f"Reservation {key} x{n} — {per_person_usd} USD/pers"
     return amount, desc
 
 def paypal_access_token() -> str:
