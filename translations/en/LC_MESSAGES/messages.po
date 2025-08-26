@@ -777,4 +777,7 @@ msgstr "Price: 125 USD / person (1 person) • 115 USD / person (2 to 3 people) 
 msgid "Tarif : 40 USD / personne (1 pers.) • 35 USD / personne (2 à 3 pers.) • 33 USD / personne dès 4 à 6 personnes"
 msgstr "Price: 40 USD / person (1 person) • 35 USD / person (2 to 3 people) • 33 USD / person from 4 to 6 people"
 
+msgid "Randonnée de niveau moyen à environ 2 500 m d’altitude. Prévoir des vêtements adaptés, de bonnes chaussures de marche et un change."
+msgstr "Moderate hike at around 2,500 m altitude. Please bring suitable clothing, good walking shoes, and a change of clothes."
+
 

@@ -1046,4 +1046,7 @@ msgstr "Tarifa: 125 USD / persona (1 persona) • 115 USD / persona (2 a 3 perso
 msgid "Tarif : 40 USD / personne (1 pers.) • 35 USD / personne (2 à 3 pers.) • 33 USD / personne dès 4 à 6 personnes"
 msgstr "Tarifa: 40 USD / persona (1 persona) • 35 USD / persona (2 a 3 personas) • 33 USD / persona desde 4 hasta 6 personas"
 
+msgid "Randonnée de niveau moyen à environ 2 500 m d’altitude. Prévoir des vêtements adaptés, de bonnes chaussures de marche et un change."
+msgstr "Caminata de nivel medio a unos 2 500 m de altitud. Se recomienda llevar ropa adecuada, buen calzado para caminar y ropa de repuesto."
+
 
