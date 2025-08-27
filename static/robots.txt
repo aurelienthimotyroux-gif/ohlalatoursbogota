@@ -1,19 +1,39 @@
+# robots.txt — Oh La La Tours Bogotá
+
 User-agent: *
-# On autorise toutes les pages principales
+
+# ✅ Pages publiques (par défaut tout est autorisé)
 Allow: /index
 Allow: /tours
-Allow: /reservation
 Allow: /transport
+Allow: /reservation
 
-# On bloque les pages techniques (inutile pour Google)
-Disallow: /paiement_erreur
-Disallow: /cancel
-Disallow: /success
-Disallow: /admin
+# ❌ Routes techniques / admin / debug / erreurs
+Disallow: /admin/
+Disallow: /_routes
+Disallow: /healthz
 Disallow: /404
 Disallow: /500
-Disallow: /base
+
+# ❌ Paiement (retours PayPal & API serveur)
+Disallow: /paiement-reussi
+Disallow: /paiement-annule
+Disallow: /success
+Disallow: /cancel
+Disallow: /create-paypal-order
+Disallow: /capture-paypal-order
+Disallow: /paypal-order
+Disallow: /paypal-config
+
+# ❌ Anciens / pages non SEO (ajuste si tu veux les indexer)
 Disallow: /galerie
 
-# Sitemap
+# ❌ Paramètres inutiles au SEO (évite l’index de variantes)
+# (Google gère * et $ — ça n’empêche pas l’exploration des versions canonicals)
+Disallow: /*?q=
+Disallow: /*&q=
+Disallow: /*?orderID=
+Disallow: /*&orderID=
+
+# 🗺️ Sitemap
 Sitemap: https://www.ohlalatoursbogota.com/sitemap.xml
