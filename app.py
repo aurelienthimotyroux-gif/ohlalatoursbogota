@@ -338,7 +338,7 @@ def admin_comments():
     rows = []
     for c in items:
         snippet = (c.message or "")
-        snippet = (snippet[:120] + "…") if len(snippet) > 120 else snippet
+        snippet = (snippet[:120] + "…") if len(snippet > 120) else snippet
         snippet = snippet.replace("<", "&lt;")
         rows.append(f"""
         <tr>
@@ -594,6 +594,29 @@ def _infer_lang_from_request(req, country_text: str = "", email_text: str = "", 
 # ✅✅✅ AJOUT — Grille tarifs USD + API devis (groupes max 6)
 # ------------------------------------------------------------------
 PRICES_USD = {
+    "monserrate": {
+        "rules": [
+            (1, 1, 65),
+            (2, 6, 55),
+        ],
+        "max_group": 6,
+    },
+    "zipaquira": {
+        "rules": [
+            (1, 1, 120),
+            (2, 2, 100),
+            (3, 6, 90),
+        ],
+        "max_group": 6,
+    },
+    "finca-cafe": {
+        "rules": [
+            (1, 1, 150),
+            (2, 2, 105),
+            (3, 6, 95),
+        ],
+        "max_group": 6,
+    },
     "chorrera": {
         "rules": [
             (1, 1, 125),
@@ -906,8 +929,11 @@ PAYPAL_API_BASE = "https://api-m.sandbox.paypal.com" if PAYPAL_MODE == "sandbox"
 
 # 🔁 Tarifs USD par personne (paliers selon la taille du groupe 1..6)
 PRICES_USD_PAYPAL = {
-    "chorrera": [(1, 1, Decimal("125")), (2, 3, Decimal("115")), (4, 6, Decimal("100"))],
-    "candelaria": [(1, 1, Decimal("40")), (2, 3, Decimal("35")), (4, 6, Decimal("33"))],
+    "monserrate": [(1, 1, Decimal("65")), (2, 6, Decimal("55"))],
+    "zipaquira":  [(1, 1, Decimal("120")), (2, 2, Decimal("100")), (3, 6, Decimal("90"))],
+    "finca-cafe": [(1, 1, Decimal("150")), (2, 2, Decimal("105")), (3, 6, Decimal("95"))],
+    "chorrera":   [(1, 1, Decimal("125")), (2, 3, Decimal("115")), (4, 6, Decimal("100"))],
+    "candelaria": [(1, 1, Decimal("40")),  (2, 3, Decimal("35")),  (4, 6, Decimal("33"))],
 }
 
 # FX interne: 1 unité devise = X COP (utilisé si tu encaisses en COP)
@@ -1138,5 +1164,3 @@ if "transport" not in app.view_functions:
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.getenv("PORT","10000")), debug=bool(os.getenv("DEBUG","0")=="1"))
-
-
