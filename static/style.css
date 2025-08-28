@@ -552,5 +552,14 @@ header.site-header .burger{ z-index: 130; position: relative; }
   margin-bottom: 20px;
 }
 
+/* Centre le titre du formulaire de commentaires (priorité élevée) */
+h2.comment-form-title,
+#comment-title,
+.leave-comment h2 {
+  text-align: center !important;
+  width: 100%;
+  display: block;
+  margin: 0 auto 20px;
+}
 
 
