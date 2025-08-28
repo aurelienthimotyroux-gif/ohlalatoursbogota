@@ -284,6 +284,40 @@
 
       <form class="reservation-form" method="POST" action="{{ url_for('reservation', lang=get_locale()) }}" novalidate>
 
+   <label for="tour">{{ _("Choisissez un tour") }}</label>
+        <select name="tour" id="tour" required>
+          <option value="">{{ _("-- Sélectionnez --") }}</option>
+          <option value="candelaria" {{ 'selected' if tour=='candelaria' else '' }}>{{ _("Visite historique de La Candelaria") }}</option>
+          <option value="monserrate" {{ 'selected' if tour=='monserrate' else '' }}>{{ _("Découverte du Monserrate") }}</option>
+          <option value="zipaquira"  {{ 'selected' if tour=='zipaquira'  else '' }}>{{ _("Excursion à la Cathédrale de sel de Zipaquirá") }}</option>
+          <option value="chorrera"   {{ 'selected' if tour=='chorrera'   else '' }}>{{ _("Cascade de La Chorrera") }}</option>
+          <option value="finca-cafe" {{ 'selected' if tour=='finca-cafe' else '' }}>{{ _("Visite d’une finca à café") }}</option>
+        </select>
+
+        <!-- 🔹 Tarifs affichés selon le tour (AJOUTÉ, rien d'autre n'est modifié) -->
+        <div id="staticTariffs" style="max-width:1000px;margin:8px auto 0;color:#0f172a;font-size:.98rem">
+          <!-- Monserrate -->
+          <p class="tariff-line" data-tour="monserrate" style="display:none;margin:.35rem 0">
+            {{ _("Tarif : 65 USD / personne (1 pers.) • 55 USD / personne dès 2 à 6 personnes") }}
+          </p>
+          <!-- Zipaquirá -->
+          <p class="tariff-line" data-tour="zipaquira" style="display:none;margin:.35rem 0">
+            {{ _("Tarif : 120 USD / personne (1 pers.) • 100 USD / personne (2 pers.) • 90 USD / personne (3 à 6 pers.)") }}
+          </p>
+          <!-- Finca café -->
+          <p class="tariff-line" data-tour="finca-cafe" style="display:none;margin:.35rem 0">
+            {{ _("Tarif : 150 USD / personne (1 pers.) • 105 USD / personne (2 pers.) • 95 USD / personne (3 à 6 pers.)") }}
+          </p>
+          <!-- La Chorrera -->
+          <p class="tariff-line" data-tour="chorrera" style="display:none;margin:.35rem 0">
+            {{ _("Tarif : 125 USD / personne (1 pers.) • 115 USD / personne (2 à 3 pers.) • 100 USD / personne (4 à 6 pers.)") }}
+          </p>
+          <!-- Candelaria -->
+          <p class="tariff-line" data-tour="candelaria" style="display:none;margin:.35rem 0">
+            {{ _("Tarif : 40 USD / personne (1 pers.) • 35 USD / personne (2 à 3 pers.) • 33 USD / personne (4 à 6 pers.)") }}
+          </p>
+        </div>
+
         <input type="hidden" name="ui_lang" value="{{ get_locale() }}">
 
         <label for="nom">{{ _("Nom") }}</label>
@@ -330,16 +364,6 @@
 
         <label for="message">{{ _("Message") }}</label>
         <textarea id="message" name="message" rows="4" placeholder="{{ _('Infos utiles, horaires, etc.') }}"></textarea>
-
-        <label for="tour">{{ _("Choisissez un tour") }}</label>
-        <select name="tour" id="tour" required>
-          <option value="">{{ _("-- Sélectionnez --") }}</option>
-          <option value="candelaria" {{ 'selected' if tour=='candelaria' else '' }}>{{ _("Visite historique de La Candelaria") }}</option>
-          <option value="monserrate" {{ 'selected' if tour=='monserrate' else '' }}>{{ _("Découverte du Monserrate") }}</option>
-          <option value="zipaquira"  {{ 'selected' if tour=='zipaquira'  else '' }}>{{ _("Excursion à la Cathédrale de sel de Zipaquirá") }}</option>
-          <option value="chorrera"   {{ 'selected' if tour=='chorrera'   else '' }}>{{ _("Cascade de La Chorrera") }}</option>
-          <option value="finca-cafe" {{ 'selected' if tour=='finca-cafe' else '' }}>{{ _("Visite d’une finca à café") }}</option>
-        </select>
 
         <input type="hidden" id="paypal_capture_id" name="paypal_capture_id" value="">
         <button type="submit" id="form-submit" disabled>{{ _("Envoyer") }}</button>
@@ -427,6 +451,14 @@
       }
     }
 
+    // 🔹 Affichage du texte tarifaire statique selon le tour choisi (AJOUTÉ)
+    function refreshTariffText(){
+      const tour = (document.getElementById('tour')?.value || '').toLowerCase();
+      document.querySelectorAll('#staticTariffs .tariff-line').forEach(el=>{
+        el.style.display = (el.getAttribute('data-tour') === tour) ? 'block' : 'none';
+      });
+    }
+
     (function(){
       const tourEl = document.getElementById('tour');
       const paxEl  = document.getElementById('persons');
@@ -443,11 +475,11 @@
       });
 
       // Recalcul quand le tour ou le nombre change
-      if (tourEl) tourEl.addEventListener('change', refreshQuote, {passive:true});
+      if (tourEl) tourEl.addEventListener('change', function(){ refreshQuote(); refreshTariffText(); }, {passive:true});
       if (paxEl)  paxEl.addEventListener('change',  refreshQuote, {passive:true});
 
       // Premier calcul au chargement
-      window.addEventListener('load', refreshQuote, {once:true});
+      window.addEventListener('load', function(){ refreshQuote(); refreshTariffText(); }, {once:true});
     })();
   </script>
 
@@ -571,5 +603,3 @@
 
 </body>
 </html>
-
-

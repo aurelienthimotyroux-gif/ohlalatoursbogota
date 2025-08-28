@@ -60,8 +60,8 @@ msgstr "Soy Alejandra, guía local apasionada, y te invito a descubrir una Bogot
 msgid "À travers mes visites en petits groupes, nous explorerons son histoire, sa culture et ses saveurs : balades dans les quartiers historiques, expériences culinaires, escapades en pleine nature et excursions uniques aux alentours, comme la célèbre Cathédrale de sel de Zipaquirá."
 msgstr "A través de mis visitas en grupos pequeños, exploraremos su historia, su cultura y sus sabores: paseos por barrios históricos, experiencias gastronómicas, escapadas a la naturaleza y excursiones únicas en los alrededores, como la famosa Catedral de Sal de Zipaquirá."
 
-msgid "Plus qu’une simple visite, je vous propose une immersion vivante et chaleureuse, une expérience à ressentir et à emporter avec vous."
-msgstr "Más que una simple visita, te propongo una inmersión cálida y viva, una experiencia para sentir y llevarte contigo."
+msgid "Plus qu’une simple visite, je vous propose une immersion vivante et chaleureuse, une expérience à vivre, un instant d'émotion, une experience qui voyage avec vous."
+msgstr "Más que una simple visita, le propongo una inmersión viva y acogedora, una experiencia para vivir, un instante de emoción, una experiencia que viaja con usted."
 
 msgid "Je propose des visites guidées à Bogotá avec un guide francophone, des tours privés vers la Candelaria, Monserrate et Zipaquirá, ainsi qu’un service de transport (taxi/van) et transferts aéroport."
 msgstr "Ofrezco visitas guiadas en Bogotá con guía francófono, tours privados a La Candelaria, Monserrate y Zipaquirá, además de servicio de transporte (taxi/van) y traslados al aeropuerto."
@@ -466,7 +466,7 @@ msgstr "Tarifa: por confirmar"
 msgid "Monserrate : Là où se rencontrent nature, histoire et foi"
 msgstr "Monserrate: Donde se encuentran naturaleza, historia y fe"
 
-msgid "Grimpez au sommet le plus emblématique de Bogotá et vivez une expérience unique qui mêle nature, histoire et spiritualité. Nous monterons en téléphérique pour profiter de l’une des plus belles vues sur la capitale, entourés par la luxuriante végétation andine. Au sommet, nous visiterons le Sanctuaire du Señor Caído, haut lieu de ferveur spirituelle, avant de parcourir ses alentours pour admirer le paysage, l’architecture et les traditions qui font de Monserrate un site incontournable."
+msgid "Grimpez au sommet le plus emblématique de Bogotá et vivez une expérience unique qui mêle nature, histoire et spiritualité. Nous monterons en téléphérique pour profiter de l’une des plus belles vues sur la capitale, entouré par la luxuriante végétation andine. Au sommet, nous visiterons le Sanctuaire du Señor Caído, haut lieu de ferveur spirituelle, avant de parcourir ses alentours pour admirer le paysage, l’architecture et les traditions qui font de Monserrate un site incontournable."
 msgstr "Asciende a la cima más emblemática de Bogotá y vive una experiencia única que combina naturaleza, historia y espiritualidad. Subiremos en teleférico para disfrutar de una de las mejores vistas de la capital, rodeados por la exuberante vegetación andina. En la cima, visitaremos el Santuario del Señor Caído, lugar de gran fervor espiritual, antes de recorrer sus alrededores para admirar el paisaje, la arquitectura y las tradiciones que hacen de Monserrate un sitio imprescindible."
 
 msgid "Guide locale experte"
