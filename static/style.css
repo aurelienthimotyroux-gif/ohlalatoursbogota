@@ -546,4 +546,11 @@ header.site-header .burger{ z-index: 130; position: relative; }
   }
 }
 
+/* Centrer le titre des commentaires */
+.comment-form-title {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+
 
