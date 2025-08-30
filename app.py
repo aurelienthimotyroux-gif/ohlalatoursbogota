@@ -338,7 +338,8 @@ def admin_comments():
     rows = []
     for c in items:
         snippet = (c.message or "")
-        snippet = (snippet[:120] + "…") if len(snippet > 120) else snippet
+        # ✅ correction ici : on mesure la longueur de la chaîne, pas d'une comparaison
+        snippet = (snippet[:120] + "…") if len(snippet) > 120 else snippet
         snippet = snippet.replace("<", "&lt;")
         rows.append(f"""
         <tr>
@@ -540,6 +541,7 @@ def admin_transfer_delete(transfer_id: int):
         app.logger.warning("delete_transfer_failed: %s", e)
         flash(_("Suppression impossible."), "error")
     return redirect(url_for("admin_transfers"))
+
 
 # ------------------------------------------------------------------
 # Données de démo + pages publiques
