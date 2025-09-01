@@ -34,6 +34,8 @@ Disallow: /*?q=
 Disallow: /*&q=
 Disallow: /*?orderID=
 Disallow: /*&orderID=
+Disallow: /tours?q=
+
 
 # 🗺️ Sitemap
 Sitemap: https://www.ohlalatoursbogota.com/sitemap.xml

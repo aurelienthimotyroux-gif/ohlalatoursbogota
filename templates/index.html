@@ -39,13 +39,20 @@
   </script>
 
   <!-- Canonical -->
-  <link rel="canonical" href="https://www.ohlalatoursbogota.com{{ request.path }}">
+  <link rel="canonical" href="{{ request.base_url }}">
 
-  <!-- Hreflang -->
-  <link rel="alternate" hreflang="fr" href="{{ url_for('index', _external=True) }}">
-  <link rel="alternate" hreflang="en" href="{{ url_for('index', lang='en', _external=True) }}">
-  <link rel="alternate" hreflang="es" href="{{ url_for('index', lang='es', _external=True) }}">
-  <link rel="alternate" hreflang="x-default" href="{{ url_for('index', _external=True) }}">
+
+{% set _tour = request.args.get('tour') %}
+
+{% macro alt_url(lang_code) -%}
+  {{ url_for(request.endpoint, lang=lang_code, _external=True, **(request.view_args or {})) ~
+     (('?tour=' ~ _tour) if _tour else '') }}
+{%- endmacro %}
+
+<link rel="alternate" hreflang="fr" href="{{ alt_url('fr') }}">
+<link rel="alternate" hreflang="en" href="{{ alt_url('en') }}">
+<link rel="alternate" hreflang="es" href="{{ alt_url('es') }}">
+<link rel="alternate" hreflang="x-default" href="{{ alt_url('fr') }}">
 
   <!-- Open Graph -->
   <meta property="og:type" content="website">
