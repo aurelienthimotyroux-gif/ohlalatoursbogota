@@ -79,8 +79,9 @@ def lang_url(lang_code: str):
     args = request.args.to_dict(flat=True)
     args["lang"] = lang_code
     endpoint = request.endpoint or "index"
-    view_args = request.view_args or {}   # 👈 ajoute cette ligne
+    view_args = request.view_args or {}   # garde les paramètres de route (ex: slug)
     return url_for(endpoint, **view_args, **args)
+
 
 
 # ✅ Normalisation d’URL: retirer ?lang=fr / lang invalide
