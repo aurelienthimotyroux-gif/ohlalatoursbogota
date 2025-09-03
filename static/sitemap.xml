@@ -22,12 +22,26 @@
     <priority>0.8</priority>
   </url>
 
-  <!-- Réservation -->
+  <!-- Réservations (URLs propres par tour) -->
   <url>
-    <loc>https://www.ohlalatoursbogota.com/reservation</loc>
+    <loc>https://www.ohlalatoursbogota.com/reservation/candelaria</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.ohlalatoursbogota.com/reservation/zipaquira</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.ohlalatoursbogota.com/reservation/la-chorrera</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.ohlalatoursbogota.com/reservation/finca-cafe</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
 </urlset>
-

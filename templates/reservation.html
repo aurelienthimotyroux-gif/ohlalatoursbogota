@@ -103,19 +103,24 @@
   <meta name="google-site-verification" content="4z28-XXEkdcB_VOcaGoy1bhgA-zj7xr6wSf76ZwZ4tQ" />
 
   <!-- ✅ Canonical + hreflang -->
+{% if slug %}
+  <link rel="canonical" href="{{ url_for('reservation_clean', slug=slug, _external=True) }}">
+{% else %}
   <link rel="canonical" href="{{ request.base_url }}">
+{% endif %}
 
-{% set _tour = request.args.get('tour') %}
-
-{% macro alt_url(lang_code) -%}
-  {{ url_for(request.endpoint, lang=lang_code, _external=True, **(request.view_args or {})) ~
-     (('?tour=' ~ _tour) if _tour else '') }}
+{% macro alt_res(lang_code) -%}
+  {% if slug -%}
+    {{ url_for('reservation_clean', slug=slug, lang=lang_code, _external=True) }}
+  {%- else -%}
+    {{ url_for(request.endpoint, lang=lang_code, _external=True, **(request.view_args or {})) }}
+  {%- endif %}
 {%- endmacro %}
 
-<link rel="alternate" hreflang="fr" href="{{ alt_url('fr') }}">
-<link rel="alternate" hreflang="en" href="{{ alt_url('en') }}">
-<link rel="alternate" hreflang="es" href="{{ alt_url('es') }}">
-<link rel="alternate" hreflang="x-default" href="{{ alt_url('fr') }}">
+<link rel="alternate" hreflang="fr" href="{{ alt_res('fr') }}">
+<link rel="alternate" hreflang="en" href="{{ alt_res('en') }}">
+<link rel="alternate" hreflang="es" href="{{ alt_res('es') }}">
+<link rel="alternate" hreflang="x-default" href="{% if slug %}{{ url_for('reservation_clean', slug=slug, _external=True) }}{% else %}{{ url_for(request.endpoint, _external=True, **(request.view_args or {})) }}{% endif %}">
 
   <!-- ✅ Open Graph / Twitter -->
   <meta property="og:type" content="website">

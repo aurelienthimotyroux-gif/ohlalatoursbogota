@@ -692,74 +692,85 @@ def api_quote():
 # ✅ Réservation GET/POST + mails langue auto
 @app.route("/reservation", methods=["GET","POST"])
 def reservation():
-    if request.method == "POST":
-        fullname = (request.form.get("nom") or "").strip()
-        email    = (request.form.get("email") or "").strip()
-        phone    = (request.form.get("phone") or "").strip()
-        country  = (request.form.get("country") or "").strip()
-        date_str = (request.form.get("date") or "").strip()
-        persons  = request.form.get("persons") or "1"
-        tour     = (request.form.get("tour") or "").strip().lower()
-        message  = (request.form.get("message") or "").strip()
-        # 🟡 ID de capture transmis par le front après paiement
-        capture_id = (request.form.get("paypal_capture_id") or "").strip()
-
-        # langue UI envoyée par le formulaire (champ hidden ui_lang)
-        ui_lang  = (request.form.get("ui_lang") or "").lower()
-        if ui_lang in ("fr","en","es"):
-            lang = ui_lang
-        else:
-            lang = _infer_lang_from_request(request, country_text=country, email_text=email, phone_text=phone)
-
-        # Validation PAX (1..6)
-        try:
-            persons = int(persons)
-            if persons < 1: persons = 1
-            if persons > 6: persons = 6
-        except Exception:
-            persons = 1
-
-        if not fullname or not email or not date_str or not tour:
-            flash(_("Merci de remplir nom, email, date et tour."), "error")
-            return render_template("reservation.html", tour=tour)
-
-        # 🟡 Vérifier le paiement AVANT d'enregistrer
-        if not verify_paypal_capture(capture_id):
-            flash(_("Le paiement PayPal n'a pas été confirmé. Merci d'effectuer le paiement avant d'envoyer la réservation."), "error")
-            return render_template("reservation.html", tour=tour)
-
-        # Enregistrer en DB
-        try:
-            r = Reservation(
-                fullname=fullname[:160],
-                email=email[:160],
-                phone=phone[:40],
-                country=country[:120],
-                date_str=date_str[:80],
-                persons=persons,
-                tour_slug=tour[:80],
-                message=message,
-                language=lang[:8],
-                paypal_capture_id=capture_id[:80]  # 🟡 on garde la trace
+    # --- GET: si ?tour= présent, redirige 301 vers l'URL propre /reservation/<slug> ---
+    if request.method == "GET":
+        tour_qs = (request.args.get("tour") or "").strip().lower()
+        if tour_qs:
+            return redirect(
+                url_for("reservation_clean", slug=tour_qs, lang=request.args.get("lang")),
+                code=301
             )
-            db.session.add(r)
-            db.session.commit()
-        except Exception as e:
-            app.logger.error("reservation_db_error: %s", e)
-            db.session.rollback()
-            flash(_("Petit souci technique, réessaie dans quelques secondes."), "error")
-            return render_template("reservation.html", tour=tour)
+        # pas de ?tour= -> page générique
+        return render_template("reservation.html")
 
-        # Emails (langue auto fr/en/es)
-        try:
-            if app.config["MAIL_USERNAME"] and (app.config["MAIL_PASSWORD"] or app.config["MAIL_USE_SSL"] or app.config["MAIL_USE_TLS"]):
-                subjects = {
-                    "fr": "Confirmation de réservation — Oh La La Tours Bogotá",
-                    "en": "Booking confirmation — Oh La La Tours Bogotá",
-                    "es": "Confirmación de reserva — Oh La La Tours Bogotá",
-                }
-                bodies = {
-                    "fr": f"""Bonjour {fullname},
+    # --- POST: logique existante inchangée ---
+    fullname = (request.form.get("nom") or "").strip()
+    email    = (request.form.get("email") or "").strip()
+    phone    = (request.form.get("phone") or "").strip()
+    country  = (request.form.get("country") or "").strip()
+    date_str = (request.form.get("date") or "").strip()
+    persons  = request.form.get("persons") or "1"
+    tour     = (request.form.get("tour") or "").strip().lower()
+    message  = (request.form.get("message") or "").strip()
+    # 🟡 ID de capture transmis par le front après paiement
+    capture_id = (request.form.get("paypal_capture_id") or "").strip()
+
+    # langue UI envoyée par le formulaire (champ hidden ui_lang)
+    ui_lang  = (request.form.get("ui_lang") or "").lower()
+    if ui_lang in ("fr","en","es"):
+        lang = ui_lang
+    else:
+        lang = _infer_lang_from_request(request, country_text=country, email_text=email, phone_text=phone)
+
+    # Validation PAX (1..6)
+    try:
+        persons = int(persons)
+        if persons < 1: persons = 1
+        if persons > 6: persons = 6
+    except Exception:
+        persons = 1
+
+    if not fullname or not email or not date_str or not tour:
+        flash(_("Merci de remplir nom, email, date et tour."), "error")
+        return render_template("reservation.html", tour=tour)
+
+    # 🟡 Vérifier le paiement AVANT d'enregistrer
+    if not verify_paypal_capture(capture_id):
+        flash(_("Le paiement PayPal n'a pas été confirmé. Merci d'effectuer le paiement avant d'envoyer la réservation."), "error")
+        return render_template("reservation.html", tour=tour)
+
+    # Enregistrer en DB
+    try:
+        r = Reservation(
+            fullname=fullname[:160],
+            email=email[:160],
+            phone=phone[:40],
+            country=country[:120],
+            date_str=date_str[:80],
+            persons=persons,
+            tour_slug=tour[:80],
+            message=message,
+            language=lang[:8],
+            paypal_capture_id=capture_id[:80]  # 🟡 on garde la trace
+        )
+        db.session.add(r)
+        db.session.commit()
+    except Exception as e:
+        app.logger.error("reservation_db_error: %s", e)
+        db.session.rollback()
+        flash(_("Petit souci technique, réessaie dans quelques secondes."), "error")
+        return render_template("reservation.html", tour=tour)
+
+    # Emails (langue auto fr/en/es)
+    try:
+        if app.config["MAIL_USERNAME"] and (app.config["MAIL_PASSWORD"] or app.config["MAIL_USE_SSL"] or app.config["MAIL_USE_TLS"]):
+            subjects = {
+                "fr": "Confirmation de réservation — Oh La La Tours Bogotá",
+                "en": "Booking confirmation — Oh La La Tours Bogotá",
+                "es": "Confirmación de reserva — Oh La La Tours Bogotá",
+            }
+            bodies = {
+                "fr": f"""Bonjour {fullname},
 
 Nous avons bien reçu votre réservation.
 • Tour : {tour}
@@ -774,7 +785,7 @@ Nous revenons vers vous très rapidement pour l’organisation.
 
 Oh La La Tours Bogotá
 """,
-                    "en": f"""Hello {fullname},
+                "en": f"""Hello {fullname},
 
 We’ve received your booking request.
 • Tour: {tour}
@@ -789,7 +800,7 @@ We’ll get back to you shortly to arrange the details.
 
 Oh La La Tours Bogotá
 """,
-                    "es": f"""Hola {fullname},
+                "es": f"""Hola {fullname},
 
 Hemos recibido tu reserva.
 • Tour: {tour}
@@ -804,20 +815,20 @@ En breve nos pondremos en contacto para organizar los detalles.
 
 Oh La La Tours Bogotá
 """
-                }
+            }
 
-                subject_cli = subjects.get(lang, subjects["fr"])
-                body_cli    = bodies.get(lang, bodies["fr"])
-                app.logger.info("reservation_email_lang=%s", lang)
+            subject_cli = subjects.get(lang, subjects["fr"])
+            body_cli    = bodies.get(lang, bodies["fr"])
+            app.logger.info("reservation_email_lang=%s", lang)
 
-                # Client
-                mail.send(Message(subject=subject_cli, recipients=[email], body=body_cli))
+            # Client
+            mail.send(Message(subject=subject_cli, recipients=[email], body=body_cli))
 
-                # Interne (FR par défaut)
-                notify_to = ADMIN_NOTIFY_EMAIL or app.config["MAIL_DEFAULT_SENDER"] or app.config["MAIL_USERNAME"]
-                if notify_to:
-                    subject_admin = f"[Réservation] {fullname} — {tour} — {date_str} — {persons}p"
-                    body_admin = f"""Nouvelle réservation
+            # Interne (FR par défaut)
+            notify_to = ADMIN_NOTIFY_EMAIL or app.config["MAIL_DEFAULT_SENDER"] or app.config["MAIL_USERNAME"]
+            if notify_to:
+                subject_admin = f"[Réservation] {fullname} — {tour} — {date_str} — {persons}p"
+                body_admin = f"""Nouvelle réservation
 
 Nom: {fullname}
 Email: {email}
@@ -832,54 +843,21 @@ Paiement PayPal (capture): {capture_id or '—'}
 Message:
 {message or '—'}
 """
-                    mail.send(Message(subject=subject_admin, recipients=[notify_to], body=body_admin))
-            else:
-                app.logger.warning("Mail non configuré: aucune confirmation envoyée. Configure MAIL_* env vars.")
-        except Exception as e:
-            app.logger.error("reservation_mail_error: %s", e)
+                mail.send(Message(subject=subject_admin, recipients=[notify_to], body=body_admin))
+        else:
+            app.logger.warning("Mail non configuré: aucune confirmation envoyée. Configure MAIL_* env vars.")
+    except Exception as e:
+        app.logger.error("reservation_mail_error: %s", e)
 
-        # ✅ On reste sur la page de réservation, avec le message flash affiché dans reservation.html
-        flash(_("Merci ! Votre réservation a bien été prise en compte. Un email de confirmation vous a été envoyé."), "success")
-        return render_template("reservation.html", tour=tour)
+    # ✅ On reste sur la page de réservation, avec le message flash affiché dans reservation.html
+    flash(_("Merci ! Votre réservation a bien été prise en compte. Un email de confirmation vous a été envoyé."), "success")
+    return render_template("reservation.html", tour=tour)
 
-    # GET → afficher le formulaire
-    return render_template("reservation.html")
-
-# ------------------------------------------------------------------
-# 🟡 RÉINSÉRÉ SANS MODIF: POST /comments (endpoint submit_comment)
-# ------------------------------------------------------------------
-@app.post("/comments")
-def submit_comment():
-    name = (request.form.get("name") or "").strip()
-    message = (request.form.get("message") or "").strip()
-    country = (request.form.get("country") or "").strip()
-    rating = request.form.get("rating") or "5"
-    date_str = request.form.get("date") or ""
-    if not message:
-        flash(_("Merci d'écrire un petit message 😇"), "error")
-        return redirect(url_for("index", lang=get_locale()))
-    try:
-        rating_f = float(rating)
-    except Exception:
-        rating_f = 5.0
-    c = Comment(
-        name=name[:120],
-        country=country[:120],
-        rating=rating_f,
-        date_str=date_str[:120],
-        created_at=parse_date_str(date_str) or datetime.utcnow(),
-        message=message
-    )
-    db.session.add(c)
-    db.session.commit()
-    try:
-        CommentTranslation.query.filter_by(comment_id=c.id).delete()
-        db.session.commit()
-    except Exception:
-        db.session.rollback()
-    flash(_("Merci pour votre adorable commentaire 💛"), "success")
-    return redirect(url_for("index", lang=get_locale()))
-# ------------------------------------------------------------------
+# ✅ Nouvelle URL propre : /reservation/<slug>
+@app.route("/reservation/<slug>", methods=["GET"])
+def reservation_clean(slug):
+    # Rend la même page avec le tour pré-sélectionné (HTTP 200)
+    return render_template("reservation.html", tour=slug, slug=slug)
 
 # ------------------------------------------------------------------
 # Statique & SEO
