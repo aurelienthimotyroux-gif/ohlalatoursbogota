@@ -155,10 +155,18 @@
     .tour-swiper .swiper-wrapper{ height: 100%; }
     .tour-swiper .swiper-slide{ display: flex; }
 
-    /* Flèches */
-    .swiper-button-next, .swiper-button-prev {
+    /* Flèches (corrigé) */
+    .swiper-button-next,
+    .swiper-button-prev{
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 44px;
+      height: 44px;
       color: #fff !important;
       text-shadow: 0 0 6px rgba(0,0,0,.65);
+      z-index: 99999 !important;
+      pointer-events: auto !important;
     }
     .swiper-button-next::after, .swiper-button-prev::after { font-size: 24px; }
 
@@ -583,7 +591,11 @@
             simulateTouch: true,
             grabCursor: true,
             keyboard: { enabled: true, onlyInViewport: true },
-            navigation: { nextEl: nextBtn, prevEl: prevBtn }
+            /* ⬇️ MODIF ICI : on cible les flèches à l'intérieur du slider */
+            navigation: {
+              nextEl: slider.querySelector('.swiper-button-next'),
+              prevEl: slider.querySelector('.swiper-button-prev')
+            }
           });
         });
       }
@@ -700,3 +712,4 @@
   </script>
 </body>
 </html>
+
