@@ -307,7 +307,7 @@
 <!-- Formulaire Laisser un commentaire -->
 <section style="max-width: 1000px; margin: 30px auto; padding: 0 20px;">
   <h2 class="comment-section-title">{{ _("À votre tour de laisser un joli commentaire") }}</h2>
-  <form method="POST" action="{{ url_for('submit_comment') }}" style="background:#fafafa; border-radius:14px; padding:20px; box-shadow:0 6px 18px rgba(0,0,0,0.08); display:grid; gap:12px; max-width:600px;">
+  <form method="POST" action="/comments" style="background:#fafafa; border-radius:14px; padding:20px; box-shadow:0 6px 18px rgba(0,0,0,0.08); display:grid; gap:12px; max-width:600px;">
     <label>{{ _("Votre nom et pays") }}<br><input name="name" required aria-required="true"></label>
     <label>{{ _("Votre commentaire") }}<br><textarea name="message" rows="4" required aria-required="true"></textarea></label>
     <label>{{ _("Votre note") }}<br>

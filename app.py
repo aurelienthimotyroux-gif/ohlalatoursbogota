@@ -79,8 +79,9 @@ def lang_url(lang_code: str):
     args = request.args.to_dict(flat=True)
     args["lang"] = lang_code
     endpoint = request.endpoint or "index"
-    return url_for(endpoint, **args)
-app.jinja_env.globals["lang_url"] = lang_url
+    view_args = request.view_args or {}   # 👈 ajoute cette ligne
+    return url_for(endpoint, **view_args, **args)
+
 
 # ✅ Normalisation d’URL: retirer ?lang=fr / lang invalide
 @app.before_request
