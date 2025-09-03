@@ -1149,5 +1149,10 @@ if "transport" not in app.view_functions:
         return render_template("transport.html")
 # -------------------------------------------------------------------
 
+@app.route('/robots.txt')
+def robots_txt():
+    return send_from_directory('static', 'robots.txt')
+
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.getenv("PORT","10000")), debug=bool(os.getenv("DEBUG","0")=="1"))
