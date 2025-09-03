@@ -560,3 +560,22 @@ header.site-header .burger{ z-index: 130; position: relative; }
   margin: 0 auto 20px;
 }
 
+/* Force la position des flèches à l’intérieur de CHAQUE carrousel */
+.tour-swiper .swiper-button-next{
+  right: 10px;     /* ⬅️ explicite */
+  left: auto;
+  opacity: 1 !important;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.tour-swiper .swiper-button-prev{
+  left: 10px;      /* ⬅️ explicite */
+  right: auto;
+  opacity: 1 !important;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.tour-swiper{ isolation: isolate; position: relative; }
+.tour-swiper .swiper-button-next,
+.tour-swiper .swiper-button-prev{ z-index: 9999 !important; pointer-events: auto !important; }
+
