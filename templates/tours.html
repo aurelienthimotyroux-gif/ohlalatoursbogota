@@ -37,19 +37,14 @@
   </script>
 
   <!-- Canonical + hreflang -->
+{# canonical: garder ?tour=... si présent, sinon URL propre #}
+{% set _tour = request.args.get('tour') %}
+{% if _tour %}
+  <link rel="canonical" href="{{ url_for(request.endpoint, _external=True, **(request.view_args or {})) ~ '?tour=' ~ _tour }}">
+{% else %}
   <link rel="canonical" href="{{ request.base_url }}">
+{% endif %}
 
- {% set _tour = request.args.get('tour') %}
-
-{% macro alt_url(lang_code) -%}
-  {{ url_for(request.endpoint, lang=lang_code, _external=True, **(request.view_args or {})) ~
-     (('?tour=' ~ _tour) if _tour else '') }}
-{%- endmacro %}
-
-<link rel="alternate" hreflang="fr" href="{{ alt_url('fr') }}">
-<link rel="alternate" hreflang="en" href="{{ alt_url('en') }}">
-<link rel="alternate" hreflang="es" href="{{ alt_url('es') }}">
-<link rel="alternate" hreflang="x-default" href="{{ alt_url('fr') }}">
 
 
   <!-- Open Graph / Twitter -->

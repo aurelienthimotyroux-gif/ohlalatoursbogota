@@ -29,13 +29,11 @@ Disallow: /paypal-config
 Disallow: /galerie
 
 # ❌ Paramètres inutiles au SEO (évite l’index de variantes)
-# (Google gère * et $ — ça n’empêche pas l’exploration des versions canonicals)
 Disallow: /*?q=
 Disallow: /*&q=
 Disallow: /*?orderID=
 Disallow: /*&orderID=
 Disallow: /tours?q=
-
 
 # 🗺️ Sitemap
 Sitemap: https://www.ohlalatoursbogota.com/sitemap.xml
