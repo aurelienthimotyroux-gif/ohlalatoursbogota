@@ -68,11 +68,14 @@ app.config["BABEL_SUPPORTED_LOCALES"] = ["fr", "en", "es"]
 app.config["BABEL_TRANSLATION_DIRECTORIES"] = "translations"
 babel = Babel(app)
 
+babel = Babel(app)
+
 @babel.localeselector
 def get_locale():
     lang = request.args.get("lang")
     return lang if lang in app.config["BABEL_SUPPORTED_LOCALES"] else app.config["BABEL_DEFAULT_LOCALE"]
 
+# 👉 expose get_locale à Jinja
 app.jinja_env.globals["get_locale"] = get_locale
 
 def lang_url(lang_code: str):
@@ -82,6 +85,8 @@ def lang_url(lang_code: str):
     view_args = request.view_args or {}   # garde les paramètres de route (ex: slug)
     return url_for(endpoint, **view_args, **args)
 
+# 👉 expose lang_url à Jinja (cette ligne MANQUAIT chez toi)
+app.jinja_env.globals["lang_url"] = lang_url
 
 
 # ✅ Normalisation d’URL: retirer ?lang=fr / lang invalide
