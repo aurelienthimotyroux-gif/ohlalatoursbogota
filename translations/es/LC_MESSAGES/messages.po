@@ -255,15 +255,6 @@ msgstr "Correo electrónico"
 msgid "WhatsApp"
 msgstr "WhatsApp"
 
-msgid "Je suis Alejandra, guide locale passionnée, et je vous invite à découvrir une Bogotá authentique, vibrante et pleine de vie."
-msgstr "Soy Alejandra, guía local apasionada, y te invito a descubrir una Bogotá auténtica, vibrante y llena de vida."
-
-msgid "À travers mes visites en petits groupes, nous explorerons son histoire, sa culture et ses saveurs : balades dans les quartiers historiques, expériences culinaires, escapades en pleine nature et excursions uniques aux alentours, comme la célèbre Cathédrale de sel de Zipaquirá."
-msgstr "A través de mis recorridos en pequeños grupos, exploraremos su historia, su cultura y sus sabores: paseos por barrios históricos, experiencias culinarias, escapadas a la naturaleza y excursiones únicas en los alrededores, como la famosa Catedral de Sal de Zipaquirá."
-
-msgid "Je propose des visites guidées à Bogotá, des tours privés vers la Candelaria, Monserrate et Zipaquirá, ainsi qu’un service de transport (taxi/van) et transferts aéroport."
-msgstr "Ofrezco visitas guiadas en Bogotá, tours privados a la Candelaria, Monserrate y Zipaquirá, así como un servicio de transporte (taxi/van) y traslados al aeropuerto.."
-
 #: templates/index.html:96
 msgid "Voir les types de visites"
 msgstr "Ver tipos de visitas"
@@ -1049,4 +1040,33 @@ msgstr "Tarifa: 40 USD / persona (1 persona) • 35 USD / persona (2 a 3 persona
 msgid "Randonnée de niveau moyen à environ 2 500 m d’altitude. Prévoir des vêtements adaptés, de bonnes chaussures de marche et un change."
 msgstr "Caminata de nivel medio a unos 2 500 m de altitud. Se recomienda llevar ropa adecuada, buen calzado para caminar y ropa de repuesto."
 
+msgid "Nous sommes Alejandra et Aurélien, une Colombienne et un Français unis par la passion de partager la magie de Bogotá et de ses alentours."
+msgstr "Somos Alejandra y Aurélien, una colombiana y un francés unidos por la pasión de compartir la magia de Bogotá y sus alrededores."
+
+msgid "Moi, Alejandra, je travaille dans le secteur touristique depuis plus de 7 ans, et depuis 3 ans Aurélien s’est joint à cette aventure, motivés par le désir de montrer au monde la richesse et la diversité de la culture colombienne."
+msgstr "Yo, Alejandra, llevo más de 7 años trabajando en el sector turístico, y desde hace 3 años Aurélien se unió a esta aventura, motivados por el deseo de mostrar al mundo la riqueza y diversidad de la cultura colombiana."
+
+msgid "Nous vous invitons à découvrir une Bogotá authentique, vibrante et pleine de vie, à travers des parcours conçus pour vous connecter à l’histoire, à la culture et aux saveurs de la ville."
+msgstr "Te invitamos a descubrir una Bogotá auténtica, vibrante y llena de vida, a través de recorridos diseñados para conectar con la historia, la cultura y los sabores de la ciudad."
+
+msgid "Avec nous, vous aurez l’opportunité de vivre la capitale comme un habitant local, en profitant d’expériences proches, spontanées et imprégnées de l’essence colombienne."
+msgstr "Con nosotros tendrás la oportunidad de vivir la capital como un local, disfrutando experiencias cercanas, espontáneas y llenas de la esencia colombiana."
+
+msgid "Nous proposons :"
+msgstr "Ofrecemos:"
+
+msgid "✔️ Visites guidées à Bogotá"
+msgstr "✔️ Visitas guiadas en Bogotá"
+
+msgid "✔️ Tours privés à la Candelaria, Monserrate, Zipaquirá et plus encore"
+msgstr "✔️ Tours privados a la Candelaria, Monserrate, Zipaquirá y más"
+
+msgid "✔️ Service de transport (taxi/van)"
+msgstr "✔️ Servicio de transporte (taxi/van)"
+
+msgid "✔️ Transferts vers l’aéroport"
+msgstr "✔️ Traslados al aeropuerto"
+
+msgid "Plus qu’une simple visite, nous voulons que vous viviez une expérience proche, chaleureuse et authentique, comme si vous découvriez la ville avec des amis locaux."
+msgstr "Más que un simple tour, queremos que vivas una experiencia cercana, cálida y auténtica, como si recorrieras la ciudad con amigos locales."
 

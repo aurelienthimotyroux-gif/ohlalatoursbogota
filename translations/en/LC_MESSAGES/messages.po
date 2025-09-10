@@ -47,18 +47,6 @@ msgstr "Transport service"
 msgid "Réservation"
 msgstr "Booking"
 
-msgid "Je suis Alejandra, guide locale passionnée, et je vous invite à découvrir une Bogotá authentique, vibrante et pleine de vie."
-msgstr "I’m Alejandra, a passionate local guide, and I invite you to discover an authentic, vibrant and lively Bogotá."
-
-msgid "À travers mes visites en petits groupes, nous explorerons son histoire, sa culture et ses saveurs : balades dans les quartiers historiques, expériences culinaires, escapades en pleine nature et excursions uniques aux alentours, comme la célèbre Cathédrale de sel de Zipaquirá."
-msgstr "Through my small-group tours, we’ll explore the city’s history, culture and flavours: strolls through historic neighbourhoods, food experiences, nature getaways and unique excursions nearby, such as the famous Zipaquirá Salt Cathedral."
-
-msgid "Plus qu’une simple visite, je vous propose une immersion vivante et chaleureuse, une expérience à vivre, un instant d'émotion, une experience qui voyage avec vous."
-msgstr "More than just a visit, I offer you a warm and lively immersion, an experience to live, a moment of emotion, an experience that travels with you.."
-
-msgid "Je propose des visites guidées à Bogotá, des tours privés vers la Candelaria, Monserrate et Zipaquirá, ainsi qu’un service de transport (taxi/van) et transferts aéroport."
-msgstr "I offer guided tours in Bogotá with a French-speaking guide, private tours to La Candelaria, Monserrate and Zipaquirá, plus transport service (taxi/van) and airport transfers."
-
 msgid "Voir les types de visites"
 msgstr "See tour types"
 
@@ -779,5 +767,36 @@ msgstr "Price: 40 USD / person (1 person) • 35 USD / person (2 to 3 people) �
 
 msgid "Randonnée de niveau moyen à environ 2 500 m d’altitude. Prévoir des vêtements adaptés, de bonnes chaussures de marche et un change."
 msgstr "Moderate hike at around 2,500 m altitude. Please bring suitable clothing, good walking shoes, and a change of clothes."
+
+msgid "Nous sommes Alejandra et Aurélien, une Colombienne et un Français unis par la passion de partager la magie de Bogotá et de ses alentours."
+msgstr "We are Alejandra and Aurélien, a Colombian and a French couple united by the passion of sharing the magic of Bogotá and its surroundings."
+
+msgid "Moi, Alejandra, je travaille dans le secteur touristique depuis plus de 7 ans, et depuis 3 ans Aurélien s’est joint à cette aventure, motivés par le désir de montrer au monde la richesse et la diversité de la culture colombienne."
+msgstr "I, Alejandra, have been working in the tourism sector for over 7 years, and for the past 3 years Aurélien has joined this adventure, driven by the desire to show the world the richness and diversity of Colombian culture."
+
+msgid "Nous vous invitons à découvrir une Bogotá authentique, vibrante et pleine de vie, à travers des parcours conçus pour vous connecter à l’histoire, à la culture et aux saveurs de la ville."
+msgstr "We invite you to discover an authentic, vibrant, and lively Bogotá, through tours designed to connect you with the city’s history, culture, and flavors."
+
+msgid "Avec nous, vous aurez l’opportunité de vivre la capitale comme un habitant local, en profitant d’expériences proches, spontanées et imprégnées de l’essence colombienne."
+msgstr "With us, you will have the opportunity to experience the capital like a local, enjoying close, spontaneous experiences filled with Colombian essence."
+
+msgid "Nous proposons :"
+msgstr "We offer:"
+
+msgid "✔️ Visites guidées à Bogotá"
+msgstr "✔️ Guided tours in Bogotá"
+
+msgid "✔️ Tours privés à la Candelaria, Monserrate, Zipaquirá et plus encore"
+msgstr "✔️ Private tours to La Candelaria, Monserrate, Zipaquirá and more"
+
+msgid "✔️ Service de transport (taxi/van)"
+msgstr "✔️ Transportation service (taxi/van)"
+
+msgid "✔️ Transferts vers l’aéroport"
+msgstr "✔️ Airport transfers"
+
+msgid "Plus qu’une simple visite, nous voulons que vous viviez une expérience proche, chaleureuse et authentique, comme si vous découvriez la ville avec des amis locaux."
+msgstr "More than just a tour, we want you to live a close, warm, and authentic experience, as if you were discovering the city with local friends."
+
 
 
