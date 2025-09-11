@@ -27,4 +27,4 @@ Disallow: /paypal-config
 Disallow: /galerie
 
 # 🗺️ Indiquer ton sitemap
-Sitemap: https://www.ohlalatoursbogota.com/sitemap.xml
+Allow: /https://www.ohlalatoursbogota.com/sitemap.xml
