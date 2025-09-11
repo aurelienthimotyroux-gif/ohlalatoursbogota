@@ -38,9 +38,8 @@
     gtag('config', 'G-92M6CENDXH', { anonymize_ip: true });
   </script>
 
-  <!-- Canonical -->
-  <link rel="canonical" href="{{ request.base_url }}">
-
+ <!-- Canonical -->
+<link rel="canonical" href="{{ request.url_root[:-1] + request.path }}">
 
 {% set _tour = request.args.get('tour') %}
 

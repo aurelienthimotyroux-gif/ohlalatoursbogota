@@ -36,10 +36,8 @@
     gtag('config', 'G-92M6CENDXH', { anonymize_ip: true });
   </script>
 
-  <!-- Canonical + hreflang -->
-
-<link rel="canonical" href="{{ url_for('tours', _external=True) }}">
-
+<!-- Canonical -->
+<link rel="canonical" href="{{ request.url_root[:-1] + request.path }}">
 
 {% macro alt_url(lang_code) -%}
   {{ url_for(request.endpoint, lang=lang_code, _external=True, **(request.view_args or {})) }}
@@ -49,7 +47,6 @@
 <link rel="alternate" hreflang="en" href="{{ alt_url('en') }}">
 <link rel="alternate" hreflang="es" href="{{ alt_url('es') }}">
 <link rel="alternate" hreflang="x-default" href="{{ url_for(request.endpoint, _external=True, **(request.view_args or {})) }}">
-
 
 
   <!-- Open Graph / Twitter -->

@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
 
-  <!-- Accueil (FR par défaut) -->
+  <!-- Accueil -->
   <url>
     <loc>https://www.ohlalatoursbogota.com/</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.ohlalatoursbogota.com/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.ohlalatoursbogota.com/?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.ohlalatoursbogota.com/?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.ohlalatoursbogota.com/"/>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
@@ -11,6 +16,10 @@
   <!-- Tours -->
   <url>
     <loc>https://www.ohlalatoursbogota.com/tours</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.ohlalatoursbogota.com/tours"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.ohlalatoursbogota.com/tours?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.ohlalatoursbogota.com/tours?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.ohlalatoursbogota.com/tours"/>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
@@ -18,28 +27,51 @@
   <!-- Transport -->
   <url>
     <loc>https://www.ohlalatoursbogota.com/transport</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.ohlalatoursbogota.com/transport"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.ohlalatoursbogota.com/transport?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.ohlalatoursbogota.com/transport?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.ohlalatoursbogota.com/transport"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
-  <!-- Réservations (URLs propres par tour) -->
+  <!-- Réservations : vérifie que ces URLs répondent 200 (sinon, remplace par /reservation?tour=...) -->
   <url>
     <loc>https://www.ohlalatoursbogota.com/reservation/candelaria</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.ohlalatoursbogota.com/reservation/candelaria"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.ohlalatoursbogota.com/reservation/candelaria?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.ohlalatoursbogota.com/reservation/candelaria?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.ohlalatoursbogota.com/reservation/candelaria"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
+
   <url>
     <loc>https://www.ohlalatoursbogota.com/reservation/zipaquira</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.ohlalatoursbogota.com/reservation/zipaquira"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.ohlalatoursbogota.com/reservation/zipaquira?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.ohlalatoursbogota.com/reservation/zipaquira?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.ohlalatoursbogota.com/reservation/zipaquira"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
+
   <url>
     <loc>https://www.ohlalatoursbogota.com/reservation/la-chorrera</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.ohlalatoursbogota.com/reservation/la-chorrera"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.ohlalatoursbogota.com/reservation/la-chorrera?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.ohlalatoursbogota.com/reservation/la-chorrera?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.ohlalatoursbogota.com/reservation/la-chorrera"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
+
   <url>
     <loc>https://www.ohlalatoursbogota.com/reservation/finca-cafe</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.ohlalatoursbogota.com/reservation/finca-cafe"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.ohlalatoursbogota.com/reservation/finca-cafe?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.ohlalatoursbogota.com/reservation/finca-cafe?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.ohlalatoursbogota.com/reservation/finca-cafe"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
