@@ -15,6 +15,8 @@ from urllib.parse import urlsplit, urlunsplit, parse_qsl, urlencode
 from flask_mail import Mail, Message
 from decimal import Decimal, ROUND_HALF_UP  # 🟡 PayPal: calcul monétaire
 
+# === Créer l'app AVANT toute config ===
+app = Flask(__name__)
 
 # --- CONFIG BDD (PostgreSQL sur Render) ---
 
