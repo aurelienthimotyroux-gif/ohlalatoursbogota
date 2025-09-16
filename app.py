@@ -15,6 +15,48 @@ from urllib.parse import urlsplit, urlunsplit, parse_qsl, urlencode
 from flask_mail import Mail, Message
 from decimal import Decimal, ROUND_HALF_UP  # 🟡 PayPal: calcul monétaire
 
+
+# --- CONFIG BDD (PostgreSQL sur Render) ---
+
+# 1) Récupère l'URL depuis l'env
+db_url = os.getenv("DATABASE_URL", "").strip()
+
+if not db_url:
+    raise RuntimeError("DATABASE_URL est vide ou manquante")
+
+# 2) Normalise le schéma pour SQLAlchemy 2.x + psycopg3
+#    (postgres://  -> postgresql+psycopg://)
+#    (postgresql:// -> postgresql+psycopg://)
+if db_url.startswith("postgres://"):
+    db_url = "postgresql+psycopg://" + db_url[len("postgres://"):]
+elif db_url.startswith("postgresql://") and not db_url.startswith("postgresql+psycopg://"):
+    db_url = "postgresql+psycopg://" + db_url[len("postgresql://"):]
+
+# 3) Ajoute sslmode=require si absent
+if "sslmode=" not in db_url:
+    db_url += ("&" if "?" in db_url else "?") + "sslmode=require"
+
+# 4) Applique à Flask-SQLAlchemy
+app.config["SQLALCHEMY_DATABASE_URI"] = db_url
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+# Options de pool: plus robuste en prod
+app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
+    "pool_pre_ping": True,
+    "pool_recycle": 1800,
+}
+
+db = SQLAlchemy(app)
+
+# (optionnel) petite route de test
+@app.route("/__dbcheck")
+def __dbcheck():
+    try:
+        with db.engine.connect() as conn:
+            return str(conn.exec_driver_sql("SELECT 1").scalar())
+    except Exception as e:
+        return f"DB ERROR: {e}", 500
+# --- FIN CONFIG BDD ---
+
 # ------------------------------------------------------------------
 # Helpers (dates, normalisation)
 # ------------------------------------------------------------------
