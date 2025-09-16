@@ -1,63 +1,17 @@
 from flask import (
     Flask, render_template, request, url_for, flash, redirect,
-    send_from_directory, send_file, session, make_response, Response, abort, jsonify  # ✅ ajout jsonify
+    send_from_directory, send_file, session, make_response, Response, abort, jsonify
 )
 from flask_babel import Babel, _
-import os, requests, logging, re, secrets, unicodedata
+import os, requests, logging, re, secrets, unicodedata, time
 from datetime import datetime
 from werkzeug.middleware.proxy_fix import ProxyFix
 from flask_sqlalchemy import SQLAlchemy
 from functools import wraps
 from sqlalchemy import inspect, text
 from urllib.parse import urlsplit, urlunsplit, parse_qsl, urlencode
-
-# ✉️ Email
 from flask_mail import Mail, Message
 from decimal import Decimal, ROUND_HALF_UP  # 🟡 PayPal: calcul monétaire
-
-# === Créer l'app AVANT toute config ===
-app = Flask(__name__)
-
-# --- CONFIG BDD (PostgreSQL sur Render) ---
-
-# 1) Récupère l'URL depuis l'env
-db_url = os.getenv("DATABASE_URL", "").strip()
-
-if not db_url:
-    raise RuntimeError("DATABASE_URL est vide ou manquante")
-
-# 2) Normalise le schéma pour SQLAlchemy 2.x + psycopg3
-#    (postgres://  -> postgresql+psycopg://)
-#    (postgresql:// -> postgresql+psycopg://)
-if db_url.startswith("postgres://"):
-    db_url = "postgresql+psycopg://" + db_url[len("postgres://"):]
-elif db_url.startswith("postgresql://") and not db_url.startswith("postgresql+psycopg://"):
-    db_url = "postgresql+psycopg://" + db_url[len("postgresql://"):]
-
-# 3) Ajoute sslmode=require si absent
-if "sslmode=" not in db_url:
-    db_url += ("&" if "?" in db_url else "?") + "sslmode=require"
-
-# 4) Applique à Flask-SQLAlchemy
-app.config["SQLALCHEMY_DATABASE_URI"] = db_url
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-# Options de pool: plus robuste en prod
-app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
-    "pool_pre_ping": True,
-    "pool_recycle": 1800,
-}
-
-db = SQLAlchemy(app)
-
-# (optionnel) petite route de test
-@app.route("/__dbcheck")
-def __dbcheck():
-    try:
-        with db.engine.connect() as conn:
-            return str(conn.exec_driver_sql("SELECT 1").scalar())
-    except Exception as e:
-        return f"DB ERROR: {e}", 500
-# --- FIN CONFIG BDD ---
 
 # ------------------------------------------------------------------
 # Helpers (dates, normalisation)
@@ -101,17 +55,18 @@ def _norm(s: str) -> str:
     return re.sub(r"\s+", " ", s)
 
 # ------------------------------------------------------------------
-# App & Babel
+# App & Base config
 # ------------------------------------------------------------------
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY", "dev-secret")
 app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1)
 
+# ------------------------------------------------------------------
+# Babel (i18n)
+# ------------------------------------------------------------------
 app.config["BABEL_DEFAULT_LOCALE"] = "fr"
 app.config["BABEL_SUPPORTED_LOCALES"] = ["fr", "en", "es"]
 app.config["BABEL_TRANSLATION_DIRECTORIES"] = "translations"
-babel = Babel(app)
-
 babel = Babel(app)
 
 @babel.localeselector
@@ -119,19 +74,15 @@ def get_locale():
     lang = request.args.get("lang")
     return lang if lang in app.config["BABEL_SUPPORTED_LOCALES"] else app.config["BABEL_DEFAULT_LOCALE"]
 
-# 👉 expose get_locale à Jinja
+# 👉 expose helpers à Jinja
 app.jinja_env.globals["get_locale"] = get_locale
-
 def lang_url(lang_code: str):
     args = request.args.to_dict(flat=True)
     args["lang"] = lang_code
     endpoint = request.endpoint or "index"
-    view_args = request.view_args or {}   # garde les paramètres de route (ex: slug)
+    view_args = request.view_args or {}
     return url_for(endpoint, **view_args, **args)
-
-# 👉 expose lang_url à Jinja (cette ligne MANQUAIT chez toi)
 app.jinja_env.globals["lang_url"] = lang_url
-
 
 # ✅ Normalisation d’URL: retirer ?lang=fr / lang invalide
 @app.before_request
@@ -149,21 +100,30 @@ def _normalize_lang_fr():
     return None
 
 # ------------------------------------------------------------------
-# Database
+# Database (Render PostgreSQL ou SQLite fallback)
 # ------------------------------------------------------------------
-raw_db = os.getenv("DATABASE_URL")
+raw_db = os.getenv("DATABASE_URL", "").strip()
+DB_URL = "sqlite:///local.db"
 if raw_db:
-    raw_db = raw_db.replace("postgres://", "postgresql://", 1)
+    # Normaliser pour SQLAlchemy 2.x + psycopg3
+    if raw_db.startswith("postgres://"):
+        raw_db = "postgresql://" + raw_db[len("postgres://"):]
     if raw_db.startswith("postgresql://"):
         raw_db = "postgresql+psycopg://" + raw_db.split("://", 1)[1]
+    # SSL obligatoire Render
+    if "sslmode=" not in raw_db:
+        raw_db += ("&" if "?" in raw_db else "?") + "sslmode=require"
     DB_URL = raw_db
-else:
-    DB_URL = "sqlite:///local.db"
 
 app.config["SQLALCHEMY_DATABASE_URI"] = DB_URL
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
+    "pool_pre_ping": True,
+    "pool_recycle": 1800,
+}
 db = SQLAlchemy(app)
 
+# Models
 class Comment(db.Model):
     __tablename__="comments"
     id = db.Column(db.Integer, primary_key=True)
@@ -199,7 +159,6 @@ class Transfer(db.Model):
     notes = db.Column(db.Text, default="")
     raw = db.Column(db.Text, default="")
 
-# ✅ Réservation avec téléphone + pays + nombre de personnes
 class Reservation(db.Model):
     __tablename__="reservations"
     id = db.Column(db.Integer, primary_key=True)
@@ -213,12 +172,11 @@ class Reservation(db.Model):
     tour_slug = db.Column(db.String(80), default="")
     message = db.Column(db.Text, default="")
     language = db.Column(db.String(8), default="")
-    # 🟡 Nouveau : associer le paiement
     paypal_capture_id = db.Column(db.String(80), default="")
 
 with app.app_context():
     db.create_all()
-    # auto-migrate douce : ajoute colonnes manquantes sans casser
+    # auto-migrate douce
     insp = inspect(db.engine)
     try:
         cols = [c["name"] for c in insp.get_columns("reservations")]
@@ -229,11 +187,19 @@ with app.app_context():
                 con.execute(text("ALTER TABLE reservations ADD COLUMN persons INTEGER DEFAULT 1"))
             if "country" not in cols:
                 con.execute(text("ALTER TABLE reservations ADD COLUMN country VARCHAR(120)"))
-            # 🟡 Ajout auto si manquant
             if "paypal_capture_id" not in cols:
                 con.execute(text("ALTER TABLE reservations ADD COLUMN paypal_capture_id VARCHAR(80)"))
     except Exception as e:
         app.logger.warning("auto_migrate_reservations_failed: %s", e)
+
+# Endpoint santé / DB check
+@app.route("/__dbcheck")
+def __dbcheck():
+    try:
+        with db.engine.connect() as conn:
+            return str(conn.exec_driver_sql("SELECT 1").scalar())
+    except Exception as e:
+        return f"DB ERROR: {e}", 500
 
 # ------------------------------------------------------------------
 # Email (Flask-Mail) — config via env vars
@@ -246,7 +212,6 @@ app.config["MAIL_USERNAME"] = os.getenv("MAIL_USERNAME", "")
 app.config["MAIL_PASSWORD"] = os.getenv("MAIL_PASSWORD", "")
 app.config["MAIL_DEFAULT_SENDER"] = os.getenv("MAIL_DEFAULT_SENDER", app.config["MAIL_USERNAME"])
 ADMIN_NOTIFY_EMAIL = os.getenv("ADMIN_NOTIFY_EMAIL", app.config["MAIL_DEFAULT_SENDER"] or app.config["MAIL_USERNAME"] or "")
-
 mail = Mail(app)
 
 # ------------------------------------------------------------------
@@ -319,7 +284,6 @@ def _ensure_tables():
             for t in needed:
                 if not insp.has_table(t):
                     db.create_all()
-            # assure colonnes
             cols = [c["name"] for c in insp.get_columns("reservations")]
             with db.engine.begin() as con:
                 if "phone" not in cols:
@@ -354,13 +318,13 @@ def admin_home():
     """
     return _inline_html("Admin", body)
 
-# ✅ Endpoint AJOUTÉ : évite le BuildError sur admin_import_legacy
+# ✅ Endpoint placeholder pour éviter 500
 @app.get("/admin/import-legacy", endpoint="admin_import_legacy")
 @admin_required
 def admin_import_legacy():
     body = f"""
       <h1>Import des anciens avis</h1>
-      <p class="small">Fonction à venir. Ce bouton existe maintenant pour éviter le 500.</p>
+      <p class="small">Fonction à venir. Ce bouton existe pour éviter le 500.</p>
       <p><a href="{url_for('admin_home')}">← Retour admin</a></p>
     """
     return _inline_html("Import anciens avis — Admin", body)
@@ -389,7 +353,6 @@ def admin_comments():
     rows = []
     for c in items:
         snippet = (c.message or "")
-        # ✅ correction ici : on mesure la longueur de la chaîne, pas d'une comparaison
         snippet = (snippet[:120] + "…") if len(snippet) > 120 else snippet
         snippet = snippet.replace("<", "&lt;")
         rows.append(f"""
@@ -499,13 +462,29 @@ def admin_transfers():
         <thead>
           <tr>
             <th>#</th><th>Créé</th><th>Nom</th><th>WhatsApp</th><th>Email</th>
-            <th>Date/Heure</th><th>Trajet</th><th>Trajet</th><th>PAX</th><th>Détails</th><th>Action</th>
+            <th>Date/Heure</th><th>Trajet</th><th>PAX</th><th>Détails</th><th>Action</th>
           </tr>
         </thead>
         <tbody>{"".join(rows)}</tbody>
       </table>
     """
     return _inline_html("Transferts — Admin", body)
+
+@app.post("/admin/transfers/<int:transfer_id>/delete")
+@admin_required
+def admin_transfer_delete(transfer_id: int):
+    if not _csrf_check(request.form.get("csrf")):
+        flash(_("Session expirée, réessaie."), "error")
+        return redirect(url_for("admin_transfers"))
+    try:
+        Transfer.query.filter_by(id=transfer_id).delete(synchronize_session=False)
+        db.session.commit()
+        flash(_("Transfert supprimé ✅"), "success")
+    except Exception as e:
+        db.session.rollback()
+        app.logger.warning("delete_transfer_failed: %s", e)
+        flash(_("Suppression impossible."), "error")
+    return redirect(url_for("admin_transfers"))
 
 # ✅ Admin — liste des réservations
 @app.get("/admin/reservations")
@@ -577,25 +556,8 @@ def admin_reservation_delete(reservation_id: int):
         flash(_("Suppression impossible."), "error")
     return redirect(url_for("admin_reservations"))
 
-@app.post("/admin/transfers/<int:transfer_id>/delete")
-@admin_required
-def admin_transfer_delete(transfer_id: int):
-    if not _csrf_check(request.form.get("csrf")):
-        flash(_("Session expirée, réessaie."), "error")
-        return redirect(url_for("admin_transfers"))
-    try:
-        Transfer.query.filter_by(id=transfer_id).delete(synchronize_session=False)
-        db.session.commit()
-        flash(_("Transfert supprimé ✅"), "success")
-    except Exception as e:
-        db.session.rollback()
-        app.logger.warning("delete_transfer_failed: %s", e)
-        flash(_("Suppression impossible."), "error")
-    return redirect(url_for("admin_transfers"))
-
-
 # ------------------------------------------------------------------
-# Données de démo + pages publiques
+# Pages publiques
 # ------------------------------------------------------------------
 @app.route("/")
 def index():
@@ -604,109 +566,47 @@ def index():
     return render_template("index.html", comments=[c for c in comments_db])
 
 # ------------------------------------------------------------------
-# Déduction de langue (fallback si ui_lang absent)
+# Déduction de langue (fallback)
 # ------------------------------------------------------------------
 def _infer_lang_from_request(req, country_text: str = "", email_text: str = "", phone_text: str = "") -> str:
-    """
-    Renvoie 'fr' / 'en' / 'es' en se basant sur:
-    1) ?lang=..., sinon
-    2) header Accept-Language, sinon
-    3) heuristiques sur le pays/adresse mail/phone, sinon 'fr'
-    """
     qlang = (req.args.get("lang") or "").lower()
-    if qlang in ("fr", "en", "es"):
+    if qlang in ("fr","en","es"):
         return qlang
-
     al = (req.headers.get("Accept-Language") or "").lower()
     for code in ("fr", "en", "es"):
         if code in al:
             return code
-
     txt = " ".join([(country_text or ""), (email_text or ""), (phone_text or "")]).lower()
-
-    en_tokens = [
-        "uk","u.k","united kingdom","england","angleterre","royaume-uni",
-        "scotland","wales","ireland","irlande",
-        "usa","united states","etats-unis","états-unis","us",
-        "canada","australia","australie","new zealand","nouvelle-zélande"
-    ]
+    en_tokens = ["uk","u.k","united kingdom","england","angleterre","royaume-uni","scotland","wales","ireland","irlande","usa","united states","etats-unis","états-unis","us","canada","australia","australie","new zealand","nouvelle-zélande"]
     if any(t in txt for t in en_tokens):
         return "en"
-
-    es_tokens = [
-        "espagne","españa","spain","colombie","colombia","mexique","méxique","mexico",
-        "argentine","argentina","pérou","peru","chili","chile","équateur","equateur","ecuador",
-        "bolivie","bolivia","uruguay","paraguay","costa rica","panama","guatemala","honduras",
-        "el salvador","nicaragua","republica dominicana","république dominicaine","dominican republic"
-    ]
+    es_tokens = ["espagne","españa","spain","colombie","colombia","mexique","méxique","mexico","argentine","argentina","pérou","peru","chili","chile","équateur","equateur","ecuador","bolivie","bolivia","uruguay","paraguay","costa rica","panama","guatemala","honduras","el salvador","nicaragua","republica dominicana","république dominicaine","dominican republic"]
     if any(t in txt for t in es_tokens):
         return "es"
-
     return "fr"
 
-# ✅✅✅ AJOUT — Grille tarifs USD + API devis (groupes max 6)
+# ------------------------------------------------------------------
+# API Devis simple (USD)
 # ------------------------------------------------------------------
 PRICES_USD = {
-    "monserrate": {
-        "rules": [
-            (1, 1, 65),
-            (2, 6, 55),
-        ],
-        "max_group": 6,
-    },
-    "zipaquira": {
-        "rules": [
-            (1, 1, 120),
-            (2, 2, 100),
-            (3, 6, 90),
-        ],
-        "max_group": 6,
-    },
-    "finca-cafe": {
-        "rules": [
-            (1, 1, 150),
-            (2, 2, 105),
-            (3, 6, 95),
-        ],
-        "max_group": 6,
-    },
-    "chorrera": {
-        "rules": [
-            (1, 1, 125),
-            (2, 3, 115),
-            (4, 6, 100),
-        ],
-        "max_group": 6,
-    },
-    "candelaria": {
-        "rules": [
-            (1, 1, 40),
-            (2, 3, 35),
-            (4, 6, 33),
-        ],
-        "max_group": 6,
-    },
+    "monserrate": {"rules": [(1, 1, 65),(2, 6, 55)], "max_group": 6},
+    "zipaquira":  {"rules": [(1, 1, 120),(2, 2, 100),(3, 6, 90)], "max_group": 6},
+    "finca-cafe": {"rules": [(1, 1, 150),(2, 2, 105),(3, 6, 95)], "max_group": 6},
+    "chorrera":   {"rules": [(1, 1, 125),(2, 3, 115),(4, 6, 100)], "max_group": 6},
+    "candelaria": {"rules": [(1, 1, 40),(2, 3, 35),(4, 6, 33)], "max_group": 6},
 }
-
 def quote_tour_usd(slug: str, people: int):
-    """
-    Retourne un dict: { 'ok': bool, 'per_person': Decimal, 'total': Decimal, 'currency': 'USD', ... }
-    - ok=False si la taille du groupe dépasse la limite (max 6)
-    """
     conf = PRICES_USD.get((slug or "").strip().lower())
     if not conf:
         return {"ok": False, "reason": "unknown_tour"}
-
     try:
         n = int(people)
     except Exception:
         n = 1
     if n < 1: n = 1
-
     max_g = conf.get("max_group")
     if max_g and n > max_g:
         return {"ok": False, "reason": "group_too_large", "max": max_g}
-
     ppp = None
     for (mn, mx, price) in conf["rules"]:
         if mn <= n <= mx:
@@ -714,7 +614,6 @@ def quote_tour_usd(slug: str, people: int):
             break
     if ppp is None:
         return {"ok": False, "reason": "no_rule"}
-
     total = (ppp * Decimal(n)).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
     ppp = ppp.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
     return {"ok": True, "per_person": ppp, "total": total, "currency": "USD", "people": n}
@@ -726,35 +625,21 @@ def api_quote():
     q = quote_tour_usd(slug, people)
     if not q.get("ok"):
         if q.get("reason") == "group_too_large":
-            return jsonify({
-                "ok": False,
-                "message": _("Groupe trop nombreux pour ce tour en réservation en ligne (max. %(max)d). Contactez-nous.", max=q.get("max", 6))
-            }), 400
+            return jsonify({"ok": False, "message": _("Groupe trop nombreux pour ce tour en réservation en ligne (max. %(max)d). Contactez-nous.", max=q.get("max", 6))}), 400
         return jsonify({"ok": False, "message": _("Tarif indisponible pour cette configuration.")}), 400
-    return jsonify({
-        "ok": True,
-        "per_person": str(q["per_person"]),
-        "total": str(q["total"]),
-        "currency": q["currency"],
-        "people": q["people"],
-    }), 200
-# ------------------------------------------------------------------
+    return jsonify({"ok": True, "per_person": str(q["per_person"]), "total": str(q["total"]), "currency": q["currency"], "people": q["people"]}), 200
 
-# ✅ Réservation GET/POST + mails langue auto
+# ------------------------------------------------------------------
+# Réservation + mails + PayPal capture check
+# ------------------------------------------------------------------
 @app.route("/reservation", methods=["GET","POST"])
 def reservation():
-    # --- GET: si ?tour= présent, redirige 301 vers l'URL propre /reservation/<slug> ---
     if request.method == "GET":
         tour_qs = (request.args.get("tour") or "").strip().lower()
         if tour_qs:
-            return redirect(
-                url_for("reservation_clean", slug=tour_qs, lang=request.args.get("lang")),
-                code=301
-            )
-        # pas de ?tour= -> page générique
+            return redirect(url_for("reservation_clean", slug=tour_qs, lang=request.args.get("lang")), code=301)
         return render_template("reservation.html")
 
-    # --- POST: logique existante inchangée ---
     fullname = (request.form.get("nom") or "").strip()
     email    = (request.form.get("email") or "").strip()
     phone    = (request.form.get("phone") or "").strip()
@@ -763,17 +648,14 @@ def reservation():
     persons  = request.form.get("persons") or "1"
     tour     = (request.form.get("tour") or "").strip().lower()
     message  = (request.form.get("message") or "").strip()
-    # 🟡 ID de capture transmis par le front après paiement
     capture_id = (request.form.get("paypal_capture_id") or "").strip()
 
-    # langue UI envoyée par le formulaire (champ hidden ui_lang)
     ui_lang  = (request.form.get("ui_lang") or "").lower()
     if ui_lang in ("fr","en","es"):
         lang = ui_lang
     else:
         lang = _infer_lang_from_request(request, country_text=country, email_text=email, phone_text=phone)
 
-    # Validation PAX (1..6)
     try:
         persons = int(persons)
         if persons < 1: persons = 1
@@ -785,12 +667,10 @@ def reservation():
         flash(_("Merci de remplir nom, email, date et tour."), "error")
         return render_template("reservation.html", tour=tour)
 
-    # 🟡 Vérifier le paiement AVANT d'enregistrer
     if not verify_paypal_capture(capture_id):
         flash(_("Le paiement PayPal n'a pas été confirmé. Merci d'effectuer le paiement avant d'envoyer la réservation."), "error")
         return render_template("reservation.html", tour=tour)
 
-    # Enregistrer en DB
     try:
         r = Reservation(
             fullname=fullname[:160],
@@ -802,7 +682,7 @@ def reservation():
             tour_slug=tour[:80],
             message=message,
             language=lang[:8],
-            paypal_capture_id=capture_id[:80]  # 🟡 on garde la trace
+            paypal_capture_id=capture_id[:80]
         )
         db.session.add(r)
         db.session.commit()
@@ -812,7 +692,6 @@ def reservation():
         flash(_("Petit souci technique, réessaie dans quelques secondes."), "error")
         return render_template("reservation.html", tour=tour)
 
-    # Emails (langue auto fr/en/es)
     try:
         if app.config["MAIL_USERNAME"] and (app.config["MAIL_PASSWORD"] or app.config["MAIL_USE_SSL"] or app.config["MAIL_USE_TLS"]):
             subjects = {
@@ -867,15 +746,10 @@ En breve nos pondremos en contacto para organizar los detalles.
 Oh La La Tours Bogotá
 """
             }
-
             subject_cli = subjects.get(lang, subjects["fr"])
             body_cli    = bodies.get(lang, bodies["fr"])
-            app.logger.info("reservation_email_lang=%s", lang)
-
-            # Client
             mail.send(Message(subject=subject_cli, recipients=[email], body=body_cli))
 
-            # Interne (FR par défaut)
             notify_to = ADMIN_NOTIFY_EMAIL or app.config["MAIL_DEFAULT_SENDER"] or app.config["MAIL_USERNAME"]
             if notify_to:
                 subject_admin = f"[Réservation] {fullname} — {tour} — {date_str} — {persons}p"
@@ -900,14 +774,12 @@ Message:
     except Exception as e:
         app.logger.error("reservation_mail_error: %s", e)
 
-    # ✅ On reste sur la page de réservation, avec le message flash affiché dans reservation.html
     flash(_("Merci ! Votre réservation a bien été prise en compte. Un email de confirmation vous a été envoyé."), "success")
     return render_template("reservation.html", tour=tour)
 
-# ✅ Nouvelle URL propre : /reservation/<slug>
+# URL propre : /reservation/<slug>
 @app.route("/reservation/<slug>", methods=["GET"])
 def reservation_clean(slug):
-    # Rend la même page avec le tour pré-sélectionné (HTTP 200)
     return render_template("reservation.html", tour=slug, slug=slug)
 
 # ------------------------------------------------------------------
@@ -946,19 +818,14 @@ def favicon():
     )
 
 # ------------------------------------------------------------------
-# 🟡 PAYPAL — unified (bloc unique à remplacer tel quel)
+# 🟡 PAYPAL — unified
 # ------------------------------------------------------------------
-import time, requests
-
-# Config
 PAYPAL_MODE = os.getenv("PAYPAL_MODE", "sandbox").lower()  # 'sandbox' ou 'live'
 PAYPAL_CLIENT_ID = os.getenv("PAYPAL_CLIENT_ID", "")
-# accepte PAYPAL_CLIENT_SECRET ou PAYPAL_SECRET (fallback)
 PAYPAL_CLIENT_SECRET = os.getenv("PAYPAL_CLIENT_SECRET") or os.getenv("PAYPAL_SECRET", "")
 PAYPAL_CURRENCY = os.getenv("PAYPAL_CURRENCY", "USD").upper()
 PAYPAL_API_BASE = "https://api-m.sandbox.paypal.com" if PAYPAL_MODE == "sandbox" else "https://api-m.paypal.com"
 
-# 🔁 Tarifs USD par personne (paliers selon la taille du groupe 1..6)
 PRICES_USD_PAYPAL = {
     "monserrate": [(1, 1, Decimal("65")), (2, 6, Decimal("55"))],
     "zipaquira":  [(1, 1, Decimal("120")), (2, 2, Decimal("100")), (3, 6, Decimal("90"))],
@@ -966,54 +833,35 @@ PRICES_USD_PAYPAL = {
     "chorrera":   [(1, 1, Decimal("125")), (2, 3, Decimal("115")), (4, 6, Decimal("100"))],
     "candelaria": [(1, 1, Decimal("40")),  (2, 3, Decimal("35")),  (4, 6, Decimal("33"))],
 }
-
-# FX interne: 1 unité devise = X COP (utilisé si tu encaisses en COP)
 COP_PER_UNIT = Decimal(os.getenv("COP_PER_UNIT", "3800"))
-
-HTTP_TIMEOUT = 60  # laisser le temps à PayPal
+HTTP_TIMEOUT = 60
 
 def _money2(q: Decimal) -> str:
     return str(q.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP))
 
 def compute_price(tour: str, persons: int):
-    """
-    Retourne (amount_str_en_PAYPAL_CURRENCY, description)
-    - Base tarifaire en USD (paliers / personne)
-    - Si PAYPAL_CURRENCY == 'USD' ➜ montant en USD
-      Sinon si 'COP' ➜ conversion via COP_PER_UNIT
-      Sinon ➜ fallback USD
-    """
     key = (tour or "").strip().lower()
     if key not in PRICES_USD_PAYPAL:
         raise ValueError("Tour non tarifé")
-
     try:
         n = int(persons)
     except Exception:
         n = 1
     n = max(1, min(n, 6))
-
-    # prix / personne selon palier
     per_person_usd = None
     for (mn, mx, price) in PRICES_USD_PAYPAL[key]:
         if mn <= n <= mx:
             per_person_usd = Decimal(price)
             break
     if per_person_usd is None:
-        # si pas de règle, on refuse
         raise ValueError("Aucune règle de prix pour ce nombre de personnes")
-
     total_usd = (per_person_usd * Decimal(n))
-
-    # conversion selon la devise PayPal
     if PAYPAL_CURRENCY == "USD":
         total_unit = total_usd
     elif PAYPAL_CURRENCY == "COP":
         total_unit = (total_usd * COP_PER_UNIT)
     else:
-        # fallback : on garde USD
         total_unit = total_usd
-
     amount = _money2(total_unit)
     desc = f"Reservation {key} x{n} — {per_person_usd} USD/pers"
     return amount, desc
@@ -1030,11 +878,8 @@ def paypal_access_token() -> str:
     js = r.json()
     return js["access_token"]
 
-# ---- Routes (un seul exemplaire de chacune) ----
-
 @app.get("/paypal-config")
 def paypal_config():
-    # Utile pour vérifier en prod la cohérence front/serveur
     return {
         "client_id": PAYPAL_CLIENT_ID,
         "currency": PAYPAL_CURRENCY,
@@ -1048,12 +893,10 @@ def create_paypal_order():
     data = request.get_json(silent=True) or {}
     tour = (data.get("tour") or "").strip()
     persons = data.get("persons") or 1
-
     try:
         amount, description = compute_price(tour, persons)
     except ValueError as e:
         return {"error": str(e)}, 400
-
     token = paypal_access_token()
     payload = {
         "intent": "CAPTURE",
@@ -1061,12 +904,8 @@ def create_paypal_order():
             "amount": {"currency_code": PAYPAL_CURRENCY, "value": amount},
             "description": description
         }],
-        "application_context": {
-            "shipping_preference": "NO_SHIPPING",
-            "user_action": "PAY_NOW",
-        }
+        "application_context": {"shipping_preference": "NO_SHIPPING","user_action": "PAY_NOW"}
     }
-
     r = requests.post(
         f"{PAYPAL_API_BASE}/v2/checkout/orders",
         headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"},
@@ -1079,7 +918,6 @@ def create_paypal_order():
             err = {"error": r.text}
         app.logger.error("paypal_create_error: %s", err)
         return {"error": err}, 400
-
     order = r.json()
     oid = order.get("id")
     if not oid:
@@ -1112,8 +950,6 @@ def paypal_order(order_id):
 @app.post("/capture-paypal-order/<order_id>")
 def capture_paypal_order(order_id):
     token = paypal_access_token()
-
-    # (A) Lecture de l'order avant capture (debug mismatch de compte)
     pre = {}
     try:
         r0 = requests.get(
@@ -1130,7 +966,6 @@ def capture_paypal_order(order_id):
     except Exception as e:
         app.logger.warning("paypal_pre_read_failed: %s", e)
 
-    # (B) Capture
     r = requests.post(
         f"{PAYPAL_API_BASE}/v2/checkout/orders/{order_id}/capture",
         headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"},
@@ -1155,14 +990,11 @@ def capture_paypal_order(order_id):
 
     data = r.json() if r.content else {}
     status = data.get("status", "UNKNOWN")
-
-    # capture id possible à 2 endroits selon les cas
     cap_id = None
     try:
         cap_id = data["purchase_units"][0]["payments"]["captures"][0]["id"]
     except Exception:
         cap_id = data.get("id")
-
     return {"id": cap_id, "status": status, "pre": pre, "raw": data}
 
 def verify_paypal_capture(capture_id: str) -> bool:
@@ -1178,20 +1010,22 @@ def verify_paypal_capture(capture_id: str) -> bool:
         app.logger.error("paypal_verify_error: %s", r.text)
         return False
     return (r.json().get("status") == "COMPLETED")
-# ------------------------------------------------------------------
 
-# --- ALIAS D’ENDPOINTS (secours) : ne fait rien si déjà présents ---
+# ------------------------------------------------------------------
+# ALIAS D’ENDPOINTS
+# ------------------------------------------------------------------
 if "tours" not in app.view_functions:
     @app.route("/tours", endpoint="tours", methods=["GET"])
     def __tours_alias():
-        # Rend le template attendu par index.html
         return render_template("tours.html")
 
 if "transport" not in app.view_functions:
     @app.route("/transport", endpoint="transport", methods=["GET"])
     def __transport_alias():
         return render_template("transport.html")
-# -------------------------------------------------------------------
 
+# ------------------------------------------------------------------
+# Entrée
+# ------------------------------------------------------------------
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.getenv("PORT","10000")), debug=bool(os.getenv("DEBUG","0")=="1"))
