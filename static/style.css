@@ -579,3 +579,14 @@ header.site-header .burger{ z-index: 130; position: relative; }
 .tour-swiper .swiper-button-next,
 .tour-swiper .swiper-button-prev{ z-index: 9999 !important; pointer-events: auto !important; }
 
+nav ul li a i.fab {
+  font-size: 20px;   /* taille de l’icône */
+  color: #fff;       /* couleur blanche */
+  margin-left: 10px; /* petit espace avant l’icône */
+  transition: color 0.3s;
+}
+
+nav ul li a i.fab:hover {
+  color: #E1306C; /* rose Instagram au survol */
+}
+
