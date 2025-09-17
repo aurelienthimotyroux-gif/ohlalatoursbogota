@@ -238,15 +238,14 @@
     <a href="{{ url_for('reservation', lang=get_locale()) }}">{{ _("Réservation") }}</a>
   </nav>
   <div class="langs" aria-label="{{ _('Changer de langue') }}">
-    <a href="{{ lang_url('fr') }}" lang="fr" aria-label="Français">🇫🇷</a>
-    <a href="{{ lang_url('en') }}" lang="en" aria-label="English">🇺🇸</a>
-    <a href="{{ lang_url('es') }}" lang="es" aria-label="Español">🇪🇸</a>
-  </div>
-<li>
-  <a href="https://www.instagram.com/ton_compte/" target="_blank" rel="noopener noreferrer">
+  <a href="{{ lang_url('fr') }}" lang="fr" aria-label="Français">🇫🇷</a>
+  <a href="{{ lang_url('en') }}" lang="en" aria-label="English">🇺🇸</a>
+  <a href="{{ lang_url('es') }}" lang="es" aria-label="Español">🇪🇸</a>
+  <!-- Instagram juste après les drapeaux -->
+  <a href="https://www.instagram.com/ohlala.tours.bogota/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
     <i class="fab fa-instagram"></i>
   </a>
-</li>
+</div>
 
 </aside>
 
