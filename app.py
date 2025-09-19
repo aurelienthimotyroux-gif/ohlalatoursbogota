@@ -590,9 +590,9 @@ def _infer_lang_from_request(req, country_text: str = "", email_text: str = "", 
 # ------------------------------------------------------------------
 PRICES_USD = {
     "monserrate": {"rules": [(1, 1, 65),(2, 6, 55)], "max_group": 6},
-    "zipaquira":  {"rules": [(1, 1, 120),(2, 2, 100),(3, 6, 90)], "max_group": 6},
-    "finca-cafe": {"rules": [(1, 1, 150),(2, 2, 105),(3, 6, 95)], "max_group": 6},
-    "chorrera":   {"rules": [(1, 1, 125),(2, 3, 115),(4, 6, 100)], "max_group": 6},
+    "zipaquira":  {"rules": [(1, 1, 130),(2, 2, 123),(3, 6, 118)], "max_group": 6},
+    "finca-cafe": {"rules": [(1, 1, 140),(2, 6, 120)], "max_group": 6},
+    "chorrera":   {"rules": [(1, 1, 125),(2, 3, 115),(4, 6, 105)], "max_group": 6},
     "candelaria": {"rules": [(1, 1, 40),(2, 3, 35),(4, 6, 33)], "max_group": 6},
 }
 def quote_tour_usd(slug: str, people: int):
