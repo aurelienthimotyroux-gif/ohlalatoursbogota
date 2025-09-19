@@ -828,9 +828,9 @@ PAYPAL_API_BASE = "https://api-m.sandbox.paypal.com" if PAYPAL_MODE == "sandbox"
 
 PRICES_USD_PAYPAL = {
     "monserrate": [(1, 1, Decimal("65")), (2, 6, Decimal("55"))],
-    "zipaquira":  [(1, 1, Decimal("120")), (2, 2, Decimal("100")), (3, 6, Decimal("90"))],
-    "finca-cafe": [(1, 1, Decimal("150")), (2, 2, Decimal("105")), (3, 6, Decimal("95"))],
-    "chorrera":   [(1, 1, Decimal("125")), (2, 3, Decimal("115")), (4, 6, Decimal("100"))],
+    "zipaquira":  [(1, 1, Decimal("130")), (2, 2, Decimal("123")), (3, 6, Decimal("118"))],
+    "finca-cafe": [(1, 1, Decimal("140")), (2, 6, Decimal("120"))],
+    "chorrera":   [(1, 1, Decimal("125")), (2, 3, Decimal("115")), (4, 6, Decimal("105"))],
     "candelaria": [(1, 1, Decimal("40")),  (2, 3, Decimal("35")),  (4, 6, Decimal("33"))],
 }
 COP_PER_UNIT = Decimal(os.getenv("COP_PER_UNIT", "3800"))
