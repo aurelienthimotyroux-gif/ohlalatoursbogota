@@ -590,7 +590,7 @@ def _infer_lang_from_request(req, country_text: str = "", email_text: str = "", 
 # ------------------------------------------------------------------
 PRICES_USD = {
     "monserrate": {"rules": [(1, 1, 65),(2, 6, 55)], "max_group": 6},
-    "zipaquira":  {"rules": [(1, 1, 130),(2, 2, 123),(3, 6, 118)], "max_group": 6},
+    "zipaquira":  {"rules": [(1, 1, 130),(2, 2, 125),(3, 6, 120)], "max_group": 6},
     "finca-cafe": {"rules": [(1, 1, 140),(2, 6, 120)], "max_group": 6},
     "chorrera":   {"rules": [(1, 1, 125),(2, 3, 115),(4, 6, 105)], "max_group": 6},
     "candelaria": {"rules": [(1, 1, 40),(2, 3, 35),(4, 6, 33)], "max_group": 6},
@@ -828,7 +828,7 @@ PAYPAL_API_BASE = "https://api-m.sandbox.paypal.com" if PAYPAL_MODE == "sandbox"
 
 PRICES_USD_PAYPAL = {
     "monserrate": [(1, 1, Decimal("65")), (2, 6, Decimal("55"))],
-    "zipaquira":  [(1, 1, Decimal("130")), (2, 2, Decimal("123")), (3, 6, Decimal("118"))],
+    "zipaquira":  [(1, 1, Decimal("130")), (2, 2, Decimal("125")), (3, 6, Decimal("120"))],
     "finca-cafe": [(1, 1, Decimal("140")), (2, 6, Decimal("120"))],
     "chorrera":   [(1, 1, Decimal("125")), (2, 3, Decimal("115")), (4, 6, Decimal("105"))],
     "candelaria": [(1, 1, Decimal("40")),  (2, 3, Decimal("35")),  (4, 6, Decimal("33"))],
