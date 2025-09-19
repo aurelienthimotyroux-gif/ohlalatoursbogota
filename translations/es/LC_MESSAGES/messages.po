@@ -1070,3 +1070,5 @@ msgstr "✔️ Traslados al aeropuerto"
 msgid "Plus qu’une simple visite, nous voulons que vous viviez une expérience proche, chaleureuse et authentique, comme si vous découvriez la ville avec des amis locaux."
 msgstr "Más que un simple tour, queremos que vivas una experiencia cercana, cálida y auténtica, como si recorrieras la ciudad con amigos locales."
 
+msgid "Devise"
+msgstr "Moneda"

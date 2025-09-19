@@ -798,5 +798,8 @@ msgstr "✔️ Airport transfers"
 msgid "Plus qu’une simple visite, nous voulons que vous viviez une expérience proche, chaleureuse et authentique, comme si vous découvriez la ville avec des amis locaux."
 msgstr "More than just a tour, we want you to live a close, warm, and authentic experience, as if you were discovering the city with local friends."
 
+msgid "Devise"
+msgstr "Currency"
+
 
 
