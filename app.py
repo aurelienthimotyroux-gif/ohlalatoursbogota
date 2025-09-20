@@ -781,6 +781,38 @@ Message:
 @app.route("/reservation/<slug>", methods=["GET"])
 def reservation_clean(slug):
     return render_template("reservation.html", tour=slug, slug=slug)
+# ------------------------------------------------------------------
+# Formulaire : ajout d’un commentaire
+# ------------------------------------------------------------------
+@app.post("/comment", endpoint="submit_comment")
+def submit_comment():
+    name = (request.form.get("name") or "").strip()
+    message = (request.form.get("message") or "").strip()
+    rating = request.form.get("rating") or "5"
+    country = ""  # tu pourras ajouter un champ "country" si besoin
+    lang = request.args.get("lang") or str(get_locale())
+
+    if not name or not message:
+        flash(_("Merci de remplir nom et commentaire."), "error")
+        return redirect(url_for("index", lang=lang))
+
+    try:
+        r = Comment(
+            name=name[:120],
+            message=message,
+            rating=float(rating),
+            country=country,
+            date_str=datetime.utcnow().strftime("%Y-%m-%d"),
+        )
+        db.session.add(r)
+        db.session.commit()
+        flash(_("Merci pour votre commentaire !"), "success")
+    except Exception as e:
+        app.logger.error("submit_comment_error: %s", e)
+        db.session.rollback()
+        flash(_("Un problème est survenu, réessaie."), "error")
+
+    return redirect(url_for("index", lang=lang))
 
 # ------------------------------------------------------------------
 # Statique & SEO
