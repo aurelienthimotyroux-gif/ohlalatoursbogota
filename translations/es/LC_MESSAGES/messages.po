@@ -1046,11 +1046,14 @@ msgstr "Somos Alejandra y Aurélien, una colombiana y un francés unidos por la 
 msgid "Moi, Alejandra, je travaille dans le secteur touristique depuis plus de 7 ans, et depuis 3 ans Aurélien s’est joint à cette aventure, motivés par le désir de montrer au monde la richesse et la diversité de la culture colombienne."
 msgstr "Yo, Alejandra, llevo más de 7 años trabajando en el sector turístico, y desde hace 3 años Aurélien se unió a esta aventura, motivados por el deseo de mostrar al mundo la riqueza y diversidad de la cultura colombiana."
 
-msgid "Nous vous invitons à découvrir une Bogotá authentique, vibrante et pleine de vie, à travers des parcours conçus pour vous connecter à l’histoire, à la culture et aux saveurs de la ville."
-msgstr "Te invitamos a descubrir una Bogotá auténtica, vibrante y llena de vida, a través de recorridos diseñados para conectar con la historia, la cultura y los sabores de la ciudad."
+msgid "Nous sommes Alejandra et Aurélien, une Colombienne et un Français unis par la passion de partager la magie de Bogotá et de ses alentours."
+msgstr "Somos Alejandra y Aurélien, una colombiana y un francés unidos por la pasión de compartir la magia de Bogotá y sus alrededores."
 
-msgid "Avec nous, vous aurez l’opportunité de vivre la capitale comme un habitant local, en profitant d’expériences proches, spontanées et imprégnées de l’essence colombienne."
-msgstr "Con nosotros tendrás la oportunidad de vivir la capital como un local, disfrutando experiencias cercanas, espontáneas y llenas de la esencia colombiana."
+msgid "Moi, Alejandra, je travaille depuis plus de 7 ans dans le secteur touristique, et depuis 3 ans Aurélien m’a rejoint dans cette aventure, motivés par le désir de montrer au monde la richesse et la diversité de la culture colombienne."
+msgstr "Yo, Alejandra, llevo más de 7 años trabajando en el sector turístico, y desde hace 3 años Aurélien se sumó a esta aventura, motivados por el deseo de mostrar al mundo la riqueza y diversidad de la cultura colombiana."
+
+msgid "Nous vous invitons à découvrir une Bogotá authentique, vibrante et pleine de vie, à travers des parcours conçus pour vous connecter à l’histoire, à la culture et aux saveurs de la ville. Avec nous, vous aurez l’opportunité de vivre la capitale comme un habitant local, en profitant d’expériences proches, spontanées et remplies de l’essence colombienne."
+msgstr "Te invitamos a descubrir una Bogotá auténtica, vibrante y llena de vida, a través de recorridos diseñados para conectar con la historia, la cultura y los sabores de la ciudad. Con nosotros tendrás la oportunidad de vivir la capital como un local, disfrutando experiencias cercanas, espontáneas y llenas de la esencia colombiana."
 
 msgid "Nous proposons :"
 msgstr "Ofrecemos:"
@@ -1058,17 +1061,17 @@ msgstr "Ofrecemos:"
 msgid "✔️ Visites guidées à Bogotá"
 msgstr "✔️ Visitas guiadas en Bogotá"
 
-msgid "✔️ Tours privés à la Candelaria, Monserrate, Zipaquirá et plus encore"
+msgid "✔️ Tours privés vers la Candelaria, Monserrate, Zipaquirá et plus encore"
 msgstr "✔️ Tours privados a la Candelaria, Monserrate, Zipaquirá y más"
 
 msgid "✔️ Service de transport (taxi/van)"
 msgstr "✔️ Servicio de transporte (taxi/van)"
 
-msgid "✔️ Transferts vers l’aéroport"
+msgid "✔️ Transferts aéroport"
 msgstr "✔️ Traslados al aeropuerto"
 
-msgid "Plus qu’une simple visite, nous voulons que vous viviez une expérience proche, chaleureuse et authentique, comme si vous découvriez la ville avec des amis locaux."
-msgstr "Más que un simple tour, queremos que vivas una experiencia cercana, cálida y auténtica, como si recorrieras la ciudad con amigos locales."
+msgid "Plus qu’une simple visite, nous voulons que vous viviez une expérience chaleureuse, conviviale et authentique, comme si vous découvriez la ville avec des amis locaux."
+msgstr "Más que un tour, queremos que vivas una experiencia cercana, cálida y auténtica, como si recorrieras la ciudad con amigos locales."
 
 msgid "Devise"
 msgstr "Moneda"
