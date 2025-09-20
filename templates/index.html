@@ -11,6 +11,9 @@
   <!-- Keywords (facultatif) -->
   <meta name="keywords" content="visite guidée Bogotá, guide francophone Bogotá, excursion Bogotá, tours privés Bogotá, visiter la Candelaria Bogotá, excursion Zipaquirá depuis Bogotá, randonnée Monserrate Bogotá, café, Bogota, Colombie, Monserrate, Zipaquira, Coloma, Hacienda Coloma, guide, tejo, Chapinero, hôtel, hostel, Alejandra, gastronomie, pesos, taxi, transport, van, aéroport, français, anglais, espagnol, Aguila, Club Colombia, histoire, tours exceptionnels">
 
+  <!-- ✅ Font Awesome pour l’icône Instagram -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
   <!-- CMP / consentmanager -->
   <script type="text/javascript" data-cmp-ab="1"
           src="https://cdn.consentmanager.net/delivery/autoblocking/62cc8437f29ac.js"
@@ -120,7 +123,7 @@
     .site-header.scrolled .main-nav a{color:#0f172a}
     .site-header.scrolled .site-title{ color:#0f172a; }
 
-    /* Styles existants pour avis, etc. (conservés) */
+    /* Avis / divers */
     .testimonials { background:#fff; padding:40px 20px; margin-top:40px; }
     .testimonials .container { max-width:1000px; margin:0 auto; }
     .testimonials h2 { text-align:center; margin-bottom:22px; font-size:28px; }
@@ -166,17 +169,14 @@
   </symbol>
 </svg>
 
-<!-- HEADER (logos light/dark + nav) -->
+<!-- HEADER (logos light/dark + nav + drapeaux + Instagram) -->
 <header class="site-header header-on-hero">
   <div class="logo-container">
-    <!-- Logo clair (sur hero/photo) -->
     <img src="{{ url_for('static', filename='img/logo-light.png') }}" alt="Oh La La Tours Bogotá" class="logo logo--light">
-    <!-- Logo foncé (après scroll, fond clair) -->
     <img src="{{ url_for('static', filename='img/logo-dark.png') }}" alt="Oh La La Tours Bogotá" class="logo logo--dark">
     <span class="site-title">Oh La La Tours Bogotá</span>
   </div>
 
-  <!-- Navigation -->
   <nav class="main-nav" aria-label="{{ _('Navigation principale') }}">
     <a href="{{ url_for('index', lang=get_locale()) }}">{{ _("Accueil") }}</a>
     <a href="{{ url_for('tours', lang=get_locale()) }}">{{ _("Nos tours") }}</a>
@@ -186,22 +186,24 @@
       <a href="{{ lang_url('fr') }}" lang="fr" aria-label="Français">🇫🇷<span class="sr-only">Français</span></a>
       <a href="{{ lang_url('en') }}" lang="en" aria-label="English">🇺🇸<span class="sr-only">English</span></a>
       <a href="{{ lang_url('es') }}" lang="es" aria-label="Español">🇪🇸<span class="sr-only">Español</span></a>
+      <!-- ✅ Icône Instagram (desktop) -->
+      <a href="https://www.instagram.com/ohlala.tours.bogota/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+        <i class="fa-brands fa-instagram" aria-hidden="true"></i>
+      </a>
     </div>
   </nav>
 </header>
 
-<!-- HERO (image de couverture) -->
+<!-- HERO -->
 <header class="hero"
         role="img"
         aria-label="Bogota Monserrate Candelaria street art visites guidées privées guide francophone café colombien cathédrale de sel Zipaquira Hacienda Coloma transport privé transfert aéroport safe friendly professional travel Colombia colombie chorrera gastronomie"
         style="background-image: url('{{ url_for('static', filename='images/accueil.jpg') }}');">
-
   <span class="sr-only">
     {{ _('Photo de couverture Bogotá Monserrate Candelaria street art Cathédrale de sel Zipaquirá Hacienda Coloma visites guidées privées guide francophone transport privé transfert aéroport') }}
     Cover photo Bogota Monserrate Candelaria street art Salt Cathedral Zipaquira coffee farm Hacienda Coloma private tours French speaking guide private transport airport transfer
     Foto de portada Bogotá Monserrate Candelaria arte urbano Catedral de Sal Zipaquirá finca cafetera Hacienda Coloma tours privados guía francófona transporte privado traslado aeropuerto
   </span>
-
   <h1 class="hero-title">{{ _("Bienvenue à Bogotá !") }}</h1>
 </header>
 
@@ -270,7 +272,17 @@
   </form>
 </section>
 
-<!-- Section Commentaires -->
+<!-- Sticky bar mobile -->
+<div class="sticky-cta">
+  <div class="container row">
+    <a class="btn btn-outline"
+       href="https://wa.me/573505384537?text={{ _('Bonjour Alejandra ! Je suis intéressé par une visite 🤗') | urlencode }}"
+       target="_blank" rel="noopener">WhatsApp</a>
+    <a class="btn" href="{{ url_for('reservation', lang=get_locale()) }}">{{ _("Réserver") }}</a>
+  </div>
+</div>
+
+<!-- ========= SECTION COMMENTAIRES (DYNAMIQUES) À LA FIN ========= -->
 <section class="testimonials">
   <div class="container">
     <h2>{{ _("Avis des voyageurs") }}</h2>
@@ -329,16 +341,6 @@
   </div>
 </section>
 
-<!-- Sticky bar mobile -->
-<div class="sticky-cta">
-  <div class="container row">
-    <a class="btn btn-outline"
-       href="https://wa.me/573505384537?text={{ _('Bonjour Alejandra ! Je suis intéressé par une visite 🤗') | urlencode }}"
-       target="_blank" rel="noopener">WhatsApp</a>
-    <a class="btn" href="{{ url_for('reservation', lang=get_locale()) }}">{{ _("Réserver") }}</a>
-  </div>
-</div>
-
 <!-- JS Lire plus / Lire moins -->
 <script>
   function toggleText(index) {
@@ -375,11 +377,11 @@
   "availableLanguage": ["French","Spanish","English"],
   "email": "alejandramontana25.18@gmail.com",
   "telephone": "+57-350-538-4537",
-  "sameAs": []
+  "sameAs": ["https://www.instagram.com/ohlala.tours.bogota/"]
 }
 </script>
 
-<!-- Script : toggle du header au scroll -->
+<!-- Script : header qui change au scroll -->
 <script>
   (function(){
     const header = document.querySelector('.site-header');
