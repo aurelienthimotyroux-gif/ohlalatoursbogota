@@ -262,7 +262,7 @@
            class="logo logo--light">
       <!-- Logo foncé -->
       <img src="{{ url_for('static', filename='img/logo-dark.png') }}"
-           alt="{% if get_locale()=='fr' %}Logo Oh La La Tours Bogotá avec colibri stylisé et silhouette de Monserrate représentant la nature, la culture et les excursions privées en Colombie{% elif get_locale()=='en' %}Oh La La Tours Bogotá logo with stylized hummingbird and Monserrate silhouette representing nature culture and private excursions in Colombia{% else %}Logo de Oh La La Tours Bogotá con colibrí estilizado y silueta de Monserrate representando naturaleza cultura y excursiones privadas en Colombia{% endif %}"
+           alt="{% if get_locale()=='fr' %}Logo Oh La La Tours Bogotá avec colibri stylisé et silhouette de Monserrate représentant la nature, la culture et les excursions privées en Colombie{% elif get_locale()=='en' %}Oh La La Tours Bogotá logo with stylized hummingbird and Monserrate silhouette representing nature culture and private excursions in Colombia{% endif %}{% if get_locale()=='es' %}Logo de Oh La La Tours Bogotá con colibrí estilizado y silueta de Monserrate representando naturaleza cultura y excursiones privadas en Colombia{% endif %}"
            class="logo logo--dark">
       <span class="site-title">Oh La La Tours Bogotá</span>
     </a>
@@ -324,7 +324,7 @@
       <h1 class="hero-title">{{ _("Nos tours") }}</h1>
   </header>
 
-  <!-- 💱 Sélecteur de devise (AJOUT) -->
+  <!-- ===== Sélecteur de devise (AJOUT, rien d'autre modifié) ===== -->
   <div style="max-width:1200px;margin:20px auto 0;padding:0 20px; display:flex; justify-content:flex-end;">
     <label for="currency" style="margin-right:8px;">{{ _('Devise') }} :</label>
     <select id="currency" aria-label="{{ _('Choisir la devise') }}">
@@ -333,10 +333,10 @@
       <option value="COP">COP $</option>
     </select>
   </div>
+  <!-- ============================================================= -->
 
   <!-- Liste des excursions -->
   <main>
-
     <section id="excursions">
 
 {% set tours_data = [
@@ -394,7 +394,7 @@
     "infos": [
       _("Durée : ~7h (transfert inclus)"),
       _("Langues : 🇫🇷 🇪🇸 🇺🇸"),
-      _("Tarif : 130 USD / personne (1 pers.) • 125 USD / personne (2 pers.) • 120 USD / personne dès 3 à 6 personnes")
+      _("Tarif : 130 USD / personne (1 pers.) • 123 USD / personne (2 pers.) • 118 USD / personne dès 3 à 6 personnes")
     ],
     "images": ["zipaquira1.jpg", "zipaquira2.jpg", "zipaquira3.jpg"]
   },
@@ -413,7 +413,7 @@
     "infos": [
       _("Durée : ~7–8h"),
       _("Langues : 🇫🇷 🇪🇸 🇺🇸"),
-      _("Tarif : 125 USD / personne (1 pers.) • 115 USD / personne (2 à 3 pers.) • 105 USD / personne dès 4 à 6 personnes")
+      _("Tarif : 125 USD / personne (1 pers.) • 115 USD / personne (2 à 3 pers.) • 100 USD / personne dès 4 à 6 personnes")
 
     ],
     "images": ["chorrera1.jpg", "chorrera2.jpeg", "chorrera3.jpeg"]
@@ -689,83 +689,6 @@
       window.addEventListener('scroll', onScroll, {passive:true});
     })();
   </script>
-<!-- 💱 Sélecteur de devise — Conversion non intrusive (AJOUT) -->
-<script>
-(function(){
-  const USD_TO_EUR = 0.85;
-  const USD_TO_COP = 3900;
-
-  const currencySelect = document.getElementById('currency');
-  if (!currencySelect) return;
-
-  function formatNumber(n){
-    const hasDecimals = Math.round(n) !== n;
-    return n.toLocaleString('fr-FR', { minimumFractionDigits: hasDecimals ? 2 : 0, maximumFractionDigits: hasDecimals ? 2 : 0 });
-  }
-  function convertAmount(amount, target){
-    const usd = parseFloat(String(amount).replace(',', '.'));
-    if (isNaN(usd)) return amount;
-    if (target === 'USD') return usd;
-    if (target === 'EUR') return usd * USD_TO_EUR;
-    if (target === 'COP') return usd * USD_TO_COP;
-    return usd;
-  }
-  function convertTarifText(usdLine, target){
-    if (target === 'USD') return usdLine;
-    return usdLine.replace(/(\d+(?:[.,]\d+)?)\s*USD/gi, function(_, num){
-      const conv = convertAmount(num, target);
-      const pretty = formatNumber(conv);
-      if (target === 'EUR') return pretty + ' EUR';
-      if (target === 'COP') return pretty + ' COP';
-      return pretty + ' USD';
-    });
-  }
-  function isTarifChip(li){
-    const strong = li.querySelector('strong');
-    return strong && /^Tarif\s*:?\s*$/i.test(strong.textContent.trim());
-  }
-  function currentTextAfterStrong(li){
-    const strong = li.querySelector('strong');
-    if (!strong) return li.textContent.trim();
-    let node = strong.nextSibling, parts = [];
-    while (node) { parts.push(node.textContent || ''); node = node.nextSibling; }
-    return parts.join('').trim();
-  }
-  function setTextAfterStrong(li, newText){
-    const strong = li.querySelector('strong');
-    if (!strong) return;
-    while (strong.nextSibling) strong.parentNode.removeChild(strong.nextSibling);
-    strong.insertAdjacentText('afterend', ' ' + newText);
-  }
-  function prepare(){
-    document.querySelectorAll('.tour-chips .chip').forEach(function(li){
-      if (!isTarifChip(li)) return;
-      if (!li.dataset.tarifUsd){
-        const usdText = currentTextAfterStrong(li);
-        li.dataset.tarifUsd = usdText;
-      }
-    });
-  }
-  function applyCurrency(target){
-    document.querySelectorAll('.tour-chips .chip').forEach(function(li){
-      if (!isTarifChip(li)) return;
-      const usdText = li.dataset.tarifUsd || currentTextAfterStrong(li);
-      const newText = convertTarifText(usdText, target);
-      setTextAfterStrong(li, newText);
-    });
-  }
-  function init(){
-    prepare();
-    applyCurrency('USD');
-    currencySelect.addEventListener('change', function(){
-      applyCurrency(this.value);
-    }, { passive: true });
-  }
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-  } else { init(); }
-})();
-</script>
 
   <!-- ✅ Burger JS -->
   <script>
@@ -795,6 +718,111 @@
       window.addEventListener('keydown', (e)=>{ if(e.key==='Escape') close(); });
     })();
   </script>
+
+  <!-- 💱 Sélecteur de devise — Conversion non intrusive (AJOUT) -->
+  <script>
+    (function(){
+      // === Taux fixes (à ajuster si tu veux) ===
+      const USD_TO_EUR = 0.92;
+      const USD_TO_COP = 4200;
+
+      const currencySelect = document.getElementById('currency');
+      if (!currencySelect) return;
+
+      function formatNumber(n){
+        // nombre -> string locale fr-FR sans décimales inutiles
+        const hasDecimals = Math.round(n) !== n;
+        return n.toLocaleString('fr-FR', { minimumFractionDigits: hasDecimals ? 2 : 0, maximumFractionDigits: hasDecimals ? 2 : 0 });
+      }
+
+      function convertAmount(amount, target){
+        const usd = parseFloat(String(amount).replace(',', '.'));
+        if (isNaN(usd)) return amount;
+        if (target === 'USD') return usd;
+        if (target === 'EUR') return usd * USD_TO_EUR;
+        if (target === 'COP') return usd * USD_TO_COP;
+        return usd;
+      }
+
+      // Construit une version transformée d'une chaîne "Tarif : ..."
+      // en convertissant chaque motif "<nombre> USD".
+      function convertTarifText(usdLine, target){
+        if (target === 'USD') return usdLine;
+        return usdLine.replace(/(\d+(?:[.,]\d+)?)\s*USD/gi, function(_, num){
+          const conv = convertAmount(num, target);
+          const pretty = formatNumber(conv);
+          if (target === 'EUR') return pretty + ' EUR';
+          if (target === 'COP') return pretty + ' COP';
+          return pretty + ' USD';
+        });
+      }
+
+      function isTarifChip(li){
+        const strong = li.querySelector('strong');
+        return strong && /^Tarif\s*:?\s*$/i.test(strong.textContent.trim());
+      }
+
+      function currentTextAfterStrong(li){
+        const strong = li.querySelector('strong');
+        if (!strong) return li.textContent.trim();
+        // récupère le texte après le <strong>:
+        // <strong>Tarif :</strong>&nbsp; ... => prendre le nœud texte suivant
+        let text = '';
+        // Parcours les nœuds après le strong dans li
+        let node = strong.nextSibling;
+        const parts = [];
+        while (node) {
+          parts.push(node.textContent || '');
+          node = node.nextSibling;
+        }
+        text = parts.join('').trim();
+        return text;
+      }
+
+      function setTextAfterStrong(li, newText){
+        const strong = li.querySelector('strong');
+        if (!strong) return;
+        // supprime les nœuds suivants puis insère le texte
+        while (strong.nextSibling) strong.parentNode.removeChild(strong.nextSibling);
+        strong.insertAdjacentText('afterend', ' ' + newText);
+      }
+
+      function prepare(){
+        document.querySelectorAll('.tour-chips .chip').forEach(function(li){
+          if (!isTarifChip(li)) return;
+          if (!li.dataset.tarifUsd){
+            const usdText = currentTextAfterStrong(li);
+            li.dataset.tarifUsd = usdText; // conserve l'original (USD)
+          }
+        });
+      }
+
+      function applyCurrency(target){
+        document.querySelectorAll('.tour-chips .chip').forEach(function(li){
+          if (!isTarifChip(li)) return;
+          const usdText = li.dataset.tarifUsd || currentTextAfterStrong(li);
+          const newText = convertTarifText(usdText, target);
+          setTextAfterStrong(li, newText);
+        });
+      }
+
+      function init(){
+        prepare();            // stocke les USD originaux
+        applyCurrency('USD'); // état par défaut
+        currencySelect.addEventListener('change', function(){
+          applyCurrency(this.value);
+        }, { passive: true });
+      }
+
+      if (document.readyState === 'loading'){
+        document.addEventListener('DOMContentLoaded', init);
+      } else { init(); }
+    })();
+  </script>
+  <!-- /Fin AJOUT devise -->
+
 </body>
 </html>
+
+
 
