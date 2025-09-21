@@ -775,25 +775,25 @@ msgid "Moi, Alejandra, je travaille depuis plus de 7 ans dans le secteur tourist
 msgstr "I, Alejandra, have been working in the tourism sector for more than 7 years, and for the past 3 years Aurélien has joined me on this adventure, driven by the desire to show the world the richness and diversity of Colombian culture."
 
 msgid "Nous vous invitons à découvrir une Bogotá authentique, vibrante et pleine de vie, à travers des parcours conçus pour vous connecter à l’histoire, à la culture et aux saveurs de la ville. Avec nous, vous aurez l’opportunité de vivre la capitale comme un habitant local, en profitant d’expériences proches, spontanées et remplies de l’essence colombienne."
-msgstr "We invite you to discover an authentic, vibrant and lively Bogotá through tours designed to connect you with the city’s history, culture and flavors. With us, you will have the opportunity to experience the capital like a local, enjoying close, spontaneous experiences filled with the Colombian spirit."
+msgstr "We invite you to discover an authentic, vibrant, and lively Bogotá through tours designed to connect you with the city’s history, culture, and flavors. With us, you’ll have the opportunity to experience the capital like a local, enjoying spontaneous, personal experiences filled with Colombian essence."
 
 msgid "Nous proposons :"
 msgstr "We offer:"
 
-msgid "✔️ Visites guidées à Bogotá"
-msgstr "✔️ Guided tours in Bogotá"
+msgid " Visites guidées à Bogotá"
+msgstr " Guided tours in Bogotá"
 
-msgid "✔️ Tours privés vers la Candelaria, Monserrate, Zipaquirá et plus encore"
-msgstr "✔️ Private tours to La Candelaria, Monserrate, Zipaquirá and more"
+msgid " Tours privés vers la Candelaria, Monserrate, Zipaquirá et plus encore"
+msgstr " Private tours to La Candelaria, Monserrate, Zipaquirá, and more"
 
-msgid "✔️ Service de transport (taxi/van)"
-msgstr "✔️ Transport service (taxi/van)"
+msgid " Service de transport (taxi/van)"
+msgstr " Transport service (taxi/van)"
 
-msgid "✔️ Transferts aéroport"
-msgstr "✔️ Airport transfers"
+msgid " Transferts aéroport"
+msgstr " Airport transfers"
 
 msgid "Plus qu’une simple visite, nous voulons que vous viviez une expérience chaleureuse, conviviale et authentique, comme si vous découvriez la ville avec des amis locaux."
-msgstr "More than just a tour, we want you to live a warm, friendly and authentic experience, as if you were discovering the city with local friends."
+msgstr "More than just a tour, we want you to live a warm, friendly, and authentic experience — as if you were exploring the city with local friends."
 
 msgid "Devise"
 msgstr "Currency"
