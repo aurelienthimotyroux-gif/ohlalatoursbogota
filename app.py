@@ -1,6 +1,6 @@
 from flask import (
     Flask, render_template, request, url_for, flash, redirect,
-    send_from_directory, send_file, session, make_response, Response, abort, jsonify  # ✅ ajout jsonify
+    send_from_directory, send_file, session, make_response, Response, abort, jsonify
 )
 from flask_babel import Babel, _
 import os, requests, logging, re, secrets, unicodedata
@@ -10,18 +10,12 @@ from flask_sqlalchemy import SQLAlchemy
 from functools import wraps
 from sqlalchemy import inspect, text
 from urllib.parse import urlsplit, urlunsplit, parse_qsl, urlencode
-
-# ✉️ Email
 from flask_mail import Mail, Message
-from decimal import Decimal, ROUND_HALF_UP  # 🟡 PayPal: calcul monétaire
+from decimal import Decimal, ROUND_HALF_UP
 
-# === Créer l'app AVANT toute config ===
+# === App unique ====================================================
 app = Flask(__name__)
-
-# --- CANONICALISATION HTTPS + WWW -------------------------
-from urllib.parse import urlsplit, urlunsplit
-from flask import request, redirect
-from werkzeug.middleware.proxy_fix import ProxyFix
+app.secret_key = os.getenv("SECRET_KEY", "dev-secret")
 
 # Render est derrière un proxy → Flask doit lire les en-têtes X-Forwarded-*
 app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_port=1)
@@ -30,57 +24,39 @@ APP_CANONICAL_HOST = "www.ohlalatoursbogota.com"
 
 @app.before_request
 def force_https_and_www():
-    # laisse passer un éventuel healthcheck
+    # laisse passer le healthcheck
     if request.path in ("/healthz",):
         return
-
-    # schéma/host réellement reçus (via proxy)
     proto = request.headers.get("X-Forwarded-Proto", request.scheme)
     host  = request.headers.get("X-Forwarded-Host", request.host)
-
-    need_https = (proto != "https")
-    need_www   = (host != APP_CANONICAL_HOST)
-
-    if need_https or need_www:
+    if proto != "https" or host != APP_CANONICAL_HOST:
         parts = urlsplit(request.url)
-        new_url = urlunsplit((
-            "https",                        # scheme
-            APP_CANONICAL_HOST,             # netloc
-            parts.path, parts.query, parts.fragment
-        ))
+        new_url = urlunsplit(("https", APP_CANONICAL_HOST, parts.path, parts.query, parts.fragment))
         return redirect(new_url, code=301)
 
-# Facultatif mais utile pour url_for(...,_external=True)
 app.config["PREFERRED_URL_SCHEME"] = "https"
-# ----------------------------------------------------------
 
-# --- CONFIG BDD (PostgreSQL sur Render) ---
+# --- CONFIG BDD unique (Render + fallback local) -------------------
+raw_db = os.getenv("DATABASE_URL", "").strip()
+DB_URL = "sqlite:///local.db"  # fallback si pas de DATABASE_URL
 
-# 1) Récupère l'URL depuis l'env
-db_url = os.getenv("DATABASE_URL", "").strip()
+if raw_db:
+    url = raw_db
+    if url.startswith("postgres://"):
+        url = url.replace("postgres://", "postgresql://", 1)
+    if "sslmode=" not in url:
+        url += ("&" if "?" in url else "?") + "sslmode=require"
+    DB_URL = url
 
-if not db_url:
-    raise RuntimeError("DATABASE_URL est vide ou manquante")
-
-# 2) Normalise le schéma pour SQLAlchemy 2.x + psycopg
-if db_url.startswith("postgres://"):
-    db_url = db_url.replace("postgres://", "postgresql://", 1)
-
-# 3) Ajoute sslmode=require si absent
-if "sslmode" not in db_url:
-    if "?" in db_url:
-        db_url += "&sslmode=require"
-    else:
-        db_url += "?sslmode=require"
-
-# 4) Configure SQLAlchemy
-app.config["SQLALCHEMY_DATABASE_URI"] = db_url
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+app.config.update(
+    SQLALCHEMY_DATABASE_URI=DB_URL,
+    SQLALCHEMY_TRACK_MODIFICATIONS=False,
+)
 
 db = SQLAlchemy(app)
+# -------------------------------------------------------------------
 
-# ----------------------------------------------------------
-# Le reste de ton fichier continue normalement (routes, etc.)
+
 # ------------------------------------------------------------------
 # Helpers (dates, normalisation)
 # ------------------------------------------------------------------
