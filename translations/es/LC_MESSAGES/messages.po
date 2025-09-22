@@ -501,8 +501,8 @@ msgid "Langues : 🇫🇷 🇪🇸 🇺🇸"
 msgstr "Idiomas: 🇫🇷 🇪🇸 🇺🇸"
 
 # --- Tours (La Chorrera) ---
-msgid "Cascade de La Chorrera : la plus haute chute d’eau de Colombie"
-msgstr "Cascada de La Chorrera: la caída de agua más alta de Colombia"
+msgid "Cascade de La Chorrera : Un joyau naturel à deux pas de Bogotá"
+msgstr "Cascada de La Chorrera: Una joya natural a un paso de Bogotá"
 
 msgid "Découvrez une aventure inoubliable au cœur des montagnes andines et contemplez La Chorrera, la plus haute cascade du pays. Nous emprunterons des sentiers bordés d’une végétation luxuriante, en observant la richesse de la faune et de la flore locales. Tout au long de la randonnée, nous profiterons de paysages spectaculaires jusqu’à atteindre la chute vertigineuse de plus de 590 mètres, un spectacle naturel à couper le souffle. Randonnée de difficulté moyenne à 2500m d’altitude : prévoir une veste de pluie, des vêtements et chaussures de rechange, ainsi que de bonnes chaussures de randonnée ou une paire de baskets solides."
 msgstr "Vive una aventura inolvidable en el corazón de las montañas andinas y contempla La Chorrera, la cascada más alta del país. Recorreremos senderos bordeados por una vegetación exuberante, observando la riqueza de la fauna y la flora locales. A lo largo de la caminata, disfrutaremos de paisajes espectaculares hasta llegar al salto vertiginoso de más de 590 metros, un espectáculo natural impresionante. Caminata de dificultad media a 2.500 m de altitud: lleva chaqueta impermeable, ropa y calzado de repuesto, y buenas botas de senderismo o unas zapatillas resistentes."
@@ -1073,4 +1073,7 @@ msgstr "Moneda"
 
 msgid "Devise"
 msgstr "Moneda"
+
+msgid "Découvrez une aventure inoubliable au cœur des montagnes andines et contemplez La Chorrera, la plus haute cascade du pays. Nous emprunterons des sentiers bordés d’une végétation luxuriante, en observant la richesse de la faune et de la flore locales. Tout au long de la randonnée, nous profiterons de paysages spectaculaires jusqu’à atteindre la chute vertigineuse de plus de 590 mètres, un spectacle naturel à couper le souffle. Randonnée de niveau moyen à environ 2 500 m d’altitude. Prévoir des vêtements adaptés, de bonnes chaussures de marche et un change."
+msgstr "Descubre una aventura inolvidable en el corazón de las montañas andinas y contempla La Chorrera, la cascada más alta del país. Recorreremos senderos rodeados de una vegetación exuberante, observando la riqueza de la fauna y la flora locales. A lo largo de la caminata, disfrutaremos de paisajes espectaculares hasta llegar a la vertiginosa caída de más de 590 metros, un espectáculo natural impresionante. Caminata de nivel medio a unos 2.500 m de altitud. Llevar ropa adecuada, buen calzado de caminata y un cambio de ropa."
 
