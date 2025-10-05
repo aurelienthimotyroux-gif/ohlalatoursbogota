@@ -44,20 +44,14 @@
     gtag('config', 'G-92M6CENDXH', { anonymize_ip: true });
   </script>
 
-  <!-- ✅ Canonical + hreflang -->
-  <link rel="canonical" href="{{ request.base_url }}">
+ <!-- ✅ Canonical + hreflang (sans paramètre parasite) -->
+<link rel="canonical" href="{{ request.base_url }}">
 
- {% set _tour = request.args.get('tour') %}
+<link rel="alternate" hreflang="fr" href="{{ url_for(request.endpoint, lang='fr', _external=True, **(request.view_args or {})) }}">
+<link rel="alternate" hreflang="en" href="{{ url_for(request.endpoint, lang='en', _external=True, **(request.view_args or {})) }}">
+<link rel="alternate" hreflang="es" href="{{ url_for(request.endpoint, lang='es', _external=True, **(request.view_args or {})) }}">
+<link rel="alternate" hreflang="x-default" href="{{ url_for(request.endpoint, lang='fr', _external=True, **(request.view_args or {})) }}">
 
-{% macro alt_url(lang_code) -%}
-  {{ url_for(request.endpoint, lang=lang_code, _external=True, **(request.view_args or {})) ~
-     (('?tour=' ~ _tour) if _tour else '') }}
-{%- endmacro %}
-
-<link rel="alternate" hreflang="fr" href="{{ alt_url('fr') }}">
-<link rel="alternate" hreflang="en" href="{{ alt_url('en') }}">
-<link rel="alternate" hreflang="es" href="{{ alt_url('es') }}">
-<link rel="alternate" hreflang="x-default" href="{{ alt_url('fr') }}">
 
 
   <!-- ✅ Open Graph -->
@@ -330,6 +324,13 @@
               {{ _("Réserver par e-mail") }}
             </a>
           </p>
+	  <p>
+ 	   {{ _("Vous souhaitez combiner votre transfert avec une visite ?") }}
+  	  <a href="{{ url_for('reservation_clean', slug='monserrate', lang=get_locale()) }}">{{ _("Tour du Monserrate") }}</a>,
+  	  <a href="{{ url_for('reservation_clean', slug='zipaquira',  lang=get_locale()) }}">{{ _("Zipaquirá") }}</a>,
+  	  <a href="{{ url_for('reservation_clean', slug='finca-cafe', lang=get_locale()) }}">{{ _("Finca café") }}</a>.
+	  </p>
+
 
           <p style="margin-top:10px;">
             <small>{{ _("Besoin d’un siège enfant, d’un van ou d’horaires très matinaux ? Dites-le nous lors de la réservation.") }}</small>
@@ -387,5 +388,82 @@
       menu.addEventListener('click', (e)=>{ if(e.target.closest('a')) close(); });
     })();
   </script>
+
+<script type="application/ld+json">
+{% if get_locale() == 'fr' -%}
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [{
+    "@type": "Question",
+    "name": "Combien coûte le transfert aéroport ⇄ hôtel à Bogotá ?",
+    "acceptedAnswer": { "@type": "Answer",
+      "text": "Le tarif est fixe à 60 000 COP pour 1 à 4 personnes (environ 16 USD). Il inclut le chauffeur professionnel, l’aide aux bagages et le trajet porte-à-porte."
+    }
+  },{
+    "@type": "Question",
+    "name": "Comment réserver mon transfert privé ?",
+    "acceptedAnswer": { "@type": "Answer",
+      "text": "Réservez par WhatsApp ou e-mail en indiquant la date, l’heure, le numéro de vol et le nombre de passagers. Nous confirmons rapidement la prise en charge."
+    }
+  },{
+    "@type": "Question",
+    "name": "Proposez-vous des trajets vers des sites touristiques ?",
+    "acceptedAnswer": { "@type": "Answer",
+      "text": "Oui, nous réalisons des trajets privés vers Monserrate, Zipaquirá, La Candelaria, la cascade de La Chorrera, etc. Il est possible de combiner transfert et visite guidée."
+    }
+  }]
+}
+{%- elif get_locale() == 'en' -%}
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [{
+    "@type": "Question",
+    "name": "How much is the airport ⇄ hotel transfer in Bogotá?",
+    "acceptedAnswer": { "@type": "Answer",
+      "text": "The fixed price is 60,000 COP for 1–4 people (around 16 USD). It includes a professional driver, luggage assistance and door-to-door service."
+    }
+  },{
+    "@type": "Question",
+    "name": "How do I book my private transfer?",
+    "acceptedAnswer": { "@type": "Answer",
+      "text": "Book via WhatsApp or email and provide the date, pickup time, flight number and number of passengers. We confirm your pickup quickly."
+    }
+  },{
+    "@type": "Question",
+    "name": "Do you offer rides to tourist sites?",
+    "acceptedAnswer": { "@type": "Answer",
+      "text": "Yes, we provide private rides to Monserrate, Zipaquirá, La Candelaria, La Chorrera waterfall, etc. You can combine the transfer with a guided tour."
+    }
+  }]
+}
+{%- else -%}
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [{
+    "@type": "Question",
+    "name": "¿Cuánto cuesta el traslado aeropuerto ⇄ hotel en Bogotá?",
+    "acceptedAnswer": { "@type": "Answer",
+      "text": "El precio fijo es de 60.000 COP para 1–4 personas (aprox. 16 USD). Incluye conductor profesional, ayuda con equipaje y servicio puerta a puerta."
+    }
+  },{
+    "@type": "Question",
+    "name": "¿Cómo reservo mi transporte privado?",
+    "acceptedAnswer": { "@type": "Answer",
+      "text": "Reserva por WhatsApp o correo indicando fecha, hora de recogida, número de vuelo y número de pasajeros. Confirmamos la recogida rápidamente."
+    }
+  },{
+    "@type": "Question",
+    "name": "¿Ofrecen trayectos a sitios turísticos?",
+    "acceptedAnswer": { "@type": "Answer",
+      "text": "Sí, realizamos trayectos privados a Monserrate, Zipaquirá, La Candelaria, la cascada La Chorrera, etc. Puedes combinar el traslado con un tour guiado."
+    }
+  }]
+}
+{%- endif %}
+</script>
+
 </body>
 </html>
